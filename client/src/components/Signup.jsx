@@ -28,16 +28,17 @@ function Signup() {
   const navigate = useNavigate();
 
   async function formData(data){
-    try{
-      const res1 = await axios.post("http://localhost:8080/api/auth/register", data);
-      toast.success("User Registered Successfully"); 
-      console.log("email", res1?.data?.user?.email, "password", res1?.data?.user?.password)
-      const res2 = await axios.post("http://localhost:8080/api/auth/login", {email: res1?.data?.user?.email, password: res1?.data?.user?.password});
-      toast.success("User login Successfully"); 
-      navigate("/trendora");
-    }catch(err){
-      console.log(err);
-    }
+    console.log(data);
+    // try{
+    //   const res1 = await axios.post("http://localhost:8080/api/auth/register", data);
+    //   toast.success("User Registered Successfully"); 
+    //   console.log("email", res1?.data?.user?.email, "password", res1?.data?.user?.password)
+    //   const res2 = await axios.post("http://localhost:8080/api/auth/login", {email: res1?.data?.user?.email, password: res1?.data?.user?.password});
+    //   toast.success("User login Successfully"); 
+    //   navigate("/trendora");
+    // }catch(err){
+    //   console.log(err);
+    // }
   }
 
   return (

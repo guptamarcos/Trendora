@@ -1,0 +1,14 @@
+1. use forwardRef in callback when you pass the ref as attribute as the time of component rendering.
+2. for getting actual element access in through useRef use it inside the useEffect() because 
+it runs after the browser paints.
+3. useLayoutEffect is a React Hook used for synchronous side effects that must run before the browser paints.
+4. add id attribute to the form and form attribute in button to link any button to any form so that 
+whenver you click on the button form will submit .
+
+
+BACKEND 
+
+1. learn about validator library in node js 
+2. In a Mongoose schema (MongoDB), the validate field is used to define custom validation logic for a schema property.
+Think of it as:
+🔒 A rule that runs before saving data to the database to ensure the value is valid.

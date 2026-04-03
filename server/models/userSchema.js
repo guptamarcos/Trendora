@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -16,11 +17,15 @@ const userSchema = new mongoose.Schema({
       trim: true,
       lowercase: true,
       unique: true,
-      match: [/^\S+@\S+\.\S+$/, "Invalid email"],
+      validate: {
+        validator: validator.isEmail,
+        message: "Invalid email address",
+      },
     },
     password: {
       type: String,
       required: [true, "Password is required"],
+      minlength: [5, "Password must be at least 5 characters"],
       match: [
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/,
         "Password must contain uppercase, lowercase, number, special character and be at least 5 characters long",
@@ -49,10 +54,12 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
+
 // MAKING A DOCUMENT LEVEL METHOD
 userSchema.methods.generateToken = function () {
   return jwt.sign({ userId: this._id }, process.env.TOKEN_SECRET, { expiresIn: "1d" });
 };
+
 
 // CREATING THE USER MODEL
 const User = mongoose.model("User", userSchema);
