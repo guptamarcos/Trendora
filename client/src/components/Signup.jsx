@@ -1,14 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { SignupSchema } from "../schemas/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 // REUSABLE BACK NAVIGATION BUTTON COMPONENT
 function BackBtn() {
   return (
-    <Link
-      to="/trendora"
+    <Link to="/trendora"
       className="absolute top-12 left-12 px-4 py-2 rounded-lg border-2 border-gray-400 flex items-center"
     >
       <FaArrowLeft style={{ paddingRight: "0.25rem" }} /> Back
@@ -24,9 +25,19 @@ const formStyling = `w-[32%] border-2 border-gray-300 shadow-lg px-10 py-12 roun
 function Signup() {
 
   const { register, handleSubmit, formState: { errors } } = useForm({resolver: zodResolver(SignupSchema)});
+  const navigate = useNavigate();
 
-  function formData(data){
-    console.log(data);
+  async function formData(data){
+    try{
+      const res1 = await axios.post("http://localhost:8080/api/auth/register", data);
+      toast.success("User Registered Successfully"); 
+      console.log("email", res1?.data?.user?.email, "password", res1?.data?.user?.password)
+      const res2 = await axios.post("http://localhost:8080/api/auth/login", {email: res1?.data?.user?.email, password: res1?.data?.user?.password});
+      toast.success("User login Successfully"); 
+      navigate("/trendora");
+    }catch(err){
+      console.log(err);
+    }
   }
 
   return (
