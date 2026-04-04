@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form";
 import { SignupSchema } from "../schemas/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import axios from "axios";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext.jsx";
+import { registerUser, login } from "../api/authApi.js";
 
 // REUSABLE BACK NAVIGATION BUTTON COMPONENT
 function BackBtn() {
@@ -26,19 +28,20 @@ function Signup() {
 
   const { register, handleSubmit, formState: { errors } } = useForm({resolver: zodResolver(SignupSchema)});
   const navigate = useNavigate();
+  const { getUser } = useContext(UserContext);
 
   async function formData(data){
-    console.log(data);
-    // try{
-    //   const res1 = await axios.post("http://localhost:8080/api/auth/register", data);
-    //   toast.success("User Registered Successfully"); 
-    //   console.log("email", res1?.data?.user?.email, "password", res1?.data?.user?.password)
-    //   const res2 = await axios.post("http://localhost:8080/api/auth/login", {email: res1?.data?.user?.email, password: res1?.data?.user?.password});
-    //   toast.success("User login Successfully"); 
-    //   navigate("/trendora");
-    // }catch(err){
-    //   console.log(err);
-    // }
+    try{
+      const res = await registerUser(data);
+      console.log(res);
+      await login({email: data.email, password: data.password});
+      getUser();
+      toast.success("Account created successfully!");
+      navigate("/trendora");
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went Wrong !!";
+      toast.error(message);
+    }
   }
 
   return (

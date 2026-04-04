@@ -1,4 +1,10 @@
+import { useContext } from "react";
+import { UserContext } from "../context/Index.jsx";
+
 function Profile() {
+
+  const { user } = useContext(UserContext);
+
   return (
     <main className="min-h-screen w-full mb-16 py-8 flex justify-center items-center  text-black">
       <div className="w-[55%] bg-gray-50 border border-gray-200 rounded-2xl px-10 py-8 shadow-sm">
@@ -19,7 +25,7 @@ function Profile() {
           </label>
           <input
             type="text"
-            value="gauri_shankar"
+            value={user.username}
             readOnly
             className="w-full text-base rounded-lg bg-gray-100 border border-gray-200 py-2 px-3 mt-2 focus:outline-none"
           />
@@ -30,7 +36,7 @@ function Profile() {
           <label className="text-base text-gray-500 tracking-wide">EMAIL</label>
           <input
             type="email"
-            value="gauri@example.com"
+            value={user.email}
             readOnly
             className="w-full text-base rounded-lg bg-gray-100 border border-gray-200 py-2 px-3 mt-2 focus:outline-none"
           />
@@ -40,9 +46,8 @@ function Profile() {
         <div className="mb-5">
           <label className="text-base text-gray-500 tracking-wide">BIO</label>
           <textarea
-            placeholder="Tell us about your style..."
-            className="w-full h-24 resize-none text-base rounded-lg bg-gray-100 border border-gray-200 py-2 px-3 mt-2 focus:outline-none"
-          />
+            className="w-full h-24 resize-none text-base rounded-lg bg-gray-100 border border-gray-200 py-2 px-3 mt-2 focus:outline-none">
+            Tell us about your self...</textarea>
         </div>
 
         {/* PASSWORD */}

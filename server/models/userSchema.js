@@ -55,7 +55,7 @@ userSchema.pre("save", async function () {
 });
 
 
-// MAKING A DOCUMENT LEVEL METHOD
+// MAKING A CUSTOM DOCUMENT LEVEL METHOD
 userSchema.methods.generateToken = function () {
   return jwt.sign({ userId: this._id }, process.env.TOKEN_SECRET, { expiresIn: "1d" });
 };

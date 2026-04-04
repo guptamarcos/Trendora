@@ -1,8 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "../schemas/LoginSchema.js";
+import { toast } from "react-toastify";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext.jsx";
+import { login } from "../api/authApi.js";
 
 // REUSABLE BACK NAVIGATION BUTTON COMPONENT
 function BackBtn() {
@@ -21,11 +25,21 @@ const buttonStyling = `w-full text-lg bg-amber-400 cursor-pointer py-[0.5rem] ro
 const formStyling = `w-[32%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
 
 function Login() {
-
+  
   const { register , handleSubmit, formState: {errors} } = useForm({resolver:zodResolver(LoginSchema)});
+  const navigate = useNavigate();
+  const { getUser } = useContext(UserContext);
 
-  function formData(data){
-    console.log(data);
+  async function formData(data){
+    try{
+      await login({ email: data.email, password: data.password }); 
+      getUser();
+      toast.success("Welcome back! You're now logged in.");
+      navigate("/trendora");
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went Wrong !!";
+      toast.error(message);
+    }
   }
 
   return (

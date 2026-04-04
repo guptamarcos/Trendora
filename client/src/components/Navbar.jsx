@@ -1,15 +1,17 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink} from "react-router-dom";
 import { FiUserPlus, FiLogIn } from "react-icons/fi";
 import { FaUserAlt, FaRegHeart } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { UserDropDown } from "./Index.jsx";
 import { useContext, useRef, useEffect } from "react";
-import { UserDropDownContext } from "../context/UserDropdownContext.jsx";
+import { UserDropDownContext,UserContext } from "../context/Index.jsx";
 
 function Navbar() {
   const { isOpen, setIsOpen } = useContext(UserDropDownContext);
   const inputRef = useRef(null);
   const buttonRef = useRef(null);
+  
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     function closeDropdown(e) {
@@ -70,7 +72,7 @@ function Navbar() {
         </div>
 
         {/* OPTIONS BEFORE LOGIN  */}
-        <div>
+        {!user && <div>
           <NavLink to="/trendora/login" className="bg-transparent text-base mr-2 border px-[0.8rem] py-[0.5rem] rounded-xl border-[#CBD5E1] text-[#374151] hover:bg-[#F1F5F9] hover:text-[#1D4ED8]">
             <FiLogIn className="inline-block mr-2 text-xl" />
             Log In
@@ -80,9 +82,10 @@ function Navbar() {
             Get Started
           </NavLink>
         </div>
+        }
 
         {/* OPTIONS AFTER LOGIN */}
-        {/* <div className="flex items-center gap-8 relative">
+        {user && <div className="flex items-center gap-8 relative">
           <NavLink to="/trendora/cart">
             <HiOutlineShoppingBag size={26} color="black" />
           </NavLink>
@@ -95,7 +98,9 @@ function Navbar() {
           <button onClick={() => setIsOpen(!isOpen)} ref={buttonRef} className="cursor-pointer">
             <FaUserAlt size={24} color="black" />
           </button>
-        </div> */}
+        </div> 
+        }
+
       </nav>
 
       {isOpen && <UserDropDown ref={inputRef} />}

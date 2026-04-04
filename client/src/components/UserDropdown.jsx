@@ -1,8 +1,29 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaUser, FaBox, FaSignOutAlt } from "react-icons/fa";
-import { forwardRef} from "react";
+import { useContext, forwardRef} from "react";
+import { logoutUser } from "../api/authApi.js";
+import { UserContext, UserDropDownContext } from "../context/Index.jsx";
+import { toast } from "react-toastify";
+
 
 const UserDropDown = forwardRef((props, ref) => {
+
+  const { getUser } = useContext(UserContext);
+  const { setIsOpen } = useContext(UserDropDownContext);
+  const navigate = useNavigate();
+  
+  async function logout(){
+    try{
+      const res = await logoutUser();
+      getUser(); 
+      toast.success("You have been logged out successfully");
+      navigate("/trendora")
+      setIsOpen(false);
+    } catch(err){
+      console.log(err);
+    }
+  }
+  
   return (
     <div className="absolute right-2 top-14 w-56 p-4 flex flex-col bg-white rounded-xl border border-gray-200 shadow-lg z-50"
       ref={ref}>
@@ -41,7 +62,7 @@ const UserDropDown = forwardRef((props, ref) => {
       </NavLink>
 
       {/* Logout */}
-      <button className="flex items-center gap-2 p-2 rounded-md text-base text-red-500 hover:bg-red-100 transition">
+      <button onClick={logout} className="flex items-center gap-2 p-2 rounded-md text-base text-red-500 hover:bg-red-100 transition">
         <FaSignOutAlt />
         Logout
       </button>

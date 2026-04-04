@@ -1,5 +1,5 @@
 // HERE min(1,...) IS USED TO ADD REQUIRED FIELD IN ZOD VALIDATION
-
+// BY DEFAULT IN ZOD EVERY FIELD IS REQUIRED
 import { z } from "zod";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
@@ -14,7 +14,7 @@ const SignupSchema = z.object({
     .trim()   
     .toLowerCase()
     .min(1, "Email is required")
-    .email("Invalid email address") ,
+    .email("Invalid email address"),
 
   password: z.string()
     .min(5, "Password must be at least 5 characters")

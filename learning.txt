@@ -4,7 +4,7 @@ it runs after the browser paints.
 3. useLayoutEffect is a React Hook used for synchronous side effects that must run before the browser paints.
 4. add id attribute to the form and form attribute in button to link any button to any form so that 
 whenver you click on the button form will submit .
-
+5. Object.keys() method will give the array of keys of the object 
 
 BACKEND 
 
@@ -12,3 +12,17 @@ BACKEND
 2. In a Mongoose schema (MongoDB), the validate field is used to define custom validation logic for a schema property.
 Think of it as:
 🔒 A rule that runs before saving data to the database to ensure the value is valid.
+3. Never modify passwords — validate them, but don’t transform them
+4. No — in real-world systems, usernames and emails should NOT keep leading/trailing spaces. They are typically trimmed and normalized before validation and storage.
+5. Mongoose document = object (in JS sense)
+But technically = instance of mongoose.Document class
+Not a plain object until you use:
+.toObject()
+.toJSON()
+
+
+
+IMPROVEMENTS
+1. agr login ke time pr user ne token copy kr ke rkh liya phir logout kr diya than login kiya 
+toh two token present ho gye hai isi problem ko solve krne ke liye access and refresh token ka 
+use krte hai

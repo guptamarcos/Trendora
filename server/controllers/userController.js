@@ -2,24 +2,22 @@ const ExpressError = require("../utils/ExpressError.js");
 const User = require("../models/userSchema.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-// const { userSchemaValidator } = require("../utils/schemaValidator.js");
+const {
+  signupSchemaValidator,
+  loginSchemaValidator,
+} = require("../utils/schemaValidator.js");
 
+// THIS IS REGISTER CONTROLLER
 async function register(req, res) {
-  const { username, email, password } = req.body;
+  // VALIDATING REQUEST BODY
+  const { error, value } = signupSchemaValidator.validate(req.body, {
+    abortEarly: false,
+  });
 
-  //   const { error, value } = userSchemaValidator.validate(req.body);
-
-  //   if (error) {
-  //    return res.status(400).json({
-  //       success: false,
-  //       message: error.details[0].message
-  //    });
-  //   }
-
-  if (!username || !email || !password) {
+  if (error) {
     return res.status(400).json({
       success: false,
-      message: "All fields are required!!",
+      message: error.details[0].message,
     });
   }
 
@@ -31,33 +29,34 @@ async function register(req, res) {
     });
   }
 
-  const createUser = await User.create({ username, email, password });
-   
+  const createdUser = await User.create({ username, email, password });
+
   return res.status(201).json({
     success: true,
     message: "User created successfully !!",
-    user: createUser,
   });
-
 }
 
 async function login(req, res) {
-  const { email, password } = req.body;
+  const { error, value } = loginSchemaValidator.validate(req.body, {
+    abortEarly: false,
+  });
 
-  if (!email || !password) {
+  if (error) {
     return res.status(400).json({
       success: false,
-      message: "All fields are required!!",
+      message: error.details[0].message,
     });
   }
-  
-  const emailNormalized = email.trim().toLowerCase();
-  const findUser = await User.findOne({ email : emailNormalized }).select("+password");
+
+  const { email, password } = value;
+
+  const findUser = await User.findOne({ email }).select("+password");
 
   if (!findUser) {
     return res.status(404).json({
       success: false,
-      message: "Invalid email or password",
+      message: "Email not exist",
     });
   }
 
@@ -66,7 +65,7 @@ async function login(req, res) {
   if (!checkPassword) {
     return res.status(400).json({
       success: false,
-      message: "Invalid Password",
+      message: "Invalid Credentials",
     });
   }
 
@@ -82,52 +81,42 @@ async function login(req, res) {
 
   return res.status(200).json({
     success: true,
-    message: "User logIn successfully",
+    message: "User logged in successfully",
   });
-
 }
 
 async function logout(req, res) {
-  res.clearCookie("token",{
+  res.clearCookie("token", {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
-  })
+    signed: true,
+  });
 
   return res.status(200).json({
     success: true,
-    message: "User logout successfully"
+    message: "User logout successfully",
   });
-
 }
 
-async function getUser(req, res, next) {
+async function getUser(req, res) {
   const { token } = req.signedCookies;
-
-  if(!token){
-    return res.status(400).json({
-      success: false,
-      message: "Token is missing",
-    })
-  }; 
-
-  const { userId } = jwt.verify(token,process.env.TOKEN_SECRET)
-  console.log(userId);
+  const { userId } = jwt.verify(token, process.env.TOKEN_SECRET);
 
   const user = await User.findById(userId);
-  
-  if(!user){
+
+  if (!user) {
     return res.status(400).json({
       success: false,
-      message: "User not found "
-    })
+      message: "User not found",
+    });
   }
 
   return res.status(200).json({
     success: true,
-    user
-  })
-};
+    user,
+  });
+}
 
 
 module.exports = { register, login, getUser, logout };
