@@ -21,6 +21,9 @@ import Policy from "./Policy.jsx";
 import ProductDetails from "./ProductDetails.jsx";
 import ProductInfo from "./ProductInfo.jsx";
 import Profile from "./Profile.jsx";
+import ProfileImage from "./ProfileImage.jsx";
+import ProfileInfo from "./ProfileInfo.jsx";
+import ProfileSecurity from "./ProfileSecurity.jsx";
 import Shirt from "./Shirt.jsx";
 import Signup from "./Signup.jsx";
 import Subscribe from "./Subscribe.jsx";
@@ -28,5 +31,9 @@ import UserDropDown from "./UserDropdown.jsx";
 import Wishlist from "./Wishlist.jsx";
 import WishlistItem from "./WishlistItem.jsx";
 
-export {About,AllOrders,BestSeller, Cart, CartItem, DeliveryDetail,DeliveryForm, Collection,CommentCard,Contact,Filters, Footer,Hero,Home,LatestCollections,Layout,
-    Login,Navbar,OrderCard, Policy,ProductDetails,ProductInfo,Profile,Shirt,Signup, Subscribe, UserDropDown, Wishlist,WishlistItem};
+export { About, AllOrders, BestSeller, Cart, CartItem, DeliveryDetail,
+  DeliveryForm, Collection, CommentCard, Contact, Filters, Footer, Hero, Home,
+  LatestCollections, Layout, Login, Navbar, OrderCard, Policy, ProductDetails,
+  ProductInfo, Profile, ProfileImage, ProfileInfo, ProfileSecurity, Shirt, Signup, 
+  Subscribe, UserDropDown, Wishlist, WishlistItem,
+};

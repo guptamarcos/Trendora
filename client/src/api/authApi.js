@@ -13,5 +13,13 @@ export const logoutUser = () => {
 };
 
 export const getCurrentUser = () => {
-    return axiosInstance.get("/auth/me");
+  return axiosInstance.get("/auth/me");
+}
+
+export const updateProfileInfo = (data) =>{
+  return axiosInstance.patch("/auth/updateProfileInfo", data)
+}
+
+export const updateProfilePassword = (data) =>{
+  return axiosInstance.patch("/auth/updateProfilePassword", data);
 }

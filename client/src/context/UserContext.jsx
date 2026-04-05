@@ -11,7 +11,7 @@ const UserContextProvider = ({ children }) => {
     try {
       const res = await getCurrentUser();
       console.log(res);
-      setUser(res?.data?.user);
+      setUser(res?.data?.user?._doc);
     } catch (err) {
       setUser(null);
       console.log(err);

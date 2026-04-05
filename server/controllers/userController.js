@@ -1,10 +1,10 @@
-const ExpressError = require("../utils/ExpressError.js");
 const User = require("../models/userSchema.js");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const {
   signupSchemaValidator,
   loginSchemaValidator,
+  ProfileInfoSchemaValidator,
+  PasswordSchemaValidator,
 } = require("../utils/schemaValidator.js");
 
 // THIS IS REGISTER CONTROLLER
@@ -100,17 +100,8 @@ async function logout(req, res) {
 }
 
 async function getUser(req, res) {
-  const { token } = req.signedCookies;
-  const { userId } = jwt.verify(token, process.env.TOKEN_SECRET);
 
-  const user = await User.findById(userId);
-
-  if (!user) {
-    return res.status(400).json({
-      success: false,
-      message: "User not found",
-    });
-  }
+  const {password , ...user} = req.user;
 
   return res.status(200).json({
     success: true,
@@ -118,5 +109,81 @@ async function getUser(req, res) {
   });
 }
 
+async function updateProfileInfo(req, res) {
+  const { error, value } = ProfileInfoSchemaValidator.validate(req.body, {
+    abortEarly: false,
+  });
 
-module.exports = { register, login, getUser, logout };
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    });
+  }
+
+  const { username, email, bio } = value;
+
+  const user = req.user;
+
+  if (user.email !== email) {
+    return res.status(400).json({
+      success: false,
+      message: "Email not exist",
+    });
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
+    { $set: { username: username, bio: bio } },
+    { returnDocument: "after", runValidators: true },
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+  });
+}
+
+async function updateProfilePassword(req, res) {
+  const { error, value } = PasswordSchemaValidator.validate(req.body, {
+    abortEarly: false,
+  });
+
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    });
+  }
+
+  const { oldPassword, newPassword } = value;
+  const user = req.user;
+
+  const checkPassword = await bcrypt.compare(oldPassword, user.password);
+  
+  if (!checkPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid credentials",
+    });
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Password updated successfully"
+  })
+
+}
+
+
+module.exports = {
+  register,
+  login,
+  getUser,
+  logout,
+  updateProfileInfo,
+  updateProfilePassword,
+};

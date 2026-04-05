@@ -25,7 +25,11 @@ const userBaseSchema = Joi.object({
       "string.min": "Password must be at least 5 characters",
     }),
 
-  bio: Joi.string().max(200).messages({
+  bio: Joi.string()
+    .trim()
+    .allow("")
+    .max(200)
+    .messages({
     "string.max": "Bio must be less than 200 characters",
   }),
 });
@@ -43,5 +47,23 @@ const loginSchemaValidator = Joi.object({
   password: userBaseSchema.extract("password") ,
 });
 
+// PROFILE VALIDATION SCHEMA 
+const ProfileInfoSchemaValidator = Joi.object({
+  username: userBaseSchema.extract("username"),
+  email: userBaseSchema.extract("email"),
+  bio: userBaseSchema.extract("bio"),
+});
 
-module.exports = { signupSchemaValidator, loginSchemaValidator };
+// PASSWORD VALIDATION SCHEMA
+const PasswordSchemaValidator = Joi.object({
+  oldPassword: userBaseSchema.extract("password"),
+  newPassword: userBaseSchema.extract("password")
+  .invalid(Joi.ref("oldPassword"))
+  .messages({
+    "any.invalid": "New password must be different from old password",
+  }),
+})
+
+
+module.exports = { signupSchemaValidator, loginSchemaValidator, 
+  ProfileInfoSchemaValidator , PasswordSchemaValidator};

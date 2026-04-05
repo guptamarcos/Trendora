@@ -44,6 +44,7 @@ app.use((req, res, next) => {
   });
 });
 
+
 // ERROR HANDLING MIDDLEWARE
 app.use((err, req, res, next) => {
   const mongooseError = MongooseErrorHandler(err);
@@ -55,10 +56,20 @@ app.use((err, req, res, next) => {
       message: message
     })
   };
+  
+  console.log("Error is occur \n", err);
+
+  if(err.name === "TypeError"){
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
+    })
+  }
 
   const { status = 500, message = "Internal Server Error" } = err;
   return res.status(status).json({ 
     success: false, 
     message: message 
   });
+
 });
