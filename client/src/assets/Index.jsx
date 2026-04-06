@@ -6,5 +6,7 @@ import about_img from "./about_img.png";
 import contact_img from "./contact_img.png";
 import razorpay_logo from "./razorpay_logo.png";
 import stripe_logo from "./stripe_logo.png";
+import defaultProfileImage from "./default.png";
 
-export { hero_img, exchange_icon, quality_icon, support_icon,about_img, contact_img, razorpay_logo,stripe_logo};
+export { hero_img, exchange_icon, quality_icon, support_icon,about_img,
+     contact_img, razorpay_logo,stripe_logo, defaultProfileImage};

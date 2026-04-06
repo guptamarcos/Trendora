@@ -13,12 +13,14 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/userRoutes.js");
 const MongooseErrorHandler = require("./utils/MongooseErrorHandler.js");
+const path = require("path");
 
 // MIDDLEWARE SETUP
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.SIGNED_COOKIE_SECRET));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // CONNECT THE DATABASE AND START THE SERVER
 connectDb()
@@ -39,37 +41,44 @@ app.use("/api/auth", userRoutes);
 
 // WHEN API ENDPOINT NOT EXIST
 app.use((req, res, next) => {
-  return res.status(404).json({ 
-    success: false, message: "Api endpoint not exist!!" 
+  return res.status(404).json({
+    success: false,
+    message: "Api endpoint not exist!!",
   });
 });
-
 
 // ERROR HANDLING MIDDLEWARE
 app.use((err, req, res, next) => {
   const mongooseError = MongooseErrorHandler(err);
 
-  if(mongooseError){
+  if (mongooseError) {
     const { statusCode, message } = mongooseError;
     return res.status(statusCode).json({
-      success: false, 
-      message: message
-    })
-  };
-  
-  console.log("Error is occur \n", err);
-
-  if(err.name === "TypeError"){
-    return res.status(500).json({
       success: false,
-      message: "Internal Server Error"
-    })
+      message: message,
+    });
   }
 
-  const { status = 500, message = "Internal Server Error" } = err;
-  return res.status(status).json({ 
-    success: false, 
-    message: message 
-  });
+  console.log("Error is occur \n", err);
 
+  if (err.name === "TypeError") {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+
+  // Multer error
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      success: false,
+      message: "File size should not exceed 2MB",
+    });
+  }
+  
+  const { status = 500, message = "Internal Server Error" } = err;
+  return res.status(status).json({
+    success: false,
+    message: message,
+  });
 });

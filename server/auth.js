@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 async function verifyAndCheckToken(req, res, next) {
   try {
     const { token } = req.signedCookies;
-    
+  
     // WHEN BOTH NAME AND VALUE OR NAME IS TEMPERED
     if (token === undefined) {
       return res.status(401).json({
@@ -33,7 +33,7 @@ async function verifyAndCheckToken(req, res, next) {
     }
     
     req.user = user;
-    
+   
     return next();
 
   } catch (err) {

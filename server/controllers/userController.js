@@ -6,6 +6,8 @@ const {
   ProfileInfoSchemaValidator,
   PasswordSchemaValidator,
 } = require("../utils/schemaValidator.js");
+const path = require("path");
+const fs = require("fs");
 
 // THIS IS REGISTER CONTROLLER
 async function register(req, res) {
@@ -100,8 +102,7 @@ async function logout(req, res) {
 }
 
 async function getUser(req, res) {
-
-  const {password , ...user} = req.user;
+  const { password, ...user } = req.user;
 
   return res.status(200).json({
     success: true,
@@ -160,7 +161,7 @@ async function updateProfilePassword(req, res) {
   const user = req.user;
 
   const checkPassword = await bcrypt.compare(oldPassword, user.password);
-  
+
   if (!checkPassword) {
     return res.status(400).json({
       success: false,
@@ -173,11 +174,47 @@ async function updateProfilePassword(req, res) {
 
   return res.status(200).json({
     success: true,
-    message: "Password updated successfully"
-  })
-
+    message: "Password updated successfully",
+  });
 }
 
+async function uploadProfileImage(req, res) {
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: "No file uploaded or invalid file type",
+    });
+  }
+
+  const user = req.user;
+
+  if (user.profileImage) {
+    const oldPath = path.join(
+      process.cwd(),
+      user.profileImage.replace(/^\/+/, ""),
+    );
+   
+    if (fs.existsSync(oldPath)) {
+      fs.unlinkSync(oldPath);
+    }
+  }
+
+  await User.updateOne(
+    { _id: user._id },
+    {
+      profileImage: `/uploads/${req.file.filename}`,
+    },
+    {
+      runValidators: true,
+      returnDocument: "after",
+    },
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "File is upload successfully",
+  });
+}
 
 module.exports = {
   register,
@@ -186,4 +223,5 @@ module.exports = {
   logout,
   updateProfileInfo,
   updateProfilePassword,
+  uploadProfileImage,
 };

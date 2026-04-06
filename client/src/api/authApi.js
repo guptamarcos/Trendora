@@ -23,3 +23,11 @@ export const updateProfileInfo = (data) =>{
 export const updateProfilePassword = (data) =>{
   return axiosInstance.patch("/auth/updateProfilePassword", data);
 }
+
+export const uploadProfileImage = ( data ) =>{
+  return axiosInstance.patch("/auth/uploadProfileImage", data,{
+    headers: {
+      "Content-Type": "multipart/form-data",
+    }
+  });
+}

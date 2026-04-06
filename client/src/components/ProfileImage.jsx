@@ -1,24 +1,51 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useEffect } from "react";
+import { uploadProfileImage } from "../api/authApi.js";
+import { defaultProfileImage } from "../assets/Index.jsx";
+import { toast } from "react-toastify";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext.jsx";
 
 function ProfileImage() {
+  
+  const { getUser , user } = useContext(UserContext);
+  const [profileImage, setProfileImage] = useState(defaultProfileImage);
+  
+  useEffect(()=>{
+    if(user.profileImage !== ""){
+      setProfileImage(`http://localhost:8080${user.profileImage}`);
+    }
+  },[user])
+
+  async function handleChange(e){
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const formData = new FormData();
+    formData.append("profileImage", file);
+
+    try{
+      const res = await uploadProfileImage(formData);
+      console.log(res);
+      getUser();
+      toast.success("Image uploaded successfully");
+    }catch(err){
+      const message = err?.response?.data?.message ; 
+      toast.error(message);
+    }
+  }
+
   return (
-    <form className="flex flex-col items-center mb-10">
+    <div className="flex flex-col items-center mb-10">
       <h2 className="text-xl font-bold mb-4 text-gray-700">Profile Photo</h2>
+      
+      <label htmlFor="profileImage" className="cursor-pointer">
+        <img src={profileImage} alt="profile"
+        className="h-40 w-40 rounded-full border border-gray-300 object-cover"/>
+      </label>
 
-      <img
-        src="https://i.pravatar.cc/150?img=5"
-        alt="profile"
-        className="h-40 w-40 rounded-full border border-gray-300 object-cover"
-      />
+      <input id="profileImage" type="file" accept="image/*" className="hidden" onChange={handleChange}></input>
 
-      <button
-        type="button"
-        className="mt-4 bg-indigo-600 text-white px-4 py-2 cursor-pointer rounded-lg hover:bg-indigo-700 transition"
-      >
-        Change Photo
-      </button>
-    </form>
+    </div>
   );
 }
 
