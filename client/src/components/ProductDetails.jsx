@@ -4,20 +4,16 @@ import { FaStar} from "react-icons/fa";
 function ProductDetails() {
   return (
     <section className="flex my-8 py-4 gap-8">
+
       {/* PRODUCT IMAGES */}
-      <div className="h-[70vh] flex gap-4 flex-1">
-        <div className="h-full w-[20%] flex flex-col justify-between">
-          <img src={hero_img} alt="Product Image" className="h-[22.5%]"></img>
-          <img src={hero_img} alt="Product Image" className="h-[22.5%]"></img>
-          <img src={hero_img} alt="Product Image" className="h-[22.5%]"></img>
-          <img src={hero_img} alt="Product Image" className="h-[22.5%]"></img>
-        </div>
-        <img src={hero_img} alt="Product Image" className="w-[80%]"></img>
+      <div className="flex-1">
+       <img src={hero_img} alt="Product Image" className="h-[75vh]"></img>
+
       </div>
 
       {/* PRODUCT INFORMATION */}
       <div className="px-4 flex flex-col justify-center flex-1">
-        <h2 className="font-semibold text-2xl">
+        <h2 className="font-semibold text-3xl">
           Men Round Neck Pure Cotton T-shirt
         </h2>
         <div className="flex items-center gap-2">
@@ -56,10 +52,12 @@ function ProductDetails() {
             XXL
           </span>
         </div>
-        <button className="my-6 py-2 px-4 text-gray-100 bg-black cursor-pointer">
+        <button className=" my-6 py-2 px-4 text-gray-100 bg-black cursor-pointer">
           ADD TO CART
         </button>
       </div>
+
+
     </section>
   );
 }

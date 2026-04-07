@@ -22,20 +22,26 @@ function BackBtn() {
 // SHARED TAILWIND STYLES FOR INPUT FIELDS
 const inputStyling = `w-full border-2 border-gray-300 rounded-md mt-1 py-[0.6rem] px-[0.4rem]`;
 const buttonStyling = `w-full text-lg bg-amber-400 cursor-pointer py-[0.5rem] rounded-md my-4`;
-const formStyling = `w-[32%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
+const formStyling = `w-[30%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
 
 function Login() {
   
   const { register , handleSubmit, formState: {errors} } = useForm({resolver:zodResolver(LoginSchema)});
   const navigate = useNavigate();
-  const { getUser } = useContext(UserContext);
+  const { user, getUser } = useContext(UserContext);
 
   async function formData(data){
     try{
       await login({ email: data.email, password: data.password }); 
-      getUser();
+      const loggedUser = await getUser();
       toast.success("Welcome back! You're now logged in.");
-      navigate("/trendora");
+      
+      if(loggedUser?.role === "admin"){
+        navigate("/trendora/admin");
+      }else{
+        navigate("/trendora");
+      }
+      
     }catch(err){
       const message = err?.response?.data?.message || "Something went Wrong !!";
       toast.error(message);

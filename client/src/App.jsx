@@ -35,6 +35,7 @@ function App() {
           <Route path="allOrdersInfo" element={<AdminOrderInfo />} />
           <Route path="addProduct" element={<AdminAddProduct/>} />
           <Route path="editProductInfo" element={<AdminProductInfoEditForm/>} />
+          <Route path="admin/profile" element={<Profile/>} />
         </Route>
 
         <Route path="/trendora/signup" element={<Signup />} />

@@ -1,7 +1,9 @@
-import { FiBell, FiUser, FiSettings } from "react-icons/fi";
-import { NavLink } from "react-router-dom";
+import { FiBell, FiUser, FiSettings, FiLogOut } from "react-icons/fi";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function AdminNavbar() {
+  const navigate = useNavigate();
+
   return (
     <header className="fixed h-[10vh] min-w-full bg-white border-b border-gray-200">
       <nav className="h-full flex justify-between items-center px-16">
@@ -21,13 +23,15 @@ function AdminNavbar() {
           </div>
 
           {/* Settings */}
-          <NavLink to="/admin/settings">
+          <NavLink to="/trendora/admin">
             <FiSettings size={24} className="text-gray-700" />
           </NavLink>
 
-          {/* Admin Profile */}
-          <button className="p-2 rounded-full border border-gray-200">
-            <FiUser size={18} className="text-gray-700 cursor-pointer" />
+        
+          {/* 🔥 Logout UI (no logic) */}
+          <button className="flex items-center gap-2 cursor-pointer text-red-500 border border-red-400 px-3 py-1 rounded-md hover:bg-red-50">
+            <FiLogOut size={20} />
+            Logout
           </button>
         </div>
       </nav>

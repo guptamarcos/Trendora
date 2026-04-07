@@ -23,7 +23,8 @@ async function register(req, res) {
       message: error.details[0].message,
     });
   }
-
+  
+  const { username, email, password } = value;
   const findUser = await User.findOne({ email });
   if (findUser) {
     return res.status(400).json({
@@ -32,7 +33,7 @@ async function register(req, res) {
     });
   }
 
-  const createdUser = await User.create({ username, email, password });
+  const createdUser = await User.create({ username, email, password});
 
   return res.status(201).json({
     success: true,
@@ -44,16 +45,15 @@ async function login(req, res) {
   const { error, value } = loginSchemaValidator.validate(req.body, {
     abortEarly: false,
   });
-
+  
   if (error) {
     return res.status(400).json({
       success: false,
       message: error.details[0].message,
     });
   }
-
+  
   const { email, password } = value;
-
   const findUser = await User.findOne({ email }).select("+password");
 
   if (!findUser) {

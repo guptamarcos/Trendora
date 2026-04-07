@@ -54,6 +54,11 @@ const userSchema = new mongoose.Schema({
         ref: "Order",
       },
     ],
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    }
   },
   { timestamps: true },
 );

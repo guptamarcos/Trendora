@@ -12,6 +12,7 @@ const UserContextProvider = ({ children }) => {
       const res = await getCurrentUser();
       console.log(res);
       setUser(res?.data?.user?._doc);
+      return res?.data?.user?._doc;
     } catch (err) {
       setUser(null);
       console.log(err);
@@ -21,7 +22,7 @@ const UserContextProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    getUser();
+     getUser();
   }, []);
 
   return (

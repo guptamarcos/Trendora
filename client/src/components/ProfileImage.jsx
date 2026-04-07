@@ -27,15 +27,12 @@ function ProfileImage() {
 
   return (
     <div className="flex flex-col items-center mb-10">
-      <h2 className="text-xl font-bold mb-4 text-gray-700">
-        Profile Photo
-      </h2>
-
+      
       <label htmlFor="profileImage" className="cursor-pointer">
         <img
           src={user?.profileImage?.path || defaultProfileImage}
           alt="profile"
-          className="h-40 w-40 rounded-full border border-gray-300 object-cover"
+          className="h-50 w-50 rounded-full border border-gray-300 object-cover"
         />
       </label>
 

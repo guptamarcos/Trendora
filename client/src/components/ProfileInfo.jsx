@@ -40,7 +40,7 @@ function ProfileInfo() {
         <input
           id="username"
           type="text"
-          defaultValue={user.username}
+          defaultValue={user?.username}
           {...register("username")}
           className="w-full text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500"
         />
@@ -54,7 +54,7 @@ function ProfileInfo() {
         <input
           id="email"
           type="email"
-          defaultValue={user.email}
+          defaultValue={user?.email}
           readOnly
           {...register("email")}
           className="w-full text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500"
@@ -67,7 +67,7 @@ function ProfileInfo() {
           className="text-base text-gray-500 tracking-wide">Bio</label>
         <textarea 
           id="bio"
-          defaultValue={user.bio || "Tell us about your self.... "}
+          defaultValue={user?.bio}
           {...register("bio")}
           className="w-full h-24 resize-none text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500">
         </textarea>

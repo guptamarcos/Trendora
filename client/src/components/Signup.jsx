@@ -22,13 +22,13 @@ function BackBtn() {
 // SHARED TAILWIND STYLES 
 const inputStyling = `w-full border-2 border-gray-300 rounded-md mt-1 py-[0.6rem] px-[0.4rem]`;
 const buttonStyling = `w-full text-lg bg-amber-400 cursor-pointer py-[0.5rem] rounded-md my-4`;
-const formStyling = `w-[32%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
+const formStyling = `w-[30%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
 
 function Signup() {
 
   const { register, handleSubmit, formState: { errors } } = useForm({resolver: zodResolver(SignupSchema)});
   const navigate = useNavigate();
-  const { getUser } = useContext(UserContext);
+  const {getUser } = useContext(UserContext);
 
   async function formData(data){
     try{
