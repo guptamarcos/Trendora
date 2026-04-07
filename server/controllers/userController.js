@@ -8,6 +8,7 @@ const {
 } = require("../utils/schemaValidator.js");
 const path = require("path");
 const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
 
 // THIS IS REGISTER CONTROLLER
 async function register(req, res) {
@@ -179,40 +180,47 @@ async function updateProfilePassword(req, res) {
 }
 
 async function uploadProfileImage(req, res) {
-  
   if (!req.file) {
     return res.status(400).json({
       success: false,
       message: "No file uploaded or invalid file type",
     });
   }
-  
+
   console.log(req.file);
 
   const user = req.user;
   
   // FOR REMOVING PREVIOUS IMAGE FORM THE LOCAL FOLDER
-  
+
   // if (user.profileImage) {
   //   const oldPath = path.join(
   //     process.cwd(),
   //     user.profileImage.replace(/^\/+/, ""),
   //   );
-   
+
   //   if (fs.existsSync(oldPath)) {
   //     fs.unlinkSync(oldPath);
   //   }
   // }
+  
+  
+  await User.updateOne({ _id: user._id },{
+    $set: {
+      profileImage: { 
+        path: req.file.path, 
+        filename: req.file.filename 
+      },
+    },
+  },
+  {
+    runValidators: true,
+  },
+);
 
-  await User.updateOne(
-    { _id: user._id },
-    {
-      profileImage: req.file.path,
-    },
-    {
-      runValidators: true,
-    },
-  );
+  if(user.profileImage.path){
+    await cloudinary.uploader.destroy(user.profileImage.filename);
+  };
 
   return res.status(200).json({
     success: true,

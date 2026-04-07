@@ -1,5 +1,14 @@
 import About from "./About.jsx";
+import AdminAddProduct from "./AdminAddProduct.jsx";
+import AdminDashboard from "./AdminDashboard.jsx";
+import AdminNavbar from "./AdminNavbar.jsx";
+import AdminOrderInfo from "./AdminOrderInfo.jsx";
+import AdminPageLayout from "./AdminPageLayout.jsx";
+import AdminProductInfoEditForm from "./AdminProductInfoEditForm.jsx";
+import AdminProductInfo from "./AdminProductsInfo.jsx";
+import AdminSidebar from "./AdminSidebar.jsx"; 
 import AllOrders from "./AllOrders.jsx";
+import AllUsersInfo from "./AdminUsersInfo.jsx";
 import BestSeller from "./BestSeller.jsx";
 import Cart from "./Cart.jsx";
 import CartItem from "./CartItem.jsx";
@@ -31,9 +40,9 @@ import UserDropDown from "./UserDropdown.jsx";
 import Wishlist from "./Wishlist.jsx";
 import WishlistItem from "./WishlistItem.jsx";
 
-export { About, AllOrders, BestSeller, Cart, CartItem, DeliveryDetail,
-  DeliveryForm, Collection, CommentCard, Contact, Filters, Footer, Hero, Home,
-  LatestCollections, Layout, Login, Navbar, OrderCard, Policy, ProductDetails,
-  ProductInfo, Profile, ProfileImage, ProfileInfo, ProfileSecurity, Shirt, Signup, 
-  Subscribe, UserDropDown, Wishlist, WishlistItem,
+export { About, AdminDashboard, AdminNavbar,AdminPageLayout, AdminProductInfo, AdminSidebar, AdminAddProduct,
+  DeliveryForm, Collection, CommentCard, Contact, Filters, Footer, Hero, Home, AdminOrderInfo,
+  LatestCollections, Layout, Login, Navbar, OrderCard, Policy, ProductDetails, Cart, CartItem, DeliveryDetail,
+  ProductInfo, Profile, ProfileImage, ProfileInfo, ProfileSecurity, Shirt, Signup, AdminProductInfoEditForm,
+  Subscribe, UserDropDown, Wishlist, WishlistItem, AllOrders,AllUsersInfo, BestSeller,
 };

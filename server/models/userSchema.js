@@ -39,8 +39,14 @@ const userSchema = new mongoose.Schema({
       maxLength: [200, "Bio cannot exceed 200 characters"],
     },
     profileImage: {
-      type: String,
-      default: "",
+      path: {
+        type: String,
+        default: "",  
+      },
+      filename: {
+        type: String,
+        default: "",
+      }
     },
     orders: [
       {
