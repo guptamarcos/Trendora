@@ -14,13 +14,16 @@ const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/userRoutes.js");
 const MongooseErrorHandler = require("./utils/MongooseErrorHandler.js");
 const path = require("path");
+const MulterErrorHandler = require("./utils/MulterErrorHandler.js");
 
 // MIDDLEWARE SETUP
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.SIGNED_COOKIE_SECRET));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// WE ONLY NEED IT WHEN WE LOCALLY UPLOADING THE IMAGES
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // CONNECT THE DATABASE AND START THE SERVER
 connectDb()
@@ -69,15 +72,18 @@ app.use((err, req, res, next) => {
   }
 
   // Multer error
-  if (err.code === "LIMIT_FILE_SIZE") {
-    return res.status(400).json({
+ const multerError = MulterErrorHandler(err);
+
+  if (multerError) {
+    const { statusCode, message } = multerError;
+    return res.status(statusCode).json({
       success: false,
-      message: "File size should not exceed 2MB",
+      message: message,
     });
   }
   
-  const { status = 500, message = "Internal Server Error" } = err;
-  return res.status(status).json({
+  const { statusCode = 500, message = "Internal Server Error" } = err;
+  return res.status(statusCode).json({
     success: false,
     message: message,
   });

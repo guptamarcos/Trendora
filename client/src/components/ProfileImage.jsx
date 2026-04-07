@@ -12,7 +12,7 @@ function ProfileImage() {
   
   useEffect(()=>{
     if(user.profileImage !== ""){
-      setProfileImage(`http://localhost:8080${user.profileImage}`);
+      setProfileImage(user.profileImage);
     }
   },[user])
 
@@ -39,7 +39,7 @@ function ProfileImage() {
       <h2 className="text-xl font-bold mb-4 text-gray-700">Profile Photo</h2>
       
       <label htmlFor="profileImage" className="cursor-pointer">
-        <img src={profileImage} alt="profile"
+        <img src={`${user.profileImage}`|| {profileImage} } alt="profile"
         className="h-40 w-40 rounded-full border border-gray-300 object-cover"/>
       </label>
 

@@ -179,34 +179,38 @@ async function updateProfilePassword(req, res) {
 }
 
 async function uploadProfileImage(req, res) {
+  
   if (!req.file) {
     return res.status(400).json({
       success: false,
       message: "No file uploaded or invalid file type",
     });
   }
+  
+  console.log(req.file);
 
   const user = req.user;
-
-  if (user.profileImage) {
-    const oldPath = path.join(
-      process.cwd(),
-      user.profileImage.replace(/^\/+/, ""),
-    );
+  
+  // FOR REMOVING PREVIOUS IMAGE FORM THE LOCAL FOLDER
+  
+  // if (user.profileImage) {
+  //   const oldPath = path.join(
+  //     process.cwd(),
+  //     user.profileImage.replace(/^\/+/, ""),
+  //   );
    
-    if (fs.existsSync(oldPath)) {
-      fs.unlinkSync(oldPath);
-    }
-  }
+  //   if (fs.existsSync(oldPath)) {
+  //     fs.unlinkSync(oldPath);
+  //   }
+  // }
 
   await User.updateOne(
     { _id: user._id },
     {
-      profileImage: `/uploads/${req.file.filename}`,
+      profileImage: req.file.path,
     },
     {
       runValidators: true,
-      returnDocument: "after",
     },
   );
 

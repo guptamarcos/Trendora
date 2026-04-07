@@ -23,6 +23,7 @@ Not a plain object until you use:
 .toJSON()
 6. use put request when you have to replace the entire document , use patch when use want to update some 
 part of the resource 
+7. instanceof method in js to check whether a object is the part of class or not 
 
 
 
