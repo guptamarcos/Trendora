@@ -33,4 +33,5 @@ const ProfileSecuritySchema = z.object({
     path: ["newPassword"],
 });
 
+
 export { ProfileInfoSchema, ProfileSecuritySchema };

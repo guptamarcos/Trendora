@@ -1,6 +1,6 @@
 const multer = require("multer");
-const crypto = require("crypto");
-const path = require("path");
+// const crypto = require("crypto");
+// const path = require("path");
 const ExpressError = require("./ExpressError.js");
 const { cloudStorage } = require("../cloudConfig.js");
 

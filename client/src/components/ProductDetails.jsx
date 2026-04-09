@@ -1,14 +1,21 @@
 import { hero_img } from "../assets/Index.jsx";
-import { FaStar} from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
+
+function SizeBox({ text }) {
+  return (
+    <span className="flex justify-center items-center cursor-pointer px-4 py-1 bg-gray-100 border-1 border-gray-400">
+      {text}
+    </span>
+  );
+}
+
 
 function ProductDetails() {
   return (
     <section className="flex my-8 py-4 gap-8">
-
       {/* PRODUCT IMAGES */}
       <div className="flex-1">
-       <img src={hero_img} alt="Product Image" className="h-[75vh]"></img>
-
+        <img src={hero_img} alt="Product Image" className="h-[75vh]"></img>
       </div>
 
       {/* PRODUCT INFORMATION */}
@@ -36,28 +43,16 @@ function ProductDetails() {
         </p>
         <h6 className="font-semibold text-gray-700 mb-2 py-4">Select Size</h6>
         <div className="w-[30%] grid grid-cols-5 gap-2">
-          <span className="flex justify-center items-center cursor-pointer px-4 py-1 bg-gray-100 border-1 border-gray-400">
-            S
-          </span>
-          <span className="flex justify-center items-center cursor-pointer px-4 py-1 bg-gray-100 border-1 border-gray-400">
-            M
-          </span>
-          <span className="flex justify-center items-center cursor-pointer px-4 py-1 bg-gray-100 border-1 border-gray-400">
-            L
-          </span>
-          <span className="flex justify-center items-center cursor-pointer px-4 py-1 bg-gray-100 border-1 border-gray-400">
-            XL
-          </span>
-          <span className="flex justify-center items-center cursor-pointer px-4 py-1 bg-gray-100 border-1 border-gray-400">
-            XXL
-          </span>
+          <SizeBox text="S"/>
+          <SizeBox text="M"/>
+          <SizeBox text="L"/>
+          <SizeBox text="XL"/>
+          <SizeBox text="XXL"/>
         </div>
         <button className=" my-6 py-2 px-4 text-gray-100 bg-black cursor-pointer">
           ADD TO CART
         </button>
       </div>
-
-
     </section>
   );
 }

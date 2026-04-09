@@ -19,7 +19,7 @@ function RecentActivity({ text, value }) {
 
 function AdminDashboard() {
   return (
-    <main className="flex-1 min-h-[90vh] p-8 bg-gray-100 space-y-6">
+    <main className="max-w-6xl mx-auto flex-1 min-h-[90vh] p-8 bg-gray-100 space-y-6">
       {/* PAGE TITLE */}
       <div>
         <h1 className="text-3xl font-semibold text-gray-800">Dashboard</h1>

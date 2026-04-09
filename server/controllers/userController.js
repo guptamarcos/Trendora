@@ -5,7 +5,7 @@ const {
   loginSchemaValidator,
   ProfileInfoSchemaValidator,
   PasswordSchemaValidator,
-} = require("../utils/schemaValidator.js");
+} = require("../utils/userSchemaValidator.js");
 const path = require("path");
 const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
@@ -39,6 +39,7 @@ async function register(req, res) {
     success: true,
     message: "User created successfully !!",
   });
+
 }
 
 async function login(req, res) {
@@ -228,6 +229,15 @@ async function uploadProfileImage(req, res) {
   });
 }
 
+async function getAllUser (req,res){
+  const allUser = await User.find({}).select("username email role profileImage")
+
+  return res.status(200).json({
+    success: false,
+    data: allUser,
+  })
+};
+
 module.exports = {
   register,
   login,
@@ -236,4 +246,5 @@ module.exports = {
   updateProfileInfo,
   updateProfilePassword,
   uploadProfileImage,
+  getAllUser
 };

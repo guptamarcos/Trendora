@@ -3,6 +3,7 @@ import { uploadProfileImage } from "../api/authApi.js";
 import { defaultProfileImage } from "../assets/Index.jsx";
 import { toast } from "react-toastify";
 import { UserContext } from "../context/UserContext.jsx";
+import ImageSchema from "../schemas/ImageSchema.js";
 
 function ProfileImage() {
   const { getUser, user } = useContext(UserContext);
@@ -11,6 +12,13 @@ function ProfileImage() {
     const file = e.target.files[0];
     if (!file) return;
 
+    const result = ImageSchema.safeParse(file);
+
+    if(!result.success){
+      toast.error(result?.error?.errors);
+      return;
+    }
+    
     const formData = new FormData();
     formData.append("profileImage", file);
 

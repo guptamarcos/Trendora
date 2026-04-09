@@ -12,6 +12,7 @@ const connectDb = require("./Db/connect.js");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/userRoutes.js");
+const productRoutes = require("./routes/productRoutes.js")
 const MongooseErrorHandler = require("./utils/MongooseErrorHandler.js");
 const path = require("path");
 const MulterErrorHandler = require("./utils/MulterErrorHandler.js");
@@ -41,6 +42,7 @@ connectDb()
   });
 
 app.use("/api/auth", userRoutes);
+app.use("/api/product", productRoutes);
 
 // WHEN API ENDPOINT NOT EXIST
 app.use((req, res, next) => {

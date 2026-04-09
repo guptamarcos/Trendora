@@ -14,7 +14,7 @@ const cloudStorage = new CloudinaryStorage({
   params: async (req, file) => {
     return {
       folder: "Trendora_Dev",
-      allowed_formats: ["jpeg", "png", "jpg"],
+      allowed_formats: ["jpeg", "png", "jpg","webp"],
       public_id: `${Date.now()}-${file.originalname}`,
     };
   },
