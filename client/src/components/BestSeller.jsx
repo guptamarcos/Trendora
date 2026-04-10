@@ -1,4 +1,4 @@
-import { Shirt } from "./Index.jsx";
+import { Product } from "./Index.jsx";
 function BestSeller(){
     return (
         <section className="px-12 py-4 flex flex-col items-center">
@@ -8,11 +8,7 @@ function BestSeller(){
             </h2>
             <p className="pt-2 text-sm font-outfit text-gray-500">Explore our top-selling picks that customers can’t get enough of, combining trend, comfort, and value.</p>
             <div className="w-full grid grid-cols-5 gap-x-5 mt-6">
-                <Shirt/>
-                <Shirt/>
-                <Shirt/>
-                <Shirt/>
-                <Shirt/>
+                
             </div>
         </section>
     )

@@ -35,3 +35,7 @@ export const uploadProfileImage = ( data ) =>{
 export const getAllUserInfo = () => {
   return axiosInstance.get("/auth/getAllUser");
 };
+
+export const deleteUser = ( userId ) => {
+  return axiosInstance.delete(`/auth/${userId}`);
+}

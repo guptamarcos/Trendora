@@ -2,7 +2,7 @@ import "./App.css";
 import {
   Home, AllOrders, Cart, Layout, About, Collection, Contact, Login, Signup, ProductInfo, Profile,
   DeliveryDetail, Wishlist, AdminPageLayout, AdminDashboard, AllUsersInfo, AdminProductInfo, AdminOrderInfo,
-  AdminAddProduct, AdminProductInfoEditForm
+  AdminAddProduct, AdminProductInfoEditForm, AdminEditProduct
 } from "./components/Index.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -36,6 +36,8 @@ function App() {
           <Route path="addProduct" element={<AdminAddProduct/>} />
           <Route path="editProductInfo" element={<AdminProductInfoEditForm/>} />
           <Route path="admin/profile" element={<Profile/>} />
+          <Route path="admin/:productId/edit" element={<AdminEditProduct/>} />
+
         </Route>
 
         <Route path="/trendora/signup" element={<Signup />} />

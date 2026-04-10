@@ -1,6 +1,7 @@
 import About from "./About.jsx";
 import AdminAddProduct from "./AdminAddProduct.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
+import AdminEditProduct from "./AdminEditProduct.jsx";
 import AdminNavbar from "./AdminNavbar.jsx";
 import AdminOrderInfo from "./AdminOrderInfo.jsx";
 import AdminPageLayout from "./AdminPageLayout.jsx";
@@ -33,7 +34,7 @@ import Profile from "./Profile.jsx";
 import ProfileImage from "./ProfileImage.jsx";
 import ProfileInfo from "./ProfileInfo.jsx";
 import ProfileSecurity from "./ProfileSecurity.jsx";
-import Shirt from "./Shirt.jsx";
+import Product from "./Product.jsx";
 import Signup from "./Signup.jsx";
 import Subscribe from "./Subscribe.jsx";
 import UserDropDown from "./UserDropdown.jsx";
@@ -43,6 +44,6 @@ import WishlistItem from "./WishlistItem.jsx";
 export { About, AdminDashboard, AdminNavbar,AdminPageLayout, AdminProductInfo, AdminSidebar, AdminAddProduct,
   DeliveryForm, Collection, CommentCard, Contact, Filters, Footer, Hero, Home, AdminOrderInfo,
   LatestCollections, Layout, Login, Navbar, OrderCard, Policy, ProductDetails, Cart, CartItem, DeliveryDetail,
-  ProductInfo, Profile, ProfileImage, ProfileInfo, ProfileSecurity, Shirt, Signup, AdminProductInfoEditForm,
-  Subscribe, UserDropDown, Wishlist, WishlistItem, AllOrders,AllUsersInfo, BestSeller,
+  ProductInfo, Profile, ProfileImage, ProfileInfo, ProfileSecurity, Product, Signup, AdminProductInfoEditForm,
+  Subscribe, UserDropDown, Wishlist, WishlistItem, AllOrders,AllUsersInfo, BestSeller,AdminEditProduct
 };

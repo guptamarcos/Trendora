@@ -188,8 +188,6 @@ async function uploadProfileImage(req, res) {
     });
   }
 
-  console.log(req.file);
-
   const user = req.user;
   
   // FOR REMOVING PREVIOUS IMAGE FORM THE LOCAL FOLDER
@@ -238,6 +236,28 @@ async function getAllUser (req,res){
   })
 };
 
+async function deleteUser(req,res){
+  const { id } = req.params;
+  
+  const checkUser = await User.findById(id);
+
+  if(!checkUser){
+    return res.status(400).json({
+      success: false,
+      message: "User not found",
+    })
+  };
+
+
+  const deletedUser = await User.deleteOne({_id: id});
+
+  return res.status(200).json({
+    success: true,
+    message: "User deleted successfully",
+  })
+
+}
+
 module.exports = {
   register,
   login,
@@ -246,5 +266,6 @@ module.exports = {
   updateProfileInfo,
   updateProfilePassword,
   uploadProfileImage,
-  getAllUser
+  getAllUser,
+  deleteUser
 };

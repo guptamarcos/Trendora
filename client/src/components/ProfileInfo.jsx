@@ -67,7 +67,7 @@ function ProfileInfo() {
           className="text-base text-gray-500 tracking-wide">Bio</label>
         <textarea 
           id="bio"
-          defaultValue={user?.bio}
+          defaultValue={user?.bio || "Tell us about yourself..."}
           {...register("bio")}
           className="w-full h-24 resize-none text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500">
         </textarea>

@@ -1,4 +1,4 @@
-import {Filters,Shirt} from "./Index.jsx";
+import {Filters,Product} from "./Index.jsx";
 
 function Collection() {
   return (
@@ -15,16 +15,16 @@ function Collection() {
           </div>
         </div>
         <div className="grid grid-cols-4 gap-6">
-          <Shirt/>
-          <Shirt/>
-          <Shirt/>
-          <Shirt/>
-          <Shirt/>
-          <Shirt/>
-          <Shirt/>
-          <Shirt/>
-          <Shirt/>
-          <Shirt/>
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
         </div>
       </div>
     </section>

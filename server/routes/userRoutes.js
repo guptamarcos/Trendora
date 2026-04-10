@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
 const {register, login, getUser, logout , updateProfileInfo, updateProfilePassword, 
-uploadProfileImage, getAllUser} = require("../controllers/userController.js");
+uploadProfileImage, getAllUser, deleteUser} = require("../controllers/userController.js");
 const { verifyAndCheckToken } = require("../auth.js");
 const upload = require("../utils/multer.js");
 
@@ -14,5 +14,7 @@ router.post("/logout",verifyAndCheckToken, wrapAsync(logout));
 router.patch("/updateProfileInfo", verifyAndCheckToken, wrapAsync(updateProfileInfo));
 router.patch("/updateProfilePassword", verifyAndCheckToken, wrapAsync(updateProfilePassword));
 router.patch("/uploadProfileImage", verifyAndCheckToken, upload.single("profileImage"),wrapAsync(uploadProfileImage));
+router.delete("/:id", wrapAsync(deleteUser));
+
 
 module.exports = router;

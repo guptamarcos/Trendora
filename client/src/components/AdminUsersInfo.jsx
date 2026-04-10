@@ -1,6 +1,7 @@
-import { getAllUserInfo } from "../api/authApi.js";
+import { getAllUserInfo, deleteUser } from "../api/authApi.js";
 import { useState, useEffect } from "react";
-import {defaultProfileImage} from "../assets/Index.jsx";
+import { defaultProfileImage } from "../assets/Index.jsx";
+import { toast } from "react-toastify";
 
 function TableHead() {
   return (
@@ -16,8 +17,19 @@ function TableHead() {
   );
 }
 
-function TableRow({ user }) {
+function TableRow({ user,getAllUser }) {
   console.log(user);
+
+  async function DeleteUser(){
+    try{
+      await deleteUser(user._id);
+      toast.success("User deleted Successfully");
+      getAllUser();
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong"; 
+      toast.error(message)
+    }
+  }
   return (
     <tr className="border-t border-gray-200 hover:bg-gray-50 transition">
       
@@ -44,7 +56,7 @@ function TableRow({ user }) {
 
       {/* ACTION */}
       <td className="px-4 py-3 text-right">
-        <button className="text-sm px-3 py-1 border border-red-200 text-red-600 rounded-md hover:bg-red-50 transition">
+        <button onClick={DeleteUser} className="cursor-pointer text-sm px-3 py-1 border border-red-200 text-red-600 rounded-md hover:bg-red-50 transition">
           Delete
         </button>
       </td>
@@ -60,6 +72,7 @@ function AllUsersInfo() {
     let res = await getAllUserInfo();
     setAllUser(res?.data?.data);
   }
+
   useEffect(()=>{
     getAllUser();
   },[])
@@ -106,7 +119,7 @@ function AllUsersInfo() {
             <tbody className="text-gray-700">
 
               {allUser?.map((user,idx) =>{
-                return <TableRow user={user} key={idx} />
+                return <TableRow user={user} key={idx} getAllUser={getAllUser}/>
               })}
 
             </tbody>

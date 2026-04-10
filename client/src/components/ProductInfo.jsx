@@ -1,4 +1,4 @@
-import { Shirt,CommentCard, ProductDetails } from "./Index.jsx";
+import { Product,CommentCard, ProductDetails } from "./Index.jsx";
 
 
 
@@ -13,11 +13,11 @@ function ProductInfo() {
           <hr className="w-[5%] border-t-2 border-black" />
         </h2>
         <div className="grid grid-cols-5 gap-6">
-          <Shirt />
-          <Shirt />
-          <Shirt />
-          <Shirt />
-          <Shirt />
+          <Product />
+          <Product />
+          <Product />
+          <Product />
+          <Product />
         </div>
       </section>
 

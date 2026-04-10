@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { getAllProductInfo } from "../api/productApi.js";
+import { deleteProduct } from "../api/productApi.js";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
 
 function TableHead() {
   return (
@@ -15,8 +19,20 @@ function TableHead() {
   );
 }
 
-function TableRow({ product }) {
-  console.log(product);
+function TableRow({ product , productInfo}) {
+  
+  const navigate = useNavigate();
+  async function DeleteProduct(){
+    try{
+      await deleteProduct(product._id);
+      toast.success("Product is deleted successfully");
+      productInfo();
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+  }
+
   return (
     <tr className="border-t border-gray-200 hover:bg-gray-50 transition">
       {/* PRODUCT */}
@@ -38,10 +54,10 @@ function TableRow({ product }) {
 
       {/* ACTION */}
       <td className="px-4 py-3 text-center">
-        <button className="cursor-pointer text-sm px-3 py-1 border border-red-200 text-red-600 rounded-md hover:bg-red-50 transition">
+        <button onClick={DeleteProduct} className="cursor-pointer text-sm px-3 py-1 border border-red-200 text-red-600 rounded-md hover:bg-red-50 transition">
           Delete
         </button>
-        <button className="cursor-pointer text-sm px-3 py-1 border ml-2 border-gray-200 text-gray-600 rounded-md hover:bg-gray-50 transition">
+        <button onClick={()=> navigate(`/trendora/admin/${product._id}/edit`)} className="cursor-pointer text-sm px-3 py-1 border ml-2 border-gray-200 text-gray-600 rounded-md hover:bg-gray-50 transition">
           Edit
         </button>
       </td>
@@ -50,7 +66,7 @@ function TableRow({ product }) {
 }
 
 function AdminProductInfo() {
-  const [products, setProducts] = useState();
+  const [products, setProducts] = useState([]);
 
   async function productInfo(){
     let res = await getAllProductInfo();
@@ -106,7 +122,7 @@ function AdminProductInfo() {
             <tbody className="text-gray-700">
 
               {products?.map((product,index)=>{
-                return <TableRow key={index} product={product}/>
+                return <TableRow key={index} product={product} productInfo={productInfo}/>
               })}
               
             </tbody>

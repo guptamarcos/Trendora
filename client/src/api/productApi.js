@@ -7,3 +7,15 @@ export const addProductInfo = (data) => {
 export const getAllProductInfo = () => {
   return axiosInstance.get("/product/getAllProduct");
 };
+
+export const deleteProduct = (productId) =>{
+  return axiosInstance.delete(`/product/${productId}`);
+}
+
+export const getProductInfo = (productId) =>{
+  return axiosInstance.get(`/product/${productId}`);
+}
+
+export const editProductInfo = (data, productId) =>{
+  return axiosInstance.patch(`/product/${productId}`, data);
+}

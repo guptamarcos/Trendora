@@ -1,8 +1,26 @@
-import { FiBell, FiUser, FiSettings, FiLogOut } from "react-icons/fi";
+import { FiBell, FiSettings, FiLogOut } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router-dom";
+import { logoutUser } from "../api/authApi.js";
+import { UserContext } from "../context/Index.jsx";
+import { toast } from "react-toastify";
+import { useContext } from "react";
+
 
 function AdminNavbar() {
+
   const navigate = useNavigate();
+
+  const { getUser } = useContext(UserContext);
+  async function logout() {
+    try {
+      const res = await logoutUser();
+      getUser();
+      toast.success("You have been logged out successfully");
+      navigate("/trendora");
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <header className="fixed h-[10vh] min-w-full bg-white border-b border-gray-200">
@@ -27,9 +45,8 @@ function AdminNavbar() {
             <FiSettings size={24} className="text-gray-700" />
           </NavLink>
 
-        
           {/* 🔥 Logout UI (no logic) */}
-          <button className="flex items-center gap-2 cursor-pointer text-red-500 border border-red-400 px-3 py-1 rounded-md hover:bg-red-50">
+          <button onClick={logout} className="flex items-center gap-2 cursor-pointer text-red-500 border border-red-400 px-3 py-1 rounded-md hover:bg-red-50">
             <FiLogOut size={20} />
             Logout
           </button>
