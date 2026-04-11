@@ -1,25 +1,9 @@
 import { Product,CommentCard, ProductDetails } from "./Index.jsx";
 
-
-
 function ProductInfo() {
   return (
     <main className="min-h-screen mb-30">
       <ProductDetails/>
-
-      <section className="my-20">
-        <h2 className="text-2xl font-semibold mb-8 flex items-center justify-center">
-          <span className="text-gray-600">RELATED</span>&nbsp;PRODUCTS &nbsp;
-          <hr className="w-[5%] border-t-2 border-black" />
-        </h2>
-        <div className="grid grid-cols-5 gap-6">
-          <Product />
-          <Product />
-          <Product />
-          <Product />
-          <Product />
-        </div>
-      </section>
 
       <section className="my-20">
         <h4 className="text-2xl font-semibold mb-8 flex items-center justify-center">

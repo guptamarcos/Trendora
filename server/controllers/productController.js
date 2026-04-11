@@ -40,14 +40,8 @@ async function addProduct(req, res) {
 }
 
 async function getAllProducts(req, res) {
-  const allProducts = await Product.find({}).select({
-    name: 1,
-    category: 1,
-    productImage: 1,
-    price: 1,
-    stock: 1,
-  });
-
+  const allProducts = await Product.find({});
+  // console.log(allProducts);
   res.status(200).json({
     success: true,
     data: allProducts,
@@ -160,10 +154,20 @@ async function editProductInfo(req, res) {
   });
 }
 
+async function latestCollections(req,res){
+  const products = await Product.find().sort({updatedAt: -1}).limit(10);
+
+  return res.status(200).json({
+    success: true,
+    data: products,
+  })
+}
+
 module.exports = {
   addProduct,
   getAllProducts,
   deleteProduct,
   getProductInfo,
   editProductInfo,
+  latestCollections,
 };

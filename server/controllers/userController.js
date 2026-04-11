@@ -1,11 +1,7 @@
 const User = require("../models/userSchema.js");
 const bcrypt = require("bcrypt");
-const {
-  signupSchemaValidator,
-  loginSchemaValidator,
-  ProfileInfoSchemaValidator,
-  PasswordSchemaValidator,
-} = require("../utils/userSchemaValidator.js");
+const { signupSchemaValidator, loginSchemaValidator, ProfileInfoSchemaValidator, 
+  PasswordSchemaValidator, } = require("../utils/userSchemaValidator.js");
 const path = require("path");
 const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
@@ -63,18 +59,20 @@ async function login(req, res) {
       message: "Email not exist",
     });
   }
-
+  
   const checkPassword = await bcrypt.compare(password, findUser.password);
 
   if (!checkPassword) {
-    return res.status(400).json({
+    return res.status(401).json({
       success: false,
       message: "Invalid Credentials",
     });
   }
+  
+  await User.findByIdAndUpdate(findUser._id, {$set: { status : "Active"}});
 
   const token = findUser.generateToken();
-
+  
   res.cookie("token", token, {
     httpOnly: true,
     secure: false,
@@ -90,6 +88,10 @@ async function login(req, res) {
 }
 
 async function logout(req, res) {
+  const user = req.user;
+ 
+  await User.findByIdAndUpdate(user._id, {$set: { status : "Inactive"}});
+
   res.clearCookie("token", {
     httpOnly: true,
     secure: false,
@@ -228,7 +230,7 @@ async function uploadProfileImage(req, res) {
 }
 
 async function getAllUser (req,res){
-  const allUser = await User.find({}).select("username email role profileImage")
+  const allUser = await User.find({}).select("username email role profileImage status")
 
   return res.status(200).json({
     success: false,

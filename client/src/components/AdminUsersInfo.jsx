@@ -18,8 +18,7 @@ function TableHead() {
 }
 
 function TableRow({ user,getAllUser }) {
-  console.log(user);
-
+  
   async function DeleteUser(){
     try{
       await deleteUser(user._id);
@@ -30,6 +29,7 @@ function TableRow({ user,getAllUser }) {
       toast.error(message)
     }
   }
+
   return (
     <tr className="border-t border-gray-200 hover:bg-gray-50 transition">
       
@@ -49,9 +49,14 @@ function TableRow({ user,getAllUser }) {
 
       {/* STATUS */}
       <td className="px-4 py-3">
-        <span className="text-green-600 text-sm font-medium">
-          Active
+        {user.status ==="Active" && <span className="text-green-600 text-base font-medium">
+          {user?.status}
         </span>
+        }
+        {user.status ==="Inactive" && <span className="text-red-600 text-base font-medium">
+          {user?.status}
+        </span>
+        }
       </td>
 
       {/* ACTION */}

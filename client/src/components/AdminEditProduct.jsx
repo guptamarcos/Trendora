@@ -217,7 +217,7 @@ function AdminEditProduct() {
             </button>
 
             <button type="submit"
-              className="px-5 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition"
+              className="cursor-pointer px-5 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition"
             >
               Edit Product
             </button>

@@ -1,6 +1,25 @@
 import {Filters,Product} from "./Index.jsx";
+import { useState, useEffect } from "react";
+import {toast } from "react-toastify";
+import { getAllProductInfo } from "../api/productApi.js";
 
 function Collection() {
+  const[allProducts, setAllProducts] = useState(null);
+
+  async function getProductInfo(){
+    try{
+      const res = await getAllProductInfo();
+      setAllProducts(res?.data?.data);
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+  }
+
+  useEffect(()=>{
+    getProductInfo();
+  }, [])
+
   return (
     <section className="mb-40 min-h-screen flex gap-8">
       <Filters/>
@@ -15,16 +34,10 @@ function Collection() {
           </div>
         </div>
         <div className="grid grid-cols-4 gap-6">
-          <Product/>
-          <Product/>
-          <Product/>
-          <Product/>
-          <Product/>
-          <Product/>
-          <Product/>
-          <Product/>
-          <Product/>
-          <Product/>
+          {allProducts?.map((product)=>{
+            return <Product product={product} key={product._id} />
+          })}
+          
         </div>
       </div>
     </section>

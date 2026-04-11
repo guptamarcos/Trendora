@@ -38,7 +38,7 @@ function TableRow({ product , productInfo}) {
       {/* PRODUCT */}
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <img src={product.productImage.url} className="w-10 h-10 bg-gray-200 rounded-md flex-shrink"></img>
+          <img src={product?.productImage?.url || ""} className="w-10 h-10 bg-gray-200 rounded-md flex-shrink"></img>
           <span className="font-medium text-gray-800">{product.name}</span>
         </div>
       </td>

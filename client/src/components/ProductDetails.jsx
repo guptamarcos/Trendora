@@ -1,59 +1,126 @@
-import { hero_img } from "../assets/Index.jsx";
 import { FaStar } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+import { getProductInfo,getRelatedProducts } from "../api/productApi.js";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { Product } from "./Index.jsx";
 
 function SizeBox({ text }) {
   return (
-    <span className="flex justify-center items-center cursor-pointer px-4 py-1 bg-gray-100 border-1 border-gray-400">
+    <span className="flex justify-center items-center cursor-pointer px-4 py-2 rounded-md bg-gray-100 border border-gray-300 hover:bg-black hover:text-white transition">
       {text}
     </span>
   );
 }
 
-
 function ProductDetails() {
-  return (
-    <section className="flex my-8 py-4 gap-8">
-      {/* PRODUCT IMAGES */}
-      <div className="flex-1">
-        <img src={hero_img} alt="Product Image" className="h-[75vh]"></img>
-      </div>
+  const { productId } = useParams();
+  const [product, setProduct] = useState();
 
-      {/* PRODUCT INFORMATION */}
-      <div className="px-4 flex flex-col justify-center flex-1">
-        <h2 className="font-semibold text-3xl">
-          Men Round Neck Pure Cotton T-shirt
+  async function getProduct() {
+    try {
+      let res = await getProductInfo(productId);
+      setProduct(res?.data?.data[0]);
+    } catch (err) {
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+  }
+
+  useEffect(() => {
+    getProduct();
+  }, []);
+  
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-10">
+      
+      {/* ================= PRODUCT SECTION ================= */}
+      <section className="grid md:grid-cols-2 gap-12">
+        
+        {/* LEFT: IMAGE */}
+        <div className="flex justify-center items-start">
+          <img
+            src={product?.productImage?.url}
+            alt="Product"
+            className="h-[65vh] w-full max-w-md object-cover rounded-xl shadow-md"
+          />
+        </div>
+
+        {/* RIGHT: DETAILS */}
+        <div className="flex flex-col space-y-6">
+          
+          <h2 className="text-3xl font-semibold text-gray-800">
+            {product?.name}
+          </h2>
+
+          {/* Ratings */}
+          <div className="flex items-center gap-2">
+            <FaStar className="text-yellow-400" />
+            <FaStar className="text-yellow-400" />
+            <FaStar className="text-yellow-400" />
+            <FaStar className="text-yellow-400" />
+            <FaStar className="text-gray-300" />
+            <span className="text-gray-600 text-sm">
+              {product?.rating?.average || "No ratings"}
+            </span>
+          </div>
+
+          {/* Price */}
+          <h5 className="text-2xl font-bold text-black">
+            ₹{product?.price || "N/A"}
+          </h5>
+
+          <hr className="border-gray-200" />
+
+          {/* Description */}
+          <p className="text-gray-600 leading-relaxed">
+            {product?.description}
+          </p>
+
+          {/* Sizes */}
+          <div>
+            <h6 className="font-semibold text-gray-700 mb-3">
+              Select Size
+            </h6>
+
+            <div className="flex flex-wrap gap-3">
+              {product?.sizes?.length > 0 &&
+                product?.sizes.map((sizeVal) => (
+                  <SizeBox key={sizeVal} text={sizeVal} />
+                ))}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-4 pt-4">
+            <button className="cursor-pointer px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition shadow-sm">
+              ADD TO CART
+            </button>
+
+            <button className="cursor-pointer px-6 py-3 border border-black text-black rounded-md hover:bg-black hover:text-white transition">
+              ADD TO WISHLIST
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= RELATED PRODUCTS ================= */}
+      <section className="mt-20">
+        <h2 className="text-2xl font-semibold mb-10 flex items-center justify-center">
+          <span className="text-gray-600">RELATED</span>&nbsp;PRODUCTS
+          <hr className="w-16 ml-3 border-t-2 border-black" />
         </h2>
-        <div className="flex items-center gap-2">
-          <FaStar color="gold" />
-          <FaStar color="gold" />
-          <FaStar color="gold" />
-          <FaStar color="gold" />
-          <FaStar color="gray" />
-          <span>(122)</span>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
+          <Product/>
         </div>
-        <h5 className="font-semibold text-2xl my-4">$149</h5>
-        <p>
-          A T-shirt is a lightweight garment, usually made from knitted fabric.
-          It is designed as a pullover, meaning it is worn by slipping it over
-          the head. The shirt typically has a close-fitting structure that
-          comfortably follows the body shape. It features a round neckline,
-          often referred to as a crew neck. T-shirts usually have short sleeves,
-          making them suitable for casual wear. They can be worn either as an
-          undershirt or as an outer garment.
-        </p>
-        <h6 className="font-semibold text-gray-700 mb-2 py-4">Select Size</h6>
-        <div className="w-[30%] grid grid-cols-5 gap-2">
-          <SizeBox text="S"/>
-          <SizeBox text="M"/>
-          <SizeBox text="L"/>
-          <SizeBox text="XL"/>
-          <SizeBox text="XXL"/>
-        </div>
-        <button className=" my-6 py-2 px-4 text-gray-100 bg-black cursor-pointer">
-          ADD TO CART
-        </button>
-      </div>
-    </section>
+      </section>
+
+    </div>
   );
 }
 

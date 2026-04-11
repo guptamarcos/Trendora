@@ -19,3 +19,11 @@ export const getProductInfo = (productId) =>{
 export const editProductInfo = (data, productId) =>{
   return axiosInstance.patch(`/product/${productId}`, data);
 }
+
+export const latestCollections = () =>{
+  return axiosInstance.get("/product/latestCollections");
+}
+
+export const getRelatedProducts = () =>{
+  return axiosInstance.get("/product/getRelatedProducts");
+}
