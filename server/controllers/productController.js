@@ -155,11 +155,31 @@ async function editProductInfo(req, res) {
 }
 
 async function latestCollections(req,res){
-  const products = await Product.find().sort({updatedAt: -1}).limit(10);
+  const products = await Product.find().select("productImage updatedAt price name").sort({updatedAt: -1}).limit(10);
 
   return res.status(200).json({
     success: true,
     data: products,
+  })
+}
+
+async function getBestSeller(req,res){
+  const bestSellers = await Product.find({}).select("productImage rating price name").sort({ "rating.average" : -1 }).limit(5);
+
+  return res.status(200).json({
+    success: true,
+    data: bestSellers,
+  })
+}
+
+async function getRelatedProducts(req,res){
+  let { category } = req.params;
+  category = category?.toLowerCase();
+  const relatedProducts = await Product.find({category}).select("productImage category price name").limit(5);
+
+  return res.status(200).json({
+    success: true,
+    data: relatedProducts,
   })
 }
 
@@ -170,4 +190,6 @@ module.exports = {
   getProductInfo,
   editProductInfo,
   latestCollections,
+  getBestSeller,
+  getRelatedProducts
 };

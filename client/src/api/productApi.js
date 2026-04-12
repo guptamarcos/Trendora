@@ -24,6 +24,11 @@ export const latestCollections = () =>{
   return axiosInstance.get("/product/latestCollections");
 }
 
-export const getRelatedProducts = () =>{
-  return axiosInstance.get("/product/getRelatedProducts");
+export const getRelatedProducts = (category) =>{
+  return axiosInstance.get(`/product/getRelatedProducts/${category}`);
 }
+
+export const getBestSeller = () => {
+  return axiosInstance.get("/product/getBestSeller");
+}
+

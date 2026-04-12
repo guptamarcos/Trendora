@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const validator = require("validator");
 
 const userSchema = new mongoose.Schema({
@@ -35,18 +35,18 @@ const userSchema = new mongoose.Schema({
     bio: {
       type: String,
       default: "",
-      trim : true,
+      trim: true,
       maxLength: [200, "Bio cannot exceed 200 characters"],
     },
     profileImage: {
       path: {
         type: String,
-        default: "",  
+        default: "",
       },
       filename: {
         type: String,
         default: "",
-      }
+      },
     },
     orders: [
       {
@@ -61,13 +61,54 @@ const userSchema = new mongoose.Schema({
     },
     status: {
       type: String,
-      enum: ["Active","Inactive"],
+      enum: ["Active", "Inactive"],
       default: "Inactive",
-    }
+    },
+    wishlist: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+
+        size: {
+          type: String,
+          required: true,
+          enum: ["S", "M", "L", "XL"], // adjust as per your app
+        },
+
+        quantity: {
+          type: Number,
+          min: [1, "Quantity must be at least 1"],
+          default: 1,
+        },
+      },
+    ],
+    cart: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+
+        size: {
+          type: String,
+          required: true,
+          enum: ["S", "M", "L", "XL"], // adjust as per your app
+        },
+
+        quantity: {
+          type: Number,
+          min: [1, "Quantity must be at least 1"],
+          default: 1,
+        },
+      },
+    ],
   },
   { timestamps: true },
 );
-
 
 // HASHING THE PASSWORD BEFORE STORING IT IN THE DATABASE
 userSchema.pre("save", async function () {
@@ -75,12 +116,12 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-
 // MAKING A CUSTOM DOCUMENT LEVEL METHOD
 userSchema.methods.generateToken = function () {
-  return jwt.sign({ userId: this._id }, process.env.TOKEN_SECRET, { expiresIn: "1d" });
+  return jwt.sign({ userId: this._id }, process.env.TOKEN_SECRET, {
+    expiresIn: "1d",
+  });
 };
-
 
 // CREATING THE USER MODEL
 const User = mongoose.model("User", userSchema);

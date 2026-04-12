@@ -8,7 +8,6 @@ function LatestCollections(){
     async function productInfo(){
         try{
             const res = await latestCollections();
-            console.log(res?.data?.data);
             setProducts(res?.data?.data);
         }catch(err){
             const message = err?.res?.data?.message || "Something went wrong";
