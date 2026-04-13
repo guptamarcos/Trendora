@@ -22,7 +22,7 @@ function BackBtn() {
 // SHARED TAILWIND STYLES FOR INPUT FIELDS
 const inputStyling = `w-full border-2 border-gray-300 rounded-md mt-1 py-[0.6rem] px-[0.4rem]`;
 const buttonStyling = `w-full text-lg bg-amber-400 cursor-pointer py-[0.5rem] rounded-md my-4`;
-const formStyling = `w-[30%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
+const formStyling = `w-[27.5%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
 
 function Login() {
   

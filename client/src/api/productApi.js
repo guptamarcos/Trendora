@@ -32,3 +32,5 @@ export const getBestSeller = () => {
   return axiosInstance.get("/product/getBestSeller");
 }
 
+
+

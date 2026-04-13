@@ -65,7 +65,7 @@ const userSchema = new mongoose.Schema({
       default: "Inactive",
     },
     wishlist: [
-      {
+      { 
         product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
@@ -75,7 +75,7 @@ const userSchema = new mongoose.Schema({
         size: {
           type: String,
           required: true,
-          enum: ["S", "M", "L", "XL"], // adjust as per your app
+          enum: ["XXL", "XL", "L", "M", "S"], 
         },
 
         quantity: {
@@ -96,7 +96,7 @@ const userSchema = new mongoose.Schema({
         size: {
           type: String,
           required: true,
-          enum: ["S", "M", "L", "XL"], // adjust as per your app
+          enum: ["XXL", "XL", "L", "M", "S"], 
         },
 
         quantity: {

@@ -1,47 +1,76 @@
-import { hero_img } from "../assets/Index";
+import { removeWishlistItem } from "../api/wishlistApi.js";
+import { addToCart } from "../api/cartApi.js";
+import { toast } from "react-toastify";
 
-function WishlistItem() {
+function WishlistItem({ wishlistItem, getUserWishListItems }) {
+  const { product, size, quantity } = wishlistItem || {};
+  const { name, price, productImage } = product || {};
+ 
+  async function deleteWishlistItem(){
+    try{
+      const res = await removeWishlistItem(wishlistItem._id);
+      toast.success("Product removed from wishlist");
+      getUserWishListItems();
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+  }
+  
+  async function addWishlistItemToCart(){
+    try{
+      const productId = product._id;
+      await addToCart({productId , size, quantity});
+      await removeWishlistItem(wishlistItem._id);
+      toast.success("Product added to cart");
+      getUserWishListItems();
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+  }
+
   return (
-    <div className="w-full h-[18vh] flex justify-between items-center border-0 border-b-2 border-gray-200">
-
-      {/* ORDER BASIC INFORMATION */}
-      <div className="h-full flex items-center gap-4 py-4">
-        {/* PRODUCT IMAGE  */}
-        <img src={hero_img} className="h-full object-cover rounded-sm "></img>
-
-        {/* PRODUCT INFORMATION */}
-        <div className="h-full flex flex-col ">
-          <h6 className="font-semibold text-lg text-gray-700">
-            Men Round Neck Pure Cotton T-Shirt
-          </h6>
-          <p className="w-full flex items-center gap-8 mt-4">
-
-            <span>$149</span>
-            <p className="text-gray-500 text-base">Size: M</p>
-            <p className="text-gray-500 text-base">Quantity: 1</p>
-            
-          </p>
-          
-        </div>
+    <div className="w-full flex justify-between items-center border-b border-gray-200 py-4">
+      
+      {/* LEFT: Product Info */}
+      <div className="flex items-center gap-4">
         
+        {/* Product Image */}
+        <div className="w-20 h-20 flex-shrink">
+          <img
+            src={productImage?.url || "/placeholder.png"}
+            alt={name || "product"}
+            className="cursor-pointer w-full h-full object-cover rounded-md"
+          />
+        </div>
+
+        {/* Product Details */}
+        <div className="flex flex-col gap-6 cursor-pointer">
+          <h6 className="font-semibold text-gray-800 text-lg">
+            {name || "No Name"}
+          </h6>
+
+          <div className="flex items-center gap-6 text-gray-600">
+            <span className="font-medium text-black">₹{price || 0}</span>
+            <span className="text-base">Size: {size || "N/A"}</span>
+            <span className="text-base">Qty: {quantity || 1}</span>
+          </div>
+        </div>
       </div>
 
-
       {/* RIGHT: Actions */}
-      <div className="flex items-center gap-4">
-
-        {/* Add to Cart */}
-        <button className="px-4 py-1.5 border border-black text-sm hover:bg-black hover:text-white transition cursor-pointer">
+      <div className="flex items-center gap-3">
+        
+        <button onClick={addWishlistItemToCart} className="cursor-pointer px-4 py-1.5 text-sm border border-black rounded-md hover:bg-black hover:text-white transition">
           Add to Cart
         </button>
 
-        {/* Remove */}
-        <button className="text-red-500 text-sm hover:underline cursor-pointer">
+        <button onClick={deleteWishlistItem} className="cursor-pointer text-sm text-red-500 hover:underline">
           Remove
         </button>
 
       </div>
-
     </div>
   );
 }

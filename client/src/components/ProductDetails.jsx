@@ -1,19 +1,48 @@
 import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { getProductInfo, getRelatedProducts } from "../api/productApi.js";
+import { getProductInfo, getRelatedProducts} from "../api/productApi.js";
+import { addToWishlist } from "../api/wishlistApi.js";
+import { addToCart } from "../api/cartApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Product } from "./Index.jsx";
+import { useContext } from "react";
+import { UserContext } from "../context/Index.jsx";
 
-function SizeBox({ text }) {
+function SizeBox({ text, selectedSize, setSelectedSize }) {
+
+  function handleSelectSize({ text }) {
+    const newSelectedSize = Object.keys(selectedSize).reduce((acc, val) => {
+      {
+        val === text ? (acc[val] = true) : (acc[val] = false);
+      }
+      return acc;
+    }, {});
+
+    setSelectedSize(newSelectedSize);
+  }
+
   return (
-    <span className="flex justify-center items-center cursor-pointer px-4 py-2 rounded-md bg-gray-100 border border-gray-300 hover:bg-black hover:text-white transition">
-      {text}
-    </span>
+    <>
+      {!selectedSize[text] && (
+        <span
+          onClick={() => handleSelectSize({ text })}
+          className="flex justify-center items-center cursor-pointer px-4 py-2 rounded-md bg-gray-100 border border-gray-300"
+        >
+          {text}
+        </span>
+      )}
+
+      {selectedSize[text] && (
+        <span className="flex justify-center items-center cursor-pointer px-4 py-2 rounded-md border border-gray-300 text-white bg-black ">
+          {text}
+        </span>
+      )}
+    </>
   );
 }
 
-function RelatedProducts({relatedProducts}) {
+function RelatedProducts({ relatedProducts }) {
   return (
     <section className="mt-20">
       <h2 className="text-3xl font-semibold mb-10 flex items-center justify-center">
@@ -33,22 +62,23 @@ function RelatedProducts({relatedProducts}) {
 
 function ProductDetails() {
   const { productId } = useParams();
-  const [product, setProduct] = useState();
-  const [relatedProducts, setRelatedProducts] = useState();
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState(null);
   const [quantity, setQuantity] = useState(1);
-
-  const increaseQty = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const decreaseQty = () => {
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  };
-
+  const [selectedSize, setSelectedSize] = useState(null);
+  const { user } = useContext(UserContext);
+  
   async function getProduct() {
     try {
       let res = await getProductInfo(productId);
       setProduct(res?.data?.data[0]);
+      const sizes = res?.data?.data[0]?.sizes;
+      const obj = sizes?.reduce((acc, val) => {
+        acc[val] = false;
+        return acc;
+      }, {});
+
+      setSelectedSize(obj);
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
@@ -66,6 +96,59 @@ function ProductDetails() {
     }
   }
 
+  async function addInWishlist(){
+    try{
+      
+      if(!user){
+        toast.error("Please log in to add items to your wishlist.");
+        return ;
+      }
+
+      const size = Object.keys(selectedSize).filter((key)=>{
+        return selectedSize[key] === true;
+      })
+      
+      if(size.length === 0){
+        toast.error("Select at least one size");
+        return;
+      }
+      
+      await addToWishlist({ productId, size : size[0], quantity});
+      toast.success("Product added in wishlist successfully");
+     
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+   
+  }
+
+  async function addInCart(){
+    try{
+      if(!user){
+        toast.error("Please log in to add items to your cart.");
+        return ;
+      }
+
+      const size = Object.keys(selectedSize).filter((key)=>{
+        return selectedSize[key] === true;
+      })
+      
+      if(size.length === 0){
+        toast.error("Select at least one size");
+        return;
+      }
+      
+      await addToCart({ productId, size : size[0], quantity});
+      toast.success("Product added in cart successfully");
+      
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+   
+  }
+
   useEffect(() => {
     getProduct();
   }, [productId]);
@@ -80,7 +163,6 @@ function ProductDetails() {
     <div className="max-w-7xl mx-auto px-6 py-16">
       {/* ================= PRODUCT SECTION ================= */}
       <section className="grid md:grid-cols-2 gap-12">
-
         {/*PRODUCT IMAGE */}
         <div className="flex justify-center items-start">
           <img
@@ -125,10 +207,14 @@ function ProductDetails() {
             <h6 className="font-semibold text-gray-700 mb-3">Select Size</h6>
 
             <div className="flex flex-wrap gap-3">
+
               {product?.sizes?.length > 0 &&
-                product?.sizes.map((sizeVal) => (
-                  <SizeBox key={sizeVal} text={sizeVal} />
+                product?.sizes?.map((sizeVal) => (
+                  <SizeBox key={sizeVal} text={sizeVal} selectedSize={selectedSize}
+                    setSelectedSize={setSelectedSize}
+                  />
                 ))}
+
             </div>
           </div>
 
@@ -138,7 +224,7 @@ function ProductDetails() {
 
             <div className="flex items-center gap-4">
               <button
-                onClick={decreaseQty}
+                onClick={() => setQuantity((prev) => (prev > 1 ? prev - 1 : 1))}
                 className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
               >
                 -
@@ -147,7 +233,7 @@ function ProductDetails() {
               <span className="text-lg font-medium">{quantity}</span>
 
               <button
-                onClick={increaseQty}
+                onClick={() => setQuantity((prev) => prev + 1)}
                 className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
               >
                 +
@@ -158,15 +244,15 @@ function ProductDetails() {
           {/* Actions */}
           <div className="flex gap-4 pt-4">
             <button
-              onClick={() =>
-                console.log("Add to cart:", product, "Qty:", quantity)
-              }
+              onClick={addInCart}
               className="cursor-pointer px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition shadow-sm"
             >
               ADD TO CART
             </button>
 
-            <button className="cursor-pointer px-6 py-3 border border-black text-black rounded-md hover:bg-black hover:text-white transition">
+            <button 
+              onClick={addInWishlist}
+              className="cursor-pointer px-6 py-3 border border-black text-black rounded-md hover:bg-black hover:text-white transition">
               ADD TO WISHLIST
             </button>
           </div>

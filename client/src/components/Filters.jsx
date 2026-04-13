@@ -1,48 +1,41 @@
 function Filters() {
   return (
-    <aside className="w-[20%] pt-12">
-      <h2 className="text-xl text-gray-700">FILTERS</h2>
+    <aside className="w-[17.5%] pt-12">
+      <h2 className="text-2xl text-gray-700">FILTERS</h2>
       <div className="border-2 border-gray-400 p-4 my-4">
 
-        <h4 className="text-base pb-2">CATEGORIES</h4>
+        <h4 className="text-lg font-semibold pb-2">CATEGORIES</h4>
 
         <div className="flex items-center">
-          <input type="checkbox" value="Men" id="Categories"></input>
-          <label className="pl-2 cursor-pointer" id="Categories">Men</label>
+          <label className="pl-2 cursor-pointer" id="Categories">
+            <input type="checkbox" value="Men" id="Categories" className="mr-2 text-base"></input>
+            Men
+          </label>
         </div>
 
         <div className="flex items-center">
-          <input type="checkbox" value="Women" id="Categories"></input>
-          <label className="pl-2 cursor-pointer" id="Categories">Women</label>
+          <label className="pl-2 cursor-pointer" id="Categories">
+            <input type="checkbox" value="Women" id="Categories" className="mr-2 text-base"></input>
+            Women
+          </label>
         </div>
 
         <div className="flex items-center">
-          <input type="checkbox" value="Kids" id="Categories"></input>
-          <label className="pl-2 cursor-pointer" id="Categories">Kids</label>
+          <label className="pl-2 cursor-pointer" id="Categories">
+            <input type="checkbox" value="Kids" id="Categories" className="mr-2 text-base"></input>
+            Girl
+          </label>
         </div>
 
-      </div>
-
-      <div className="border-2 border-gray-400 p-4">
-
-        <h4 className="text-base pb-2">TYPE</h4>
-        
-        <div className="flex items-center">
-           <input type="checkbox" value="TopWear" id="Type"></input>
-           <label className="pl-2 cursor-pointer" id="Type">TopWear</label>
-        </div>
-
-        <div className="flex items-center">
-           <input type="checkbox" value="BottomWear" id="Type"></input>
-           <label className="pl-2 cursor-pointer" id="Type">BottomWear</label>
-        </div>
-
-        <div className="flex items-center">
-           <input type="checkbox" value="WinterWear" id="Type"></input>
-           <label className="pl-2 cursor-pointer" id="Type">WinterWear</label>
+         <div className="flex items-center">
+          <label className="pl-2 cursor-pointer" id="Categories">
+            <input type="checkbox" value="Kids" id="Categories" className="mr-2 text-base"></input>
+            Boys
+          </label>
         </div>
 
       </div>
+
     </aside>
   );
 }

@@ -1,4 +1,5 @@
 const Product = require("../models/productSchema.js");
+const User = require("../models/userSchema.js");
 const {
   productSchemaValidator,
 } = require("../utils/productSchemaValidator.js");
@@ -183,6 +184,8 @@ async function getRelatedProducts(req,res){
   })
 }
 
+
+
 module.exports = {
   addProduct,
   getAllProducts,
@@ -191,5 +194,5 @@ module.exports = {
   editProductInfo,
   latestCollections,
   getBestSeller,
-  getRelatedProducts
+  getRelatedProducts,
 };
