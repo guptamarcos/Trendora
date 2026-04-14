@@ -1,14 +1,17 @@
 import { FaTrash } from "react-icons/fa";
 import { removeCartItem } from "../api/cartApi.js";
 import { toast } from "react-toastify";
+import { UserContext } from "../context/Index.jsx";
+import { useContext } from "react";
 
 function CartItem({ cartItem, getUserCartItems }) {
+  const { getUser } = useContext(UserContext);
 
   async function deleteCartItem(){
     try{
       const res = await removeCartItem(cartItem._id);
       toast.success("Product is removed from cart");
-      getUserCartItems();
+      getUserCartItems(); getUser();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);

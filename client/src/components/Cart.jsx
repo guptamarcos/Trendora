@@ -8,7 +8,7 @@ function PriceTotal({ text, price }) {
   return (
     <p className="flex justify-between border-b border-gray-300 py-2">
       <span>{text}</span>
-      <span>${price}</span>
+      <span>₹{price.toFixed(2)}</span>
     </p>
   );
 }
@@ -30,7 +30,16 @@ function Cart() {
     fetchCartItems();
   }, []);
 
-  const isCartEmpty = cartItems?.length === 0;
+  const isCartEmpty = cartItems.length === 0;
+
+  const subtotal = cartItems.reduce((acc, item) => {
+    const price = item?.product?.price || 0;
+    const qty = item?.quantity || 1;
+    return acc + price * qty;
+  }, 0);
+
+  const shippingFee = subtotal > 0 ? 100 : 0;
+  const total = subtotal + shippingFee;
 
   return (
     <section className="min-h-screen pt-16 mb-32">
@@ -53,9 +62,7 @@ function Cart() {
 
       {/* EMPTY STATE */}
       {isCartEmpty && (
-        <h2 className="text-center mt-10 text-gray-500">
-          No items added yet
-        </h2>
+        <h2 className="text-center mt-10 text-gray-500">No items added yet</h2>
       )}
 
       {/* CART TOTAL */}
@@ -69,12 +76,12 @@ function Cart() {
               <hr className="w-[20%] border-t-2 border-black ml-2" />
             </h2>
 
-            <PriceTotal text="Subtotal" price={60.0} />
-            <PriceTotal text="Shipping Fee" price={10.0} />
+            <PriceTotal text="Subtotal" price={subtotal} />
+            <PriceTotal text="Shipping Fee" price={shippingFee} />
 
             <p className="flex justify-between py-2 text-base font-semibold">
               <span>Total</span>
-              <span>$70.00</span>
+              <span>₹{total.toFixed(2)}</span>
             </p>
 
             <Link

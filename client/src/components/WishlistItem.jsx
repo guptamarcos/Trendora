@@ -1,16 +1,20 @@
 import { removeWishlistItem } from "../api/wishlistApi.js";
 import { addToCart } from "../api/cartApi.js";
 import { toast } from "react-toastify";
+import { UserContext } from "../context/Index.jsx";
+import { useContext } from "react";
 
 function WishlistItem({ wishlistItem, getUserWishListItems }) {
   const { product, size, quantity } = wishlistItem || {};
   const { name, price, productImage } = product || {};
+
+  const { getUser } = useContext(UserContext);
  
   async function deleteWishlistItem(){
     try{
       const res = await removeWishlistItem(wishlistItem._id);
       toast.success("Product removed from wishlist");
-      getUserWishListItems();
+      getUserWishListItems(); getUser();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
@@ -23,7 +27,7 @@ function WishlistItem({ wishlistItem, getUserWishListItems }) {
       await addToCart({productId , size, quantity});
       await removeWishlistItem(wishlistItem._id);
       toast.success("Product added to cart");
-      getUserWishListItems();
+      getUserWishListItems(); getUser();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);

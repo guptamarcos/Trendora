@@ -1,6 +1,6 @@
 import { NavLink} from "react-router-dom";
 import { FiUserPlus, FiLogIn } from "react-icons/fi";
-import { FaUserAlt, FaRegHeart } from "react-icons/fa";
+import { FaUserAlt, FaRegHeart,FaHeart } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { UserDropDown } from "./Index.jsx";
 import { useContext, useRef, useEffect } from "react";
@@ -12,7 +12,9 @@ function Navbar() {
   const buttonRef = useRef(null);
   
   const { user } = useContext(UserContext);
-
+  const itemsInCart = user?.cart?.length;
+  const itemsInWishlist = user?.wishlist?.length === 0;
+  
   useEffect(() => {
     function closeDropdown(e) {
       if(inputRef.current && !inputRef.current.contains(e.target) && buttonRef.current &&
@@ -89,11 +91,12 @@ function Navbar() {
           <NavLink to="/trendora/cart">
             <HiOutlineShoppingBag size={26} color="black" />
           </NavLink>
-          <p className="absolute bg-black text-xs text-white left-4 top-4 rounded-[50%] px-1 flex justify-center items-center">
-            4
-          </p>
+          {itemsInCart !== 0 && <p className="absolute bg-black text-xs text-white left-4 top-4 rounded-[50%] px-1 flex justify-center items-center">
+            {itemsInCart}
+          </p>}
           <NavLink to="/trendora/wishlist">
-            <FaRegHeart size={24} color="black" />
+            {itemsInWishlist && <FaRegHeart size={24} color="black" />}
+            {!itemsInWishlist && <FaHeart size={24} color="black" /> }
           </NavLink>
           <button onClick={() => setIsOpen(!isOpen)} ref={buttonRef} className="cursor-pointer">
             <FaUserAlt size={24} color="black" />

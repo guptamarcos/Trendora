@@ -5,6 +5,12 @@ import { getAllProductInfo } from "../api/productApi.js";
 
 function Collection() {
   const [allProducts, setAllProducts] = useState(null);
+  const [activeFilter, setActiveFilter] = useState({
+    men: false,
+    women: false,
+    girl: false,
+    boy: false,
+  });
 
   async function getProductInfo() {
     try {
@@ -20,11 +26,19 @@ function Collection() {
     getProductInfo();
   }, []);
 
+  let showProducts = allProducts?.filter((product) => {
+    const productCategory = product.category;
+    return activeFilter[productCategory];
+  });
+
+  if(showProducts?.length === 0){
+    showProducts = allProducts;
+  }
+
   return (
     <section className="mb-40 min-h-screen flex gap-8">
-      <Filters />
+      <Filters activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
       <div className="flex-1">
-
         <div className="py-6 flex justify-between ">
           <h2 className="text-3xl flex items-center">
             ALL&nbsp;<b>COLLECTIONS</b>&nbsp;&nbsp;
@@ -33,11 +47,10 @@ function Collection() {
         </div>
 
         <div className="grid grid-cols-4 gap-6">
-          {allProducts?.map((product) => {
+          {showProducts?.map((product) => {
             return <Product product={product} key={product._id} />;
           })}
         </div>
-
       </div>
     </section>
   );

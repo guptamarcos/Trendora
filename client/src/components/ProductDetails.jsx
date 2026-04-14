@@ -66,7 +66,7 @@ function ProductDetails() {
   const [relatedProducts, setRelatedProducts] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
-  const { user } = useContext(UserContext);
+  const { user, getUser } = useContext(UserContext);
   
   async function getProduct() {
     try {
@@ -115,7 +115,7 @@ function ProductDetails() {
       
       await addToWishlist({ productId, size : size[0], quantity});
       toast.success("Product added in wishlist successfully");
-     
+      getUser();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
@@ -141,8 +141,8 @@ function ProductDetails() {
       
       await addToCart({ productId, size : size[0], quantity});
       toast.success("Product added in cart successfully");
-      
-    }catch(err){
+      getUser();
+    }catch(err){ 
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
     }
