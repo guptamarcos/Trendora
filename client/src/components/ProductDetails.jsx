@@ -164,7 +164,7 @@ function ProductDetails() {
       {/* ================= PRODUCT SECTION ================= */}
       <section className="grid md:grid-cols-2 gap-12">
         {/*PRODUCT IMAGE */}
-        <div className="flex justify-center items-start">
+        <div className="flex justify-center items-start cursor-pointer hover:scale-101 transition">
           <img
             src={product?.productImage?.url}
             alt="Product"

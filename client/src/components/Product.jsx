@@ -9,7 +9,7 @@ function Product({ product }) {
   };
 
   return (
-    <div className="cursor-pointer" onClick={handleClick}>
+    <div className="cursor-pointer hover:scale-104 transition" onClick={handleClick}>
       <img
         src={product?.productImage?.url}
         className="h-[32.5vh] rounded-lg"
@@ -21,7 +21,7 @@ function Product({ product }) {
       </h5>
 
       <h6 className="text-xs font-outfit">
-        ${product?.price}
+        ₹{product?.price}
       </h6>
     </div>
   );

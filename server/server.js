@@ -11,13 +11,15 @@ const port = process.env.PORT || 8080;
 const connectDb = require("./Db/connect.js");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const userRoutes = require("./routes/userRoutes.js");
-const productRoutes = require("./routes/productRoutes.js")
-const cartRoutes = require("./routes/cartRoutes.js");
-const wishlistRoutes = require("./routes/wishlistRoutes.js")
 const MongooseErrorHandler = require("./utils/MongooseErrorHandler.js");
 const path = require("path");
 const MulterErrorHandler = require("./utils/MulterErrorHandler.js");
+
+const userRoutes = require("./routes/userRoutes.js");
+const productRoutes = require("./routes/productRoutes.js")
+const cartRoutes = require("./routes/cartRoutes.js");
+const wishlistRoutes = require("./routes/wishlistRoutes.js");
+const orderRoutes = require("./routes/orderRoutes.js");
 
 // MIDDLEWARE SETUP
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
@@ -47,6 +49,7 @@ app.use("/api/auth", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/user/cart", cartRoutes);
 app.use("/api/user/wishlist", wishlistRoutes);
+app.use("/api/orders", orderRoutes);
 
 // WHEN API ENDPOINT NOT EXIST
 app.use((req, res, next) => {

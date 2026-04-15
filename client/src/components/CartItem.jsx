@@ -3,9 +3,11 @@ import { removeCartItem } from "../api/cartApi.js";
 import { toast } from "react-toastify";
 import { UserContext } from "../context/Index.jsx";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 function CartItem({ cartItem, getUserCartItems }) {
   const { getUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   async function deleteCartItem(){
     try{
@@ -17,9 +19,10 @@ function CartItem({ cartItem, getUserCartItems }) {
       toast.error(message);
     }
   }
-
+ 
   return (
-    <div className="w-full flex justify-between items-center border-b border-gray-200 py-4">
+    <div onClick={()=> navigate(`/trendora/products/${cartItem?.product?._id}`)}
+      className="w-full flex justify-between items-center border-b border-gray-200 py-4">
 
       {/* LEFT: Product Info */}
       <div className="flex items-center gap-4">

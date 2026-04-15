@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     username: {
       type: String,
       required: [true, "Username is required"],
@@ -11,6 +12,7 @@ const userSchema = new mongoose.Schema({
       minLength: [3, "Name must be at least 3 characters"],
       maxLength: [50, "Name cannot exceed 50 characters"],
     },
+
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -22,6 +24,7 @@ const userSchema = new mongoose.Schema({
         message: "Invalid email address",
       },
     },
+
     password: {
       type: String,
       required: [true, "Password is required"],
@@ -32,12 +35,14 @@ const userSchema = new mongoose.Schema({
       ],
       select: false,
     },
+
     bio: {
       type: String,
       default: "",
       trim: true,
       maxLength: [200, "Bio cannot exceed 200 characters"],
     },
+
     profileImage: {
       path: {
         type: String,
@@ -48,24 +53,28 @@ const userSchema = new mongoose.Schema({
         default: "",
       },
     },
+
     orders: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Order",
       },
     ],
+
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
     },
+
     status: {
       type: String,
       enum: ["Active", "Inactive"],
       default: "Inactive",
     },
+
     wishlist: [
-      { 
+      {
         product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
@@ -75,7 +84,7 @@ const userSchema = new mongoose.Schema({
         size: {
           type: String,
           required: true,
-          enum: ["XXL", "XL", "L", "M", "S"], 
+          enum: ["XXL", "XL", "L", "M", "S"],
         },
 
         quantity: {
@@ -85,6 +94,7 @@ const userSchema = new mongoose.Schema({
         },
       },
     ],
+
     cart: [
       {
         product: {
@@ -96,13 +106,88 @@ const userSchema = new mongoose.Schema({
         size: {
           type: String,
           required: true,
-          enum: ["XXL", "XL", "L", "M", "S"], 
+          enum: ["XXL", "XL", "L", "M", "S"],
         },
 
         quantity: {
           type: Number,
           min: [1, "Quantity must be at least 1"],
           default: 1,
+        },
+      },
+    ],
+
+    addresses: [
+      {
+        firstName: {
+          type: String,
+          required: true,
+          trim: true,
+          minlength: [3, "First name must be at least 3 characters"],
+          maxLength: [30, "First name must not exceed 30 characters"],
+        },
+        lastName: {
+          type: String,
+          trim: true,
+          default: "",
+          validate: {
+            validator: function (val) {
+              return val === "" || val.length >= 3;
+            },
+            message: "Last name must be at least 3 characters",
+          },
+          maxLength: [30, "Last name is too long"],
+        },
+        email: {
+          type: String,
+          required: [true, "Email is required"],
+          trim: true,
+          lowercase: true,
+          validate: {
+            validator: validator.isEmail,
+            message: "Invalid email address",
+          },
+        },
+        street: {
+          type: String,
+          trim: true,
+          default: "",
+          validate: {
+            validator: function (val) {
+              return val === "" || val.length >= 5;
+            },
+            message: "Street address too short",
+          },
+        },
+        city: {
+          type: String,
+          required: true,
+          trim: true,
+          minlength: [3, "City at least have 3 characters"],
+        },
+        state: {
+          type: String,
+          required: true,
+          trim: true,
+          minlength: [3, "State at least have 3 characters"],
+        },
+        zipcode: {
+          type: String,
+          required: true,
+          trim: true,
+          match: [/^\d{6}$/, "Zip code must be 6 digits"],
+        },
+        country: {
+          type: String,
+          required: true,
+          trim: true,
+          minlength: [3, "Country at least have 3 characters"],
+        },
+        phone: {
+          type: String,
+          required: true,
+          trim: true,
+          match: [/^[6-9]\d{9}$/, "Invalid Indian phone number"],
         },
       },
     ],

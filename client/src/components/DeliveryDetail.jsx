@@ -1,6 +1,7 @@
 import { stripe_logo, razorpay_logo } from "../assets/Index.jsx";
 import { DeliveryForm } from "./Index.jsx";
-import { useState } from "react";
+import { useState , useEffect} from "react";
+import { getCartItems } from "../api/cartApi.js";
 
 function Heading({ textGray, textBlack, fontSize }) {
   return (
@@ -14,6 +15,30 @@ function Heading({ textGray, textBlack, fontSize }) {
 
 function DeliveryDetail() {
   const [paymentMethod, setPaymentMethod] = useState("stripe");
+  const [cartItems, setCartItems] = useState([]);
+ 
+  async function getUserCartItems(){
+    try{
+      const res = await getCartItems();
+      setCartItems(res?.data?.data?.cart);
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+  }
+  
+  useEffect(()=>{
+    getUserCartItems();
+  },[]);
+
+  const subTotal = cartItems.reduce((acc,val)=>{
+    const quantity = val?.quantity || 1;
+    const price = val?.product?.price || 0;
+    const totalItemPrice = quantity*price;
+    acc += totalItemPrice;
+    return acc;
+  },0) 
+  
 
   return (
     <section className="min-h-screen flex justify-between gap-30">
@@ -28,17 +53,17 @@ function DeliveryDetail() {
         <Heading textGray="CART" textBlack="TOTALS" fontSize="text-2xl" />
         <p className="flex justify-between border-b border-gray-300 py-2">
           <span>Subtotal</span>
-          <span>$60.00</span>
+          <span>₹{subTotal.toFixed(2)}</span>
         </p>
         <p className="flex justify-between border-b border-gray-300 py-2">
           <span>Shipping Fee</span>
-          <span>$10.00</span>
+          <span>₹100.00</span>
         </p>
         <p className="flex justify-between py-2 text-base">
           <span>
             <b>Total</b>
           </span>
-          <span>$70.00</span>
+          <span><b>₹{(subTotal + 100).toFixed(2)}</b></span>
         </p>
 
         <Heading textGray="PAYMENT" textBlack="METHODS" fontSize="text-2xl" />
@@ -83,7 +108,7 @@ function DeliveryDetail() {
         </div>
 
         <div className="w-full text-right">
-          <button type="submit" form="deliveryAddressForm" className="px-8 py-2 bg-black text-gray-100">
+          <button type="submit" form="deliveryAddressForm" className="cursor-pointer px-8 py-2 bg-black text-gray-100">
             PLACE ORDER
           </button>
         </div>

@@ -3,10 +3,12 @@ import { addToCart } from "../api/cartApi.js";
 import { toast } from "react-toastify";
 import { UserContext } from "../context/Index.jsx";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 function WishlistItem({ wishlistItem, getUserWishListItems }) {
   const { product, size, quantity } = wishlistItem || {};
   const { name, price, productImage } = product || {};
+  const navigate = useNavigate();
 
   const { getUser } = useContext(UserContext);
  
@@ -35,7 +37,8 @@ function WishlistItem({ wishlistItem, getUserWishListItems }) {
   }
 
   return (
-    <div className="w-full flex justify-between items-center border-b border-gray-200 py-4">
+    <div onClick={() => navigate(`/trendora/products/${product?._id}`)}
+      className="w-full flex justify-between items-center border-b border-gray-200 py-4">
       
       {/* LEFT: Product Info */}
       <div className="flex items-center gap-4">

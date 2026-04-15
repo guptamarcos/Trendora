@@ -1,12 +1,22 @@
 import { useForm } from "react-hook-form";
 import { DeliveryAddressSchema } from "../schemas/AddressSchema.js";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { addOrder } from "../api/orderApi.js";
 
 function DeliveryForm({paymentMethod}) {
-  const { register, handleSubmit,formState: { errors }} = useForm({ resolver: zodResolver(DeliveryAddressSchema) });
+  const { register, handleSubmit, formState: { errors }} = useForm({ resolver: zodResolver(DeliveryAddressSchema) });
   
-  function formData(data) {
-    console.log(data);
+  async function formData(data) {
+    data.paymentMethod = paymentMethod;
+    try{
+      const res = await addOrder(data);
+      console.log(res);
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
   }
 
   return (
