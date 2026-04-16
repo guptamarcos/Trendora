@@ -1,6 +1,23 @@
-import {OrderCard} from "./Index.jsx";
+import { OrderCard } from "./Index.jsx";
+import { useEffect, useState } from "react";
+import { getUserOrder } from "../api/orderApi.js";
+import { toast } from "react-toastify";
 
 function AllOrders() {
+  async function getUserOrderInfo(){
+    try{
+      const res = await getUserOrder();
+      console.log(res?.data?.userOrders);
+    }catch(err){
+      const message = err?.response?.data?.message;
+      toast.error(message);
+    }
+  }
+
+  useEffect(()=>{
+    getUserOrderInfo();
+  },[])
+
   return (
     <section className="min-h-screen pt-16">
         {/* MY ORDERS HEADING  */}

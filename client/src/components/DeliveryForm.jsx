@@ -4,12 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { addOrder } from "../api/orderApi.js";
+import { toast } from "react-toastify";
 
 function DeliveryForm({paymentMethod}) {
   const { register, handleSubmit, formState: { errors }} = useForm({ resolver: zodResolver(DeliveryAddressSchema) });
   
   async function formData(data) {
     data.paymentMethod = paymentMethod;
+    
     try{
       const res = await addOrder(data);
       console.log(res);
