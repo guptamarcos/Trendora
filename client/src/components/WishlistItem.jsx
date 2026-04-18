@@ -11,40 +11,42 @@ function WishlistItem({ wishlistItem, getUserWishListItems }) {
   const navigate = useNavigate();
 
   const { getUser } = useContext(UserContext);
- 
-  async function deleteWishlistItem(){
-    try{
+
+  async function deleteWishlistItem() {
+    try {
       const res = await removeWishlistItem(wishlistItem._id);
       toast.success("Product removed from wishlist");
-      getUserWishListItems(); getUser();
-    }catch(err){
+      getUserWishListItems();
+      getUser();
+    } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
     }
   }
-  
-  async function addWishlistItemToCart(){
-    try{
+
+  async function addWishlistItemToCart() {
+    try {
       const productId = product._id;
-      await addToCart({productId , size, quantity});
+      await addToCart({ productId, size, quantity });
       await removeWishlistItem(wishlistItem._id);
       toast.success("Product added to cart");
-      getUserWishListItems(); getUser();
-    }catch(err){
+      getUserWishListItems();
+      getUser();
+    } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
     }
   }
 
   return (
-    <div onClick={() => navigate(`/trendora/products/${product?._id}`)}
-      className="w-full flex justify-between items-center border-b border-gray-200 py-4">
-      
+    <div className="w-full flex justify-between items-center border-b border-gray-200 py-4">
       {/* LEFT: Product Info */}
       <div className="flex items-center gap-4">
-        
         {/* Product Image */}
-        <div className="w-20 h-20 flex-shrink">
+        <div
+          className="w-20 h-20 flex-shrink"
+          onClick={() => navigate(`/trendora/products/${product?._id}`)}
+        >
           <img
             src={productImage?.url || "/placeholder.png"}
             alt={name || "product"}
@@ -54,7 +56,10 @@ function WishlistItem({ wishlistItem, getUserWishListItems }) {
 
         {/* Product Details */}
         <div className="flex flex-col gap-6 cursor-pointer">
-          <h6 className="font-semibold text-gray-800 text-lg">
+          <h6
+            className="font-semibold text-gray-800 text-lg"
+            onClick={() => navigate(`/trendora/products/${product?._id}`)}
+          >
             {name || "No Name"}
           </h6>
 
@@ -68,15 +73,19 @@ function WishlistItem({ wishlistItem, getUserWishListItems }) {
 
       {/* RIGHT: Actions */}
       <div className="flex items-center gap-3">
-        
-        <button onClick={addWishlistItemToCart} className="cursor-pointer px-4 py-1.5 text-sm border border-black rounded-md hover:bg-black hover:text-white transition">
+        <button
+          onClick={addWishlistItemToCart}
+          className="cursor-pointer px-4 py-1.5 text-sm border border-black rounded-md hover:bg-black hover:text-white transition"
+        >
           Add to Cart
         </button>
 
-        <button onClick={deleteWishlistItem} className="cursor-pointer text-sm text-red-500 hover:underline">
+        <button
+          onClick={deleteWishlistItem}
+          className="cursor-pointer text-sm text-red-500 hover:underline"
+        >
           Remove
         </button>
-
       </div>
     </div>
   );

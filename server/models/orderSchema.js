@@ -23,6 +23,16 @@ const orderSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        size: {
+          type: String,
+          required: true,
+          enum: ["M", "L", "XL", "XXL", "S"],
+        },
+        orderStatus: {
+          type: String,
+          enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+          default: "Pending",
+        },
       },
     ],
 
@@ -40,12 +50,6 @@ const orderSchema = new mongoose.Schema(
     paymentStatus: {
       type: String,
       enum: ["Pending", "Completed", "Failed"],
-      default: "Pending",
-    },
-
-    orderStatus: {
-      type: String,
-      enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
     },
 

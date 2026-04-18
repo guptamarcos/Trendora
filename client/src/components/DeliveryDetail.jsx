@@ -2,6 +2,7 @@ import { stripe_logo, razorpay_logo } from "../assets/Index.jsx";
 import { DeliveryForm } from "./Index.jsx";
 import { useState , useEffect} from "react";
 import { getCartItems } from "../api/cartApi.js";
+import { useNavigate } from "react-router-dom";
 
 function Heading({ textGray, textBlack, fontSize }) {
   return (
@@ -16,6 +17,7 @@ function Heading({ textGray, textBlack, fontSize }) {
 function DeliveryDetail() {
   const [paymentMethod, setPaymentMethod] = useState("stripe");
   const [cartItems, setCartItems] = useState([]);
+  const navigate = useNavigate();
  
   async function getUserCartItems(){
     try{
@@ -108,7 +110,8 @@ function DeliveryDetail() {
         </div>
 
         <div className="w-full text-right">
-          <button type="submit" form="deliveryAddressForm" className="cursor-pointer px-8 py-2 bg-black text-gray-100">
+          <button type="submit" form="deliveryAddressForm" onClick={()=> navigate("/trendora/allorders")}
+            className="cursor-pointer px-8 py-2 bg-black text-gray-100">
             PLACE ORDER
           </button>
         </div>

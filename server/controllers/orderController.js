@@ -9,8 +9,7 @@ async function addOrder(req, res) {
     path: "cart.product",
   });
 
-  console.log(Cart);
-  if (Cart.length === 0) {
+  if (!Cart.cart || Cart.cart.length === 0) {
     return res.status(404).json({
       success: false,
       message: "Cart is empty",
@@ -41,12 +40,13 @@ async function addOrder(req, res) {
   }
 
   const paymentStatus = paymentMethod === "cod" ? "Pending" : "Completed";
-
+  
   const products = Cart.cart.map((cartItem) => {
     return {
       product: cartItem.product._id,
       quantity: cartItem.quantity,
       price: cartItem.quantity * cartItem.product.price,
+      size: cartItem.size,
     };
   });
 
@@ -80,22 +80,27 @@ async function addOrder(req, res) {
   });
 }
 
-async function getUserOrder(req,res){
+async function getUserOrder(req, res) {
   const userId = req.user._id;
-  const userOrders = await Order.find({user: userId});
+  const userOrders = await Order.find({ user: userId })
+    .select("createdAt totalAmount products")
+    .sort({createdAt: -1})
+    .populate({
+      path: "products.product",
+      select: "productImage name",
+    });
 
   return res.status(200).json({
     success: true,
     userOrders,
-  })
+  });
 }
 
-async function getAllOrder(req,res){
+async function getAllOrder(req, res) {
   const allOrders = await Order.find({});
   return res.status(200).json({
     success: true,
     allOrders: allOrders,
-  })
+  });
 }
 module.exports = { addOrder, getUserOrder };
- 
