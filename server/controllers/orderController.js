@@ -5,14 +5,17 @@ const { addressSchema } = require("../utils/addressSchemaValidator.js");
 async function addOrder(req, res) {
   // CHECK CART NOT EMPTY
   const userId = req.user._id;
-  const Cart = await User.findById(userId).select("cart").populate({
+  const Cart = await User.findById(userId)
+  .select("cart")
+  .populate({
     path: "cart.product",
   });
+
 
   if (!Cart.cart || Cart.cart.length === 0) {
     return res.status(404).json({
       success: false,
-      message: "Cart is empty",
+      message: "Please select the item for order",
     });
   }
 
@@ -41,29 +44,22 @@ async function addOrder(req, res) {
 
   const paymentStatus = paymentMethod === "cod" ? "Pending" : "Completed";
   
-  const products = Cart.cart.map((cartItem) => {
+  const allOrders = Cart.cart.map((cartItem) => {
     return {
+      user: userId,
       product: cartItem.product._id,
       quantity: cartItem.quantity,
-      price: cartItem.quantity * cartItem.product.price,
+      priceAtOrder: cartItem.product.price,
       size: cartItem.size,
+      totalAmount: (cartItem.quantity * cartItem.product.price),
+      paymentMethod, 
+      paymentStatus,
+      shippingAddress: address,
     };
   });
+  
 
-  const totalAmount = products.reduce((acc, product) => {
-    return acc + product.price;
-  }, 0);
-
-  const order = {
-    user: userId,
-    products,
-    totalAmount,
-    paymentMethod,
-    paymentStatus,
-    shippingAddress: address,
-  };
-
-  const createdOrder = await Order.create(order);
+  const Orders = await Order.create(allOrders);
 
   const cartItemIds = Cart.cart.map((cartItem) => {
     return cartItem._id;
@@ -82,25 +78,37 @@ async function addOrder(req, res) {
 
 async function getUserOrder(req, res) {
   const userId = req.user._id;
-  const userOrders = await Order.find({ user: userId })
-    .select("createdAt totalAmount products")
-    .sort({createdAt: -1})
+  const userOrders = await Order.find({ user: userId }).sort({ createdAt: -1 })
     .populate({
-      path: "products.product",
+      path: "product",
       select: "productImage name",
-    });
+    })
 
   return res.status(200).json({
     success: true,
-    userOrders,
+    orders: userOrders,
   });
 }
 
 async function getAllOrder(req, res) {
-  const allOrders = await Order.find({});
+  const allOrders = await Order.find({})
+    .select("createdAt totalAmount product paymentStatus user")
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "user",
+      select: "username"
+    })
+    .populate(
+      {
+        path: "product",
+        select: "productImage name",
+      },
+    );
+
   return res.status(200).json({
     success: true,
-    allOrders: allOrders,
+    allOrders,
   });
 }
-module.exports = { addOrder, getUserOrder };
+
+module.exports = { addOrder, getUserOrder,getAllOrder };

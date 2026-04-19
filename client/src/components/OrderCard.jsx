@@ -1,39 +1,79 @@
-import { hero_img } from "../assets/Index.jsx";
 import { FaCircle } from "react-icons/fa";
 
-function OrderCard({order}) {
+function OrderCard({ order }) {
+  if (!order) return null;
+
+  const { product, totalAmount, quantity, size, createdAt, orderStatus } =
+    order;
+
+  const formattedDate = new Date(createdAt).toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  const imageUrl = product?.productImage?.url || "/placeholder.png";
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Delivered":
+        return "green";
+      case "Pending":
+        return "orange";
+      case "Cancelled":
+        return "red";
+      default:
+        return "gray";
+    }
+  };
+
   return (
-    <div className="w-full h-[18vh] flex justify-between items-center border-0 border-b-2 border-gray-200">
-      
-      {/* ORDER BASIC INFORMATION */}
-      <div className="h-full flex items-center gap-4 h-full py-4">
+    <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4 border-b border-gray-200">
+      {/* LEFT SECTION */}
+      <div className="flex items-center gap-4 w-full md:w-auto">
+        {/* IMAGE */}
+        <img
+          src={imageUrl}
+          alt={product?.name || "Product"}
+          className="cursor-pointer h-20 w-20 object-cover rounded-md"
+        />
 
-        {/* PRODUCT IMAGE  */}
-        <img src={order[0].product?.productImage?.url || ""} alt="Product Image" className="h-full w-[5vw]"></img>
+        {/* DETAILS */}
+        <div className="flex flex-col justify-between">
+          <h6 className="cursor-pointer font-semibold text-lg text-gray-700">
+            {product?.name || "Unknown Product"}
+          </h6>
 
-        {/* PRODUCT INFORMATION */}
-        <div className="h-full flex flex-col justify-between">
+          <div className="my-2 flex flex-wrap gap-4 text-sm text-gray-600">
+            <span>₹{totalAmount}</span>
+            <span>
+              <b>Qty:</b> {quantity}
+            </span>
+            <span>
+              <b>Size:</b> {size}
+            </span>
+          </div>
 
-          <h6 className="font-semibold text-lg text-gray-700">{order[0].product?.name}</h6>
-          <p className="w-full flex justify-between">
-            <span>₹{order[0]?.price}</span>
-            <span><b>Quantity: </b>{order[0]?.quantity}</span> 
-            <span><b>Size: </b>{order[0]?.size}</span>
+          <p className="text-sm text-gray-500">
+            <b>Date:</b> {formattedDate}
           </p>
-          <p> <b>Date: &nbsp;</b>{order[1]}</p>
-
         </div>
 
       </div>
 
-      {/* ORDER STATUS */}
-      <span className="flex items-center gap-2">
-        <FaCircle color="green" size={14} />
-        {order[0]?.orderStatus}
-      </span>
+      {/* RIGHT SECTION */}
+      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
+        {/* STATUS */}
+        <span className="flex items-center gap-2 text-sm">
+          <FaCircle color={getStatusColor(orderStatus)} size={10} />
+          {orderStatus}
+        </span>
 
-      {/* TRACK ORDER BUTTON  */}
-      <button className="border px-4 py-2 text-gray-800 cursor-pointer">Track Order</button>
+        {/* BUTTON */}
+        <button className="cursor-pointer border border-gray-300 px-4 py-2 rounded-md text-sm hover:bg-gray-100 transition">
+          Track Order
+        </button>
+      </div>
     </div>
   );
 }

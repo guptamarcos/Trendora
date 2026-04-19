@@ -7,3 +7,7 @@ export const addOrder = (data) => {
 export const getUserOrder = () => {
    return axiosInstance.get("/orders/getUserOrder");
 }
+
+export const getAllOrder = () => {
+   return axiosInstance.get("/orders/getAllOrder");
+}

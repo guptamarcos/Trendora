@@ -9,32 +9,33 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
-    products: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-        },
-        quantity: {
-          type: Number,
-          required: true,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
-        size: {
-          type: String,
-          required: true,
-          enum: ["M", "L", "XL", "XXL", "S"],
-        },
-        orderStatus: {
-          type: String,
-          enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
-          default: "Pending",
-        },
-      },
-    ],
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+
+    quantity: {
+      type: Number,
+      required: true,
+      min: []
+    },
+
+    priceAtOrder: {
+      type: Number,
+      required: true,
+    },
+
+    size: {
+      type: String,
+      required: true,
+      enum: ["M", "L", "XL", "XXL", "S"],
+    },
+
+    orderStatus: {
+      type: String,
+      enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+      default: "Pending",
+    },
 
     totalAmount: {
       type: Number,
