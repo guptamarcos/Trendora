@@ -1,3 +1,8 @@
+import { useState, useEffect } from "react";
+import { getDashboardInfo } from "../api/authApi.js";
+import { toast } from "react-toastify";
+
+
 function InformationTabs({ text, value }) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-5">
@@ -18,6 +23,23 @@ function RecentActivity({ text, value }) {
 
 
 function AdminDashboard() {
+  const [dashboard, setDashboard] = useState(null);
+
+  async function dashboardInfo(){
+    try{
+      const res = await getDashboardInfo();
+      console.log(res?.data?.DashboardInfo);
+      setDashboard(res?.data?.DashboardInfo);
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
+  }
+
+  useEffect(()=>{
+    dashboardInfo();
+  },[]);
+
   return (
     <main className="max-w-6xl mx-auto flex-1 min-h-[90vh] p-8 bg-gray-100 space-y-6">
       {/* PAGE TITLE */}
@@ -28,10 +50,10 @@ function AdminDashboard() {
 
       {/* STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <InformationTabs text="Total Users" value="1,245" />
-        <InformationTabs text="Total Products" value="320" />
-        <InformationTabs text="Orders" value="842" />
-        <InformationTabs text="Revenue" value="₹52,000" />
+        <InformationTabs text="Total Users" value={dashboard?.totalUsers} />
+        <InformationTabs text="Total Products" value={dashboard?.totalProducts} />
+        <InformationTabs text="Orders" value={dashboard?.totalOrders} />
+        <InformationTabs text="Revenue" value= {`₹ ${dashboard?.revenue}`} />
       </div>
 
       {/* RECENT ACTIVITY */}
@@ -41,10 +63,10 @@ function AdminDashboard() {
         </h2>
 
         <div className="space-y-4 text-sm text-gray-700">
-          <RecentActivity text="New user registered" value="2 min ago" />
-          <RecentActivity text="Order #1234 placed" value="10 min ago" />
-          <RecentActivity text="Product added" value="2 hours ago" />
-          <RecentActivity text="User deleted" value="2 hours ago" />
+          <RecentActivity text="New user registered" value={`${dashboard?.latestUser} ago`} />
+          <RecentActivity text={`Order #${dashboard?.id.slice(10,16)} placed`} value={`${dashboard?.latestOrder} ago`} />
+          <RecentActivity text="Product added" value={`${dashboard?.latestProduct} ago`} />
+         
         </div>
       </div>
 

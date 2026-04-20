@@ -39,3 +39,7 @@ export const getAllUserInfo = () => {
 export const deleteUser = ( userId ) => {
   return axiosInstance.delete(`/auth/${userId}`);
 }
+
+export const getDashboardInfo = () => {
+  return axiosInstance.get("/auth/dashboard");
+};

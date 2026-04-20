@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
 const {register, login, getUser, logout , updateProfileInfo, updateProfilePassword, 
-uploadProfileImage, getAllUser, deleteUser} = require("../controllers/userController.js");
+uploadProfileImage, getAllUser, deleteUser, DashboardInfo} = require("../controllers/userController.js");
 const { verifyAndCheckUserToken, verifyAndCheckAdminToken } = require("../auth.js");
 const upload = require("../utils/multer.js");
 
 router.get("/me",verifyAndCheckUserToken,wrapAsync(getUser));
 router.get("/getAllUser",verifyAndCheckAdminToken,wrapAsync(getAllUser));
+router.get("/dashboard",verifyAndCheckAdminToken, wrapAsync(DashboardInfo));
 router.post("/register", wrapAsync(register));
 router.post("/login", wrapAsync(login));
 router.post("/logout",verifyAndCheckUserToken, wrapAsync(logout));

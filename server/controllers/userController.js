@@ -1,10 +1,17 @@
 const User = require("../models/userSchema.js");
+const Order = require("../models/orderSchema.js");
 const bcrypt = require("bcrypt");
-const { signupSchemaValidator, loginSchemaValidator, ProfileInfoSchemaValidator, 
-  PasswordSchemaValidator, } = require("../utils/userSchemaValidator.js");
+const {
+  signupSchemaValidator,
+  loginSchemaValidator,
+  ProfileInfoSchemaValidator,
+  PasswordSchemaValidator,
+} = require("../utils/userSchemaValidator.js");
 const path = require("path");
 const fs = require("fs");
+const Product = require("../models/productSchema.js");
 const cloudinary = require("cloudinary").v2;
+const getExactTime = require("../utils/helper.js");
 
 // THIS IS REGISTER CONTROLLER
 async function register(req, res) {
@@ -19,7 +26,7 @@ async function register(req, res) {
       message: error.details[0].message,
     });
   }
-  
+
   const { username, email, password } = value;
   const findUser = await User.findOne({ email });
   if (findUser) {
@@ -29,27 +36,26 @@ async function register(req, res) {
     });
   }
 
-  const createdUser = await User.create({ username, email, password});
+  const createdUser = await User.create({ username, email, password });
 
   return res.status(201).json({
     success: true,
     message: "User created successfully !!",
   });
-
 }
 
 async function login(req, res) {
   const { error, value } = loginSchemaValidator.validate(req.body, {
     abortEarly: false,
   });
-  
+
   if (error) {
     return res.status(400).json({
       success: false,
       message: error.details[0].message,
     });
   }
-  
+
   const { email, password } = value;
   const findUser = await User.findOne({ email }).select("+password");
 
@@ -59,7 +65,7 @@ async function login(req, res) {
       message: "Email not exist",
     });
   }
-  
+
   const checkPassword = await bcrypt.compare(password, findUser.password);
 
   if (!checkPassword) {
@@ -68,11 +74,11 @@ async function login(req, res) {
       message: "Invalid Credentials",
     });
   }
-  
-  await User.findByIdAndUpdate(findUser._id, {$set: { status : "Active"}});
+
+  await User.findByIdAndUpdate(findUser._id, { $set: { status: "Active" } });
 
   const token = findUser.generateToken();
-  
+
   res.cookie("token", token, {
     httpOnly: true,
     secure: false,
@@ -89,8 +95,8 @@ async function login(req, res) {
 
 async function logout(req, res) {
   const user = req.user;
- 
-  await User.findByIdAndUpdate(user._id, {$set: { status : "Inactive"}});
+
+  await User.findByIdAndUpdate(user._id, { $set: { status: "Inactive" } });
 
   res.clearCookie("token", {
     httpOnly: true,
@@ -191,7 +197,7 @@ async function uploadProfileImage(req, res) {
   }
 
   const user = req.user;
-  
+
   // FOR REMOVING PREVIOUS IMAGE FORM THE LOCAL FOLDER
 
   // if (user.profileImage) {
@@ -204,24 +210,25 @@ async function uploadProfileImage(req, res) {
   //     fs.unlinkSync(oldPath);
   //   }
   // }
-  
-  
-  await User.updateOne({ _id: user._id },{
-    $set: {
-      profileImage: { 
-        path: req.file.path, 
-        filename: req.file.filename 
+
+  await User.updateOne(
+    { _id: user._id },
+    {
+      $set: {
+        profileImage: {
+          path: req.file.path,
+          filename: req.file.filename,
+        },
       },
     },
-  },
-  {
-    runValidators: true,
-  },
-);
+    {
+      runValidators: true,
+    },
+  );
 
-  if(user.profileImage.path){
+  if (user.profileImage.path) {
     await cloudinary.uploader.destroy(user.profileImage.filename);
-  };
+  }
 
   return res.status(200).json({
     success: true,
@@ -229,35 +236,87 @@ async function uploadProfileImage(req, res) {
   });
 }
 
-async function getAllUser (req,res){
-  const allUser = await User.find({}).select("username email role profileImage status")
+async function getAllUser(req, res) {
+  const allUser = await User.find({}).select(
+    "username email role profileImage status",
+  );
 
   return res.status(200).json({
     success: false,
     data: allUser,
-  })
-};
+  });
+}
 
-async function deleteUser(req,res){
+async function deleteUser(req, res) {
   const { id } = req.params;
-  
+
   const checkUser = await User.findById(id);
 
-  if(!checkUser){
+  if (!checkUser) {
     return res.status(400).json({
       success: false,
       message: "User not found",
-    })
-  };
+    });
+  }
 
-
-  const deletedUser = await User.deleteOne({_id: id});
+  const deletedUser = await User.deleteOne({ _id: id });
 
   return res.status(200).json({
     success: true,
     message: "User deleted successfully",
-  })
+  });
+}
 
+async function DashboardInfo(req, res) {
+  // estimatedDocumentCount() --> fast , not accept filter
+  // countDocuments({ filter }) --> slow , scan all document
+
+  const [totalUsers, totalProducts, totalOrders] = await Promise.all([
+    User.estimatedDocumentCount(),
+    Product.estimatedDocumentCount(),
+    Order.estimatedDocumentCount(),
+  ]);
+
+  const result = await Order.aggregate([
+    {
+      $match: { paymentStatus: "Completed" },
+    },
+    {
+      $group: {
+        _id: null,
+        totalRevenue: { $sum: "$totalAmount" },
+      },
+    },
+  ]);
+
+  const user = await User.findOne()
+    .sort({ createdAt: -1 })
+    .select("createdAt");
+
+  const order = await Order.findOne()
+    .sort({ createdAt: -1 })
+    .select("createdAt");
+
+  const product = await Product.findOne()
+    .sort({ createdAt: -1 })
+    .select("createdAt");
+
+  const latestUser = getExactTime(user);
+  const latestOrder = getExactTime(order);
+  const latestProduct = getExactTime(product);
+ 
+  console.log(latestUser, latestOrder, latestProduct);
+
+  return res.status(200).json({
+    success: true,
+    DashboardInfo: {
+      totalUsers,
+      totalOrders,
+      totalProducts,
+      revenue: result[0]?.totalRevenue,
+      latestUser, latestOrder , latestProduct, id: order._id
+    },
+  });
 }
 
 module.exports = {
@@ -269,5 +328,6 @@ module.exports = {
   updateProfilePassword,
   uploadProfileImage,
   getAllUser,
-  deleteUser
+  deleteUser,
+  DashboardInfo,
 };
