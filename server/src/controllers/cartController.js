@@ -1,6 +1,20 @@
 const Product = require("../models/productSchema.js");
 const User = require("../models/userSchema.js");
 
+async function getCartItems(req, res) {
+  const userId = req.user._id;
+
+  const cartItems = await User.findById(userId).select("cart").populate({
+    path: "cart.product",
+    select: "productImage name price",
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: cartItems,
+  });
+}
+
 async function addToCart(req, res) {
   const { productId, size, quantity } = req.body;
 
@@ -27,27 +41,15 @@ async function addToCart(req, res) {
   });
 }
 
-async function getCartItems(req, res) {
-  const userId = req.user._id;
-
-  const cartItems = await User.findById(userId).select("cart").populate({
-    path: "cart.product",
-    select: "productImage name price",
-  });
-
-  return res.status(200).json({
-    success: true,
-    data: cartItems,
-  });
-}
-
 async function removeCartItem(req, res) {
   const userId = req.user._id;
-  const { cartItemId } = req.params;
+  const { itemId } = req.params;
 
-  const cartItems = await User.updateOne({ _id: userId },{
+  const cartItems = await User.updateOne(
+    { _id: userId },
+    {
       $pull: {
-        cart: { _id: cartItemId },
+        cart: { _id: itemId },
       },
     },
   );
@@ -59,7 +61,7 @@ async function removeCartItem(req, res) {
 }
 
 module.exports = {
-  addToCart,
   getCartItems,
+  addToCart,
   removeCartItem,
 };

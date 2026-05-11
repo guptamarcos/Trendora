@@ -12,34 +12,3 @@ export const logoutUser = () => {
   return axiosInstance.post("/auth/logout");
 };
 
-export const getCurrentUser = () => {
-  return axiosInstance.get("/auth/me");
-}
-
-export const updateProfileInfo = (data) =>{
-  return axiosInstance.patch("/auth/updateProfileInfo", data)
-}
-
-export const updateProfilePassword = (data) =>{
-  return axiosInstance.patch("/auth/updateProfilePassword", data);
-}
-
-export const uploadProfileImage = ( data ) =>{
-  return axiosInstance.patch("/auth/uploadProfileImage", data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    }
-  });
-}
-
-export const getAllUserInfo = () => {
-  return axiosInstance.get("/auth/getAllUser");
-};
-
-export const deleteUser = ( userId ) => {
-  return axiosInstance.delete(`/auth/${userId}`);
-}
-
-export const getDashboardInfo = () => {
-  return axiosInstance.get("/auth/dashboard");
-};

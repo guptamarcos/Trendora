@@ -1,5 +1,5 @@
 import { Product } from "./Index.jsx";
-import { getBestSeller } from "../api/productApi.js";
+import { bestSellers } from "../api/productApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
@@ -7,7 +7,7 @@ function BestSeller(){
     const [bestSellerProduct, setBestSellerProduct] = useState([]);
     async function bestSeller(){
         try{
-           const res = await getBestSeller();
+           const res = await bestSellers();
            setBestSellerProduct(res?.data?.data);
         }catch(err){
             const message = err?.response?.data?.message || "Something went wrong";

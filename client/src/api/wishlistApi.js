@@ -1,13 +1,17 @@
 import axiosInstance from "./axiosInstance.js";
 
-export const addToWishlist = ({productId, size, quantity}) => {
-  return axiosInstance.post("/user/wishlist/addToWishlist", {productId, size, quantity});
-}
 
+// GET USER WISHLIST 
 export const getWishlistItems = () => {
-  return axiosInstance.get("/user/wishlist/wishlistItems");
+  return axiosInstance.get("/wishlist/items");
 }
 
+// ADD ITEM IN WISHLIST
+export const addToWishlist = ({productId, size, quantity}) => {
+  return axiosInstance.post("/wishlist/items", {productId, size, quantity});
+}
+
+// REMOVE ITEM FROM THE WISHLIST
 export const removeWishlistItem = (wishlistItemId) =>{
-  return axiosInstance.delete(`/user/wishlist/${wishlistItemId}`)
+  return axiosInstance.delete(`/wishlist/items/${wishlistItemId}`)
 }

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { uploadProfileImage } from "../api/authApi.js";
+import { uploadProfileImage } from "../api/userApi.js";
 import { defaultProfileImage } from "../assets/Index.jsx";
 import { toast } from "react-toastify";
 import { UserContext } from "../context/UserContext.jsx";

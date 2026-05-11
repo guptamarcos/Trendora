@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ProductSchema from "../schemas/ProductSchema.js";
-import { getProductInfo, editProductInfo } from "../api/productApi.js";
+import { getProductInfo } from "../api/productApi.js";
+import { editProduct } from "../api/adminApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";

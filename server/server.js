@@ -8,18 +8,23 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 8080;
 
-const connectDb = require("./Db/connect.js");
+const connectDb = require("./src/config/dbConfig.js");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const MongooseErrorHandler = require("./utils/MongooseErrorHandler.js");
 const path = require("path");
-const MulterErrorHandler = require("./utils/MulterErrorHandler.js");
+const {
+  verifyAndCheckUserToken,
+  verifyAndCheckAdminToken,
+} = require("./src/middleware/authMiddleware.js");
+const errorMiddleware = require("./src/middleware/errorMiddleware.js");
 
-const userRoutes = require("./routes/userRoutes.js");
-const productRoutes = require("./routes/productRoutes.js")
-const cartRoutes = require("./routes/cartRoutes.js");
-const wishlistRoutes = require("./routes/wishlistRoutes.js");
-const orderRoutes = require("./routes/orderRoutes.js");
+const authRoutes = require("./src/routes/authRoutes.js");
+const userRoutes = require("./src/routes/userRoutes.js");
+const adminRoutes = require("./src/routes/adminRoutes.js");
+const productRoutes = require("./src/routes/productRoutes.js");
+const cartRoutes = require("./src/routes/cartRoutes.js");
+const wishlistRoutes = require("./src/routes/wishlistRoutes.js");
+const orderRoutes = require("./src/routes/orderRoutes.js");
 
 // MIDDLEWARE SETUP
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
@@ -45,11 +50,13 @@ connectDb()
     process.exit(1);
   });
 
-app.use("/api/auth", userRoutes);
-app.use("/api/product", productRoutes);
-app.use("/api/user/cart", cartRoutes);
-app.use("/api/user/wishlist", wishlistRoutes);
-app.use("/api/orders", orderRoutes);
+app.use("/api/admin", verifyAndCheckAdminToken, adminRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", verifyAndCheckUserToken, userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart/items", verifyAndCheckUserToken, cartRoutes);
+app.use("/api/wishlist/items", verifyAndCheckUserToken, wishlistRoutes);
+app.use("/api/orders", verifyAndCheckUserToken, orderRoutes);
 
 // WHEN API ENDPOINT NOT EXIST
 app.use((req, res, next) => {
@@ -60,40 +67,4 @@ app.use((req, res, next) => {
 });
 
 // ERROR HANDLING MIDDLEWARE
-app.use((err, req, res, next) => {
-  const mongooseError = MongooseErrorHandler(err);
-
-  if (mongooseError) {
-    const { statusCode, message } = mongooseError;
-    return res.status(statusCode).json({
-      success: false,
-      message: message,
-    });
-  }
-
-  console.log("Error is occur \n", err);
-
-  if (err.name === "TypeError") {
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
-
-  // Multer error
- const multerError = MulterErrorHandler(err);
-
-  if (multerError) {
-    const { statusCode, message } = multerError;
-    return res.status(statusCode).json({
-      success: false,
-      message: message,
-    });
-  }
-  
-  const { statusCode = 500, message = "Internal Server Error" } = err;
-  return res.status(statusCode).json({
-    success: false,
-    message: message,
-  });
-});
+app.use(errorMiddleware);

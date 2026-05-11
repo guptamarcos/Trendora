@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { getAllProductInfo } from "../api/productApi.js";
-import { deleteProduct } from "../api/productApi.js";
+import { deleteProduct } from "../api/adminApi.js";
+import { getAllProducts } from "../api/productApi.js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -69,7 +69,7 @@ function AdminProductInfo() {
   const [products, setProducts] = useState([]);
 
   async function productInfo(){
-    let res = await getAllProductInfo();
+    let res = await getAllProducts();
     setProducts(res?.data?.data);
   }
   useEffect(()=>{

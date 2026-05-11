@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ProductSchema from "../schemas/ProductSchema.js";
-import { addProductInfo } from "../api/productApi.js";
+import { addProduct } from "../api/adminApi.js";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -13,7 +13,6 @@ function AdminAddProduct() {
   const [file, setFile] = useState(null);
   const [preview , setPreview ] = useState(null);
 
-  {file && console.log(file)}
   async function formData(data) {
     try {
       if (!file) {
@@ -28,7 +27,7 @@ function AdminAddProduct() {
         formData.append(key, data[key]);
       });
 
-      await addProductInfo(formData);
+      await addProduct(formData);
       toast.success("Product added successfully");
       reset();
     } catch (err) {

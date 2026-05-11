@@ -1,4 +1,4 @@
-import { getAllUserInfo, deleteUser } from "../api/authApi.js";
+import { getAllUserInfo,deleteUser  } from "../api/adminApi.js";
 import { useState, useEffect } from "react";
 import { defaultProfileImage } from "../assets/Index.jsx";
 import { toast } from "react-toastify";

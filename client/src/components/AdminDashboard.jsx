@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getDashboardInfo } from "../api/authApi.js";
+import { getDashboardInfo } from "../api/adminApi.js";
 import { toast } from "react-toastify";
 
 
@@ -28,7 +28,6 @@ function AdminDashboard() {
   async function dashboardInfo(){
     try{
       const res = await getDashboardInfo();
-      console.log(res?.data?.DashboardInfo);
       setDashboard(res?.data?.DashboardInfo);
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";

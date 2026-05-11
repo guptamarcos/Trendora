@@ -1,16 +1,49 @@
 const User = require("../models/userSchema.js");
 const Order = require("../models/orderSchema.js");
-const { addressSchema } = require("../utils/addressSchemaValidator.js");
+const { addressSchema } = require("../validations/addressSchemaValidator.js");
+
+
+async function getUserOrder(req, res) {
+  const userId = req.user._id;
+  const userOrders = await Order.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "product",
+      select: "productImage name",
+    });
+
+  return res.status(200).json({
+    success: true,
+    orders: userOrders,
+  });
+}
+
+async function getAllOrder(req, res) {
+  const allOrders = await Order.find({})
+    .select("createdAt totalAmount product paymentStatus user")
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "user",
+      select: "username",
+    })
+    .populate({
+      path: "product",
+      select: "productImage name",
+    });
+
+  return res.status(200).json({
+    success: true,
+    allOrders,
+  });
+}
+
 
 async function addOrder(req, res) {
   // CHECK CART NOT EMPTY
   const userId = req.user._id;
-  const Cart = await User.findById(userId)
-  .select("cart")
-  .populate({
+  const Cart = await User.findById(userId).select("cart").populate({
     path: "cart.product",
   });
-
 
   if (!Cart.cart || Cart.cart.length === 0) {
     return res.status(404).json({
@@ -43,7 +76,7 @@ async function addOrder(req, res) {
   }
 
   const paymentStatus = paymentMethod === "cod" ? "Pending" : "Completed";
-  
+
   const allOrders = Cart.cart.map((cartItem) => {
     return {
       user: userId,
@@ -51,13 +84,12 @@ async function addOrder(req, res) {
       quantity: cartItem.quantity,
       priceAtOrder: cartItem.product.price,
       size: cartItem.size,
-      totalAmount: (cartItem.quantity * cartItem.product.price),
-      paymentMethod, 
+      totalAmount: cartItem.quantity * cartItem.product.price,
+      paymentMethod,
       paymentStatus,
       shippingAddress: address,
     };
   });
-  
 
   const Orders = await Order.create(allOrders);
 
@@ -76,39 +108,5 @@ async function addOrder(req, res) {
   });
 }
 
-async function getUserOrder(req, res) {
-  const userId = req.user._id;
-  const userOrders = await Order.find({ user: userId }).sort({ createdAt: -1 })
-    .populate({
-      path: "product",
-      select: "productImage name",
-    })
 
-  return res.status(200).json({
-    success: true,
-    orders: userOrders,
-  });
-}
-
-async function getAllOrder(req, res) {
-  const allOrders = await Order.find({})
-    .select("createdAt totalAmount product paymentStatus user")
-    .sort({ createdAt: -1 })
-    .populate({
-      path: "user",
-      select: "username"
-    })
-    .populate(
-      {
-        path: "product",
-        select: "productImage name",
-      },
-    );
-
-  return res.status(200).json({
-    success: true,
-    allOrders,
-  });
-}
-
-module.exports = { addOrder, getUserOrder,getAllOrder };
+module.exports = { addOrder, getUserOrder, getAllOrder };

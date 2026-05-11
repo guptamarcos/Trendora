@@ -1,10 +1,10 @@
 const multer = require("multer");
 // const crypto = require("crypto");
 // const path = require("path");
-const ExpressError = require("./ExpressError.js");
-const { cloudStorage } = require("../cloudConfig.js");
+const ExpressError = require("../utils/ExpressError.js");
+const { cloudStorage } = require("../config/cloudConfig.js");
 
-// FOR STORING FILES IN LOCAL SYSTEM 
+// FOR STORING FILES IN LOCAL SYSTEM
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -23,7 +23,6 @@ const { cloudStorage } = require("../cloudConfig.js");
 // });
 
 const fileFilter = (req, file, cb) => {
- 
   const allowedMimeTypes = [
     "image/jpeg",
     "image/png",
@@ -36,14 +35,12 @@ const fileFilter = (req, file, cb) => {
   } else {
     cb(new ExpressError(400, "Only image files are allowed"), false);
   }
-
 };
-
 
 const upload = multer({
   storage: cloudStorage,
   limits: { fileSize: 2 * 1024 * 1024 },
-  fileFilter
+  fileFilter,
 });
 
 module.exports = upload;

@@ -87,8 +87,8 @@ function ProductDetails() {
 
   async function getRelatedProductsInfo() {
     try {
-      const category = product?.category || "Boys";
-      const res = await getRelatedProducts(category);
+      const productId = product?._id || "Boys";
+      const res = await getRelatedProducts(productId);
       setRelatedProducts(res?.data?.data);
     } catch (err) {
       const message = err?.response?.data?.message;

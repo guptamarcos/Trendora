@@ -1,7 +1,7 @@
 import { Filters, Product } from "./Index.jsx";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { getAllProductInfo } from "../api/productApi.js";
+import { getAllProducts } from "../api/productApi.js";
 
 function Collection() {
   const [allProducts, setAllProducts] = useState(null);
@@ -14,7 +14,7 @@ function Collection() {
 
   async function getProductInfo() {
     try {
-      const res = await getAllProductInfo();
+      const res = await getAllProducts();
       setAllProducts(res?.data?.data);
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";

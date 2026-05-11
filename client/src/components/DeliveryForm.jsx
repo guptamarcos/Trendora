@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { DeliveryAddressSchema } from "../schemas/AddressSchema.js";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { addOrder } from "../api/orderApi.js";
 import { toast } from "react-toastify";

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllOrder } from "../api/orderApi.js";
+import { getAllOrder } from "../api/adminApi.js";
 import { toast } from "react-toastify";
 
 function StatusDropdown({ value, onChange }) {
