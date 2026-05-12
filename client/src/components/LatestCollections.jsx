@@ -25,7 +25,7 @@ function LatestCollections(){
                 <hr className="w-12 border-t-2 border-black" />
             </h2>
             <p className="pt-2 text-sm font-outfit text-gray-500">Explore our latest collections, inspired by current trends,crafted to bring you style, comfort, and confidence every day.</p>
-            <div className="w-full grid grid-cols-5 gap-y-6 gap-x-5 mt-6">
+            <div className="w-full grid grid-cols-5 gap-y-8 gap-x-5 mt-6">
                 {products.length > 0 && products.map((product)=>{
                     return  <Product key={product._id} product={product}/>
                 })}

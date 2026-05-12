@@ -12,6 +12,7 @@ function Navbar() {
   const buttonRef = useRef(null);
   
   const { user } = useContext(UserContext);
+
   const itemsInCart = user?.cart?.length;
   const itemsInWishlist = user?.wishlist?.length === 0;
   
@@ -48,7 +49,7 @@ function Navbar() {
             Home
           </NavLink>
           <NavLink
-            to="/trendora/collection"
+            to="/trendora/collections"
             className={({ isActive }) =>
               `text-lg ${isActive ? "text-black" : "text-gray-500"}`
             }

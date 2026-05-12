@@ -14,7 +14,7 @@ function Heading({ textGray, textBlack, fontSize }) {
   );
 }
 
-function DeliveryDetail() {
+function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("stripe");
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
@@ -110,7 +110,7 @@ function DeliveryDetail() {
         </div>
 
         <div className="w-full text-right">
-          <button type="submit" form="deliveryAddressForm" onClick={()=> navigate("/trendora/allorders")}
+          <button type="submit" form="deliveryAddressForm" onClick={()=> navigate("/trendora/orders")}
             className="cursor-pointer px-8 py-2 bg-black text-gray-100">
             PLACE ORDER
           </button>
@@ -120,4 +120,4 @@ function DeliveryDetail() {
   );
 }
 
-export default DeliveryDetail;
+export default Checkout;

@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const UserDropDown = forwardRef((props, ref) => {
 
-  const { getUser } = useContext(UserContext);
+  const { user,getUser } = useContext(UserContext);
   const { setIsOpen } = useContext(UserDropDownContext);
   const navigate = useNavigate();
   
@@ -29,8 +29,8 @@ const UserDropDown = forwardRef((props, ref) => {
       ref={ref}>
       {/* User Info */}
       <div className="border-b pb-3 mb-3">
-        <p className="font-semibold text-gray-800">Demo</p>
-        <p className="text-sm text-gray-500 truncate">Demo@email.com</p>
+        <p className="font-semibold text-gray-800">{user?.username}</p>
+        <p className="text-sm text-gray-500 truncate">{user?.email}</p>
       </div>
 
       {/* Links */}
@@ -48,7 +48,7 @@ const UserDropDown = forwardRef((props, ref) => {
       </NavLink>
 
       <NavLink
-        to="/trendora/allorders"
+        to="/trendora/orders"
         className={({ isActive }) =>
           `flex items-center gap-2 p-2 rounded-md text-base transition ${
             isActive

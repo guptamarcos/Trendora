@@ -8,7 +8,7 @@ const {
   editProductInfo,
   deleteProduct,
 } = require("../controllers/productController.js");
-const wrapAsync = require("../utils/wrapAsync.js");
+const wrapAsync = require("../utils/WrapAsync.js");
 const upload = require("../middleware/multerMiddleware.js");
 
 // ALL THE ROUTES

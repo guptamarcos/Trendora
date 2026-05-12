@@ -8,10 +8,10 @@ import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
 function AdminEditProduct() {
-  const [ product, setProduct ] = useState("");
+  const [product, setProduct] = useState("");
   const { productId } = useParams();
-  const [ preview, setPreview ] = useState();
-  const [ file, setFile ] = useState("");
+  const [preview, setPreview] = useState();
+  const [file, setFile] = useState("");
 
   async function getProduct() {
     try {
@@ -27,7 +27,12 @@ function AdminEditProduct() {
     getProduct();
   }, []);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
     resolver: zodResolver(ProductSchema),
   });
 
@@ -35,7 +40,7 @@ function AdminEditProduct() {
     try {
       const formData = new FormData();
 
-      if(file){
+      if (file) {
         formData.append("productImage", file);
       }
 
@@ -43,7 +48,7 @@ function AdminEditProduct() {
         formData.append(key, data[key]);
       });
 
-      await editProductInfo(formData,product?._id);
+      await editProduct(formData, product?._id);
       toast.success("Product edited successfully");
       getProduct();
       reset();
@@ -57,7 +62,8 @@ function AdminEditProduct() {
     if (product) {
       reset({
         name: product.name,
-        category: product.category.charAt(0).toUpperCase() + product.category.slice(1),
+        category:
+          product.category.charAt(0).toUpperCase() + product.category.slice(1),
         description: product.description,
         price: product.price.toString(),
         stock: product.stock.toString(),
@@ -67,7 +73,6 @@ function AdminEditProduct() {
     }
   }, [product, reset]);
 
-  
   return (
     <main className="w-full min-h-screen p-8 bg-gray-100">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -82,7 +87,9 @@ function AdminEditProduct() {
         </div>
 
         {/* FORM */}
-        <form onSubmit={handleSubmit(formData)} encType="multipart/form-data"
+        <form
+          onSubmit={handleSubmit(formData)}
+          encType="multipart/form-data"
           className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-8"
         >
           {/* PRODUCT DETAILS */}
@@ -94,8 +101,11 @@ function AdminEditProduct() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* NAME */}
               <div className="flex flex-col gap-1">
-                <input type="text" placeholder="Product Name" {...register("name")}
-                  className="border border-gray-200 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black" 
+                <input
+                  type="text"
+                  placeholder="Product Name"
+                  {...register("name")}
+                  className="border border-gray-200 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 {errors.name && (
                   <p className="text-red-500 text-sm">{errors.name.message}</p>
@@ -124,7 +134,10 @@ function AdminEditProduct() {
 
             {/* DESCRIPTION */}
             <div className="mt-4 flex flex-col gap-1">
-              <textarea placeholder="Product Description" rows="4" {...register("description")}
+              <textarea
+                placeholder="Product Description"
+                rows="4"
+                {...register("description")}
                 className="w-full border border-gray-200 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
               ></textarea>
               {errors.description && (
@@ -143,7 +156,10 @@ function AdminEditProduct() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="flex flex-col gap-1">
-                <input type="number" placeholder="Price (₹)" {...register("price")}
+                <input
+                  type="number"
+                  placeholder="Price (₹)"
+                  {...register("price")}
                   className="border border-gray-200 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 {errors.price && (
@@ -152,7 +168,10 @@ function AdminEditProduct() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <input type="number" placeholder="Stock Quantity" {...register("stock")}
+                <input
+                  type="number"
+                  placeholder="Stock Quantity"
+                  {...register("stock")}
                   className="border border-gray-200 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 {errors.stock && (
@@ -193,31 +212,37 @@ function AdminEditProduct() {
               Product Image
             </h2>
 
-          
             {preview && (
-              <img src={preview} alt="Product"
+              <img
+                src={preview}
+                alt="Product"
                 className="w-32 h-32 object-cover rounded-md mb-3 border"
               />
             )}
 
-            <input type="file" accept="image/*"
+            <input
+              type="file"
+              accept="image/*"
               className="border border-gray-200 px-4 py-2 rounded-md bg-white"
-              onChange={(e) =>{ 
+              onChange={(e) => {
                 setFile(e.target.files[0]);
-                setPreview(URL.createObjectURL(e.target.files[0]))
+                setPreview(URL.createObjectURL(e.target.files[0]));
               }}
             />
           </section>
 
           {/* ACTION BUTTONS */}
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
-            <button type="button" onClick={() => reset()}
+            <button
+              type="button"
+              onClick={() => reset()}
               className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition"
             >
               Cancel
             </button>
 
-            <button type="submit"
+            <button
+              type="submit"
               className="cursor-pointer px-5 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition"
             >
               Edit Product

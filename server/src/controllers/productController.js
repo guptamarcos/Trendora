@@ -4,200 +4,64 @@ const {
   productSchemaValidator,
 } = require("../validations/productSchemaValidator.js");
 const cloudinary = require("cloudinary").v2;
+const productServices = require("../services/productServices.js");
 
 
 async function getProductInfo(req, res) {
+
   const { productId } = req.params;
 
-  const product = await Product.find({ _id: productId });
-  if (!product) {
-    return res.status(400).json({
-      success: false,
-      message: "Product not found",
-    });
-  }
+  const result = await productServices.getProductInfo(productId);
 
-  return res.status(200).json({
-    success: true,
-    data: product,
-  });
+  return res.status(200).json(result);
 }
 
 async function getBestSeller(req, res) {
-  const bestSellers = await Product.find({})
-    .select("productImage rating price name")
-    .sort({ "rating.average": -1 })
-    .limit(5);
 
-  return res.status(200).json({
-    success: true,
-    data: bestSellers,
-  });
+  const result = await productServices.getBestSeller();
+  
+  return res.status(200).json(result);
 }
 
 async function getRelatedProducts(req, res) {
   let { productId } = req.params;
-  const product = await Product.findById(productId);
-  if (!product) {
-    return res.status(400).json({
-      message: "Product not found",
-    });
-  }
+  
+  const result = await productServices.getRelatedProducts(productId);
 
-  const category = product.category;
-  const relatedProducts = await Product.find({ category })
-    .select("productImage category price name")
-    .limit(5);
-
-  return res.status(200).json({
-    success: true,
-    data: relatedProducts,
-  });
+  return res.status(200).json(result);
 }
 
 async function getAllProducts(req, res) {
-  const allProducts = await Product.find({});
-  // console.log(allProducts);
-  res.status(200).json({
-    success: true,
-    data: allProducts,
-  });
+  const result = await productServices.getAllProducts();
+  
+  res.status(200).json(result);
 }
 
 async function latestCollections(req, res) {
-  const products = await Product.find()
-    .select("productImage updatedAt price name")
-    .sort({ updatedAt: -1 })
-    .limit(10);
-
-  return res.status(200).json({
-    success: true,
-    data: products,
-  });
+  const result = await productServices.latestCollections();
+ 
+  return res.status(200).json(result);
 }
 
 async function addProduct(req, res) {
-  if (typeof req.body.sizes === "string") {
-    req.body.sizes = req.body.sizes.split(",");
-  }
+  const result = await productServices.addProduct(req.body,req.file);
 
-  const { error, value } = productSchemaValidator.validate(req.body, {
-    abortEarly: false,
-  });
-
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.details[0].message,
-    });
-  }
-
-  const { name, category, description, sizes, price, stock } = value;
-  const { filename, path } = req.file;
-
-  const cratedProduct = await Product.create({
-    name,
-    category,
-    description,
-    sizes,
-    price,
-    stock,
-    productImage: { url: path, filename: filename },
-  });
-
-  return res.status(201).json({
-    success: true,
-    message: "Product added successfully",
-  });
+  return res.status(201).json(result);
 }
 
 async function editProductInfo(req, res) {
   const { productId } = req.params;
 
-  const product = await Product.findById(productId);
-  if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: "Product not found",
-    });
-  }
+  const result = await productServices.editProductInfo(req.body,req.file,productId);
 
-  // Handle sizes
-  if (typeof req.body.sizes === "string") {
-    req.body.sizes = req.body.sizes.split(",");
-  }
-
-  // Validation
-  const { error, value } = productSchemaValidator.validate(req.body, {
-    abortEarly: false,
-  });
-
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.details[0].message,
-    });
-  }
-
-  const { name, category, description, sizes, price, stock } = value;
-
-  // Prepare update object
-  const updateData = {
-    name,
-    category,
-    description,
-    sizes,
-    price,
-    stock,
-  };
-
-  const file = req.file;
-
-  // If new image uploaded
-  if (file) {
-    const { filename, path } = file;
-
-    // delete old image FIRST
-    if (product.productImage?.filename) {
-      await cloudinary.uploader.destroy(product.productImage.filename);
-    }
-
-    updateData.productImage = {
-      url: path,
-      filename: filename,
-    };
-  }
-
-  // Single DB call
-  await Product.findByIdAndUpdate(productId, updateData, {
-    new: true,
-    runValidators: true,
-  });
-
-  return res.status(200).json({
-    success: true,
-    message: "Product Information edited successfully",
-  });
+  return res.status(200).json(result);
 }
 
 async function deleteProduct(req, res) {
   const { productId } = req.params;
+  const result = await productServices.deleteProduct(productId);
 
-  const findProduct = await Product.find({ _id: productId });
-
-  if (!findProduct) {
-    return res.status(404).json({
-      success: false,
-      message: "Product not found",
-    });
-  }
-
-  const deleteProduct = await Product.deleteOne({ _id: productId });
-
-  return res.status(200).json({
-    success: true,
-    message: "Product deleted successfully",
-  });
+  return res.status(200).json(result);
 }
 
 

@@ -2,6 +2,7 @@ const ExpressError = require("../utils/ExpressError");
 const User = require("../models/userSchema.js");
 const jwt = require("jsonwebtoken");
 
+
 async function verifyAndCheckUserToken(req, res, next) {
   try {
     const { token } = req.signedCookies;

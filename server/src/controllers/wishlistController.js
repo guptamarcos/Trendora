@@ -1,64 +1,30 @@
 const Product = require("../models/productSchema.js");
 const User = require("../models/userSchema.js");
+const wishlistServices = require("../services/wishlistServices.js");
 
 async function getWishlistItems(req, res) {
-  const userId = req.user._id;
 
-  const wishlist = await User.findById(userId).select("wishlist").populate({
-    path: "wishlist.product",
-    select: "productImage name price",
-  });
+  const result = await wishlistServices.getWishlistItems(req.user._id);
 
-  return res.status(200).json({
-    success: true,
-    data: wishlist,
-  });
+  return res.status(200).json(result);
 }
 
 async function addToWishlist(req, res) {
-  const { productId, size, quantity } = req.body;
 
-  const userId = req.user;
+  const result = await wishlistServices.addToWishlist(req.body, req.user._id);
 
-  console.log(userId);
-  await User.findByIdAndUpdate(
-    userId,
-    {
-      $push: {
-        wishlist: {
-          product: productId,
-          size,
-          quantity,
-        },
-      },
-    },
-    { returnDocument: "after" },
-  );
-
-  return res.status(201).json({
-    success: true,
-    message: "Product added to wishlist",
-  });
+  return res.status(201).json(result);
 }
 
 
 async function removeWishlistItem(req, res) {
+
   const userId = req.user._id;
   const { itemId } = req.params;
 
-  const item = await User.updateOne(
-    { _id: userId },
-    {
-      $pull: {
-        wishlist: { _id: itemId },
-      },
-    },
-  );
+  const result = await wishlistServices.removeWishlistItem(userId,itemId);
 
-  return res.status(200).json({
-    success: true,
-    message: "Item removed successfully",
-  });
+  return res.status(200).json(result);
 }
 
 module.exports = {

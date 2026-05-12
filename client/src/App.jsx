@@ -1,12 +1,34 @@
 import "./App.css";
 import {
-  Home, AllOrders, Cart, Layout, About, Collection, Contact, Login, Signup, ProductInfo, Profile,
-  DeliveryDetail, Wishlist, AdminPageLayout, AdminDashboard, AllUsersInfo, AdminProductInfo, AdminOrderInfo,
-  AdminAddProduct, AdminProductInfoEditForm, AdminEditProduct
+  Home,
+  AllOrders,
+  Cart,
+  Layout,
+  About,
+  Collection,
+  Contact,
+  Login,
+  Signup,
+  ProductInfo,
+  Profile,
+  Checkout,
+  Wishlist,
+  AdminPageLayout,
+  AdminDashboard,
+  AllUsersInfo,
+  AdminProductInfo,
+  AdminOrderInfo,
+  AdminAddProduct,
+  AdminEditProduct,
 } from "./components/Index.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  UserProtectedRoutes,
+  AdminProtectedRoutes,
+  CheckUserAuth,
+} from "./routes/ProtectedRoutes.jsx";
 
 function App() {
   return (
@@ -17,31 +39,36 @@ function App() {
 
         <Route path="/trendora" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="collection" element={<Collection />} />
+          <Route path="collections" element={<Collection />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="products/:productId" element={<ProductInfo />} />
-          <Route path="deliveryDetail" element={<DeliveryDetail />} />
-          <Route path="allOrders" element={<AllOrders />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="wishlist" element={<Wishlist />} />
+
+          <Route element={<UserProtectedRoutes />}>
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="orders" element={<AllOrders />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="wishlist" element={<Wishlist />} />
+          </Route>
         </Route>
 
-        <Route path="/trendora" element={<AdminPageLayout />}>
-          <Route path="admin" element={<AdminDashboard/>} />
-          <Route path="allUsers" element={<AllUsersInfo />} />
-          <Route path="allProducts" element={<AdminProductInfo />} />
-          <Route path="allOrdersInfo" element={<AdminOrderInfo />} />
-          <Route path="addProduct" element={<AdminAddProduct/>} />
-          <Route path="editProductInfo" element={<AdminProductInfoEditForm/>} />
-          <Route path="admin/profile" element={<Profile/>} />
-          <Route path="admin/:productId/edit" element={<AdminEditProduct/>} />
-
+        <Route path="/trendora/admin" element={<AdminPageLayout />}>
+          <Route element={<AdminProtectedRoutes />}>
+            <Route path="" element={<AdminDashboard />} />
+            <Route path="users" element={<AllUsersInfo />} />
+            <Route path="products" element={<AdminProductInfo />} />
+            <Route path="products/new" element={<AdminAddProduct />} />
+            <Route path="orders" element={<AdminOrderInfo />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path=":productId/edit" element={<AdminEditProduct />} />
+          </Route>
         </Route>
 
-        <Route path="/trendora/signup" element={<Signup />} />
-        <Route path="/trendora/login" element={<Login />} />
+        <Route element={<CheckUserAuth />}>
+          <Route path="/trendora/signup" element={<Signup />} />
+          <Route path="/trendora/login" element={<Login />} />
+        </Route>
       </Routes>
 
       <ToastContainer />

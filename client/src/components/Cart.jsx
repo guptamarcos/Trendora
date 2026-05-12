@@ -85,7 +85,7 @@ function Cart() {
             </p>
 
             <Link
-              to="/trendora/deliveryDetail"
+              to="/trendora/checkout"
               className="inline-block mt-6 px-8 py-2 bg-black text-gray-100"
             >
               PROCEED TO CHECKOUT

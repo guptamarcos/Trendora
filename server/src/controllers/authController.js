@@ -1,76 +1,15 @@
-const User = require("../models/userSchema.js");
-const bcrypt = require("bcrypt");
-const {
-  signupSchemaValidator,
-  loginSchemaValidator,
-} = require("../validations/userSchemaValidator.js");
+const authServices = require("../services/authServices.js");
 
 async function register(req, res) {
-  // VALIDATING REQUEST BODY
-  const { error, value } = signupSchemaValidator.validate(req.body, {
-    abortEarly: false,
-  });
+  const result = await authServices.registerUser(req.body);
 
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.details[0].message,
-    });
-  }
-
-  const { username, email, password } = value;
-  const findUser = await User.findOne({ email });
-  if (findUser) {
-    return res.status(400).json({
-      success: false,
-      message: "Email is already exist!!",
-    });
-  }
-
-  const createdUser = await User.create({ username, email, password });
-
-  return res.status(201).json({
-    success: true,
-    message: "User created successfully !!",
-  });
+  return res.status(201).json(result);
 }
 
 async function login(req, res) {
-  const { error, value } = loginSchemaValidator.validate(req.body, {
-    abortEarly: false,
-  });
-
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.details[0].message,
-    });
-  }
-
-  const { email, password } = value;
-  const findUser = await User.findOne({ email }).select("+password");
-
-  if (!findUser) {
-    return res.status(404).json({
-      success: false,
-      message: "Email not exist",
-    });
-  }
-
-  const checkPassword = await bcrypt.compare(password, findUser.password);
-
-  if (!checkPassword) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid Credentials",
-    });
-  }
-
-  await User.findByIdAndUpdate(findUser._id, { $set: { status: "Active" } });
-
-  const token = findUser.generateToken();
-
-  res.cookie("token", token, {
+  const result = await authServices.loginUser(req.body);
+  
+  res.cookie("token", result?.token, {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
@@ -79,15 +18,14 @@ async function login(req, res) {
   });
 
   return res.status(200).json({
-    success: true,
-    message: "User logged in successfully",
+    success: result?.success,
+    message: result?.message,
   });
 }
 
 async function logout(req, res) {
-  const user = req.user;
-
-  await User.findByIdAndUpdate(user._id, { $set: { status: "Inactive" } });
+  const userId = req.user._id;
+  const result = await authServices.logoutUser(userId);
 
   res.clearCookie("token", {
     httpOnly: true,
@@ -96,10 +34,7 @@ async function logout(req, res) {
     signed: true,
   });
 
-  return res.status(200).json({
-    success: true,
-    message: "User logout successfully",
-  });
+  return res.status(200).json(result);
 }
 
 module.exports = {
