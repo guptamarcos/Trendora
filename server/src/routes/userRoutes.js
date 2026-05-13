@@ -8,12 +8,14 @@ const {
   uploadProfileImage,
 } = require("../controllers/userController.js");
 const upload = require("../middleware/multerMiddleware.js");
+const csrfProtection = require("../config/csrfConfig.js");
 
 router.get("/me", wrapAsync(getUser));
-router.patch("/me", wrapAsync(updateProfileInfo));
-router.patch("/me/password", wrapAsync(updateProfilePassword));
+router.patch("/me", csrfProtection, wrapAsync(updateProfileInfo));
+router.patch("/me/password",csrfProtection, wrapAsync(updateProfilePassword));
 router.patch(
   "/me/avatar",
+  csrfProtection,
   upload.single("profileImage"),
   wrapAsync(uploadProfileImage),
 );

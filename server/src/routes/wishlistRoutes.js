@@ -6,9 +6,10 @@ const {
   getWishlistItems,
   removeWishlistItem,
 } = require("../controllers/wishlistController.js");
+const csrfProtection = require("../config/csrfConfig.js");
 
 router.get("/", wrapAsync(getWishlistItems));
-router.post("/", wrapAsync(addToWishlist));
-router.delete("/:itemId", wrapAsync(removeWishlistItem));
+router.post("/",csrfProtection, wrapAsync(addToWishlist));
+router.delete("/:itemId", csrfProtection, wrapAsync(removeWishlistItem));
 
 module.exports = router;

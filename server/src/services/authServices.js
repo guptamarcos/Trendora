@@ -4,7 +4,8 @@ const {
   signupSchemaValidator,
   loginSchemaValidator,
 } = require("../validations/userSchemaValidator.js");
-const { loginEmail } = require("../services/emailServices.js");
+const { loginEmail } = require("./emailServices.js");
+const { loginSms } = require("./smsServices.js");
 const ExpressError = require("../utils/ExpressError.js");
 
 async function registerUser(body) {
@@ -58,6 +59,12 @@ async function loginUser(body) {
   
   if (!emailSent) {
     console.log("Login email could not be sent");
+  }
+
+  const smsSent = await loginSms();
+  
+  if (!smsSent) {
+    console.log("Login Sms could not be sent");
   }
   
   await User.findByIdAndUpdate(findUser._id, { $set: { status: "Active" } });

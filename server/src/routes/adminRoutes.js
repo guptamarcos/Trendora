@@ -10,19 +10,21 @@ const {
 } = require("../controllers/productController.js");
 const wrapAsync = require("../utils/WrapAsync.js");
 const upload = require("../middleware/multerMiddleware.js");
+const csrfProtection = require("../config/csrfConfig.js");
 
 // ALL THE ROUTES
 
 router.get("/users", wrapAsync(getAllUser));
 router.get("/orders", wrapAsync(getAllOrder));
 router.get("/dashboard", wrapAsync(DashboardInfo));
-router.post("/products", upload.single("productImage"), wrapAsync(addProduct));
+router.post("/products", csrfProtection,upload.single("productImage"), wrapAsync(addProduct));
 router.patch(
   "/products/:productId",
+  csrfProtection,
   upload.single("productImage"),
   wrapAsync(editProductInfo),
 );
-router.delete("/users/:userId", wrapAsync(deleteUser));
-router.delete("/products/:productId", wrapAsync(deleteProduct));
+router.delete("/users/:userId",csrfProtection, wrapAsync(deleteUser));
+router.delete("/products/:productId",csrfProtection, wrapAsync(deleteProduct));
 
 module.exports = router;
