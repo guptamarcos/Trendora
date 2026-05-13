@@ -75,7 +75,7 @@ function Navbar() {
         </div>
 
         {/* OPTIONS BEFORE LOGIN  */}
-        {!user && <div>
+        {((!user) || (user?.role === "admin")) && <div>
           <NavLink to="/trendora/login" className="bg-transparent text-base mr-2 border px-[0.8rem] py-[0.5rem] rounded-xl border-[#CBD5E1] text-[#374151] hover:bg-[#F1F5F9] hover:text-[#1D4ED8]">
             <FiLogIn className="inline-block mr-2 text-xl" />
             Log In
@@ -88,7 +88,7 @@ function Navbar() {
         }
 
         {/* OPTIONS AFTER LOGIN */}
-        {user && <div className="flex items-center gap-8 relative">
+        {(user &&  user?.role !== "admin") && <div className="flex items-center gap-8 relative">
           <NavLink to="/trendora/cart">
             <HiOutlineShoppingBag size={26} color="black" />
           </NavLink>

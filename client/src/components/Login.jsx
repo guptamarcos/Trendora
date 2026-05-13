@@ -1,17 +1,19 @@
-import { Link , useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "../schemas/LoginSchema.js";
 import { toast } from "react-toastify";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext.jsx";
 import { login } from "../api/authApi.js";
+import { ClipLoader } from "react-spinners";
 
 // REUSABLE BACK NAVIGATION BUTTON COMPONENT
 function BackBtn() {
   return (
-    <Link to="/trendora"
+    <Link
+      to="/trendora"
       className="absolute top-12 left-12 px-4 py-2 rounded-lg border-2 border-gray-400 flex items-center"
     >
       <FaArrowLeft style={{ paddingRight: "0.25rem" }} /> Back
@@ -25,42 +27,51 @@ const buttonStyling = `w-full text-lg bg-amber-400 cursor-pointer py-[0.5rem] ro
 const formStyling = `w-[27.5%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
 
 function Login() {
-  
-  const { register , handleSubmit, formState: {errors} } = useForm({resolver:zodResolver(LoginSchema)});
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(LoginSchema) });
   const navigate = useNavigate();
-  const { user, getUser } = useContext(UserContext);
+  const { getUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
 
-  async function formData(data){
-    try{
-      await login({ email: data.email, password: data.password }); 
+  async function formData(data) {
+    try {
+      setLoading(true);
+      await login({ email: data.email, password: data.password });
       const loggedUser = await getUser();
       toast.success("Welcome back! You're now logged in.");
-      
-      if(loggedUser?.role === "admin"){
+
+      if (loggedUser?.role === "admin") {
         navigate("/trendora/admin");
-      }else{
+      } else {
         navigate("/trendora");
       }
-      
-    }catch(err){
+    } catch (err) {
       const message = err?.response?.data?.message || "Something went Wrong !!";
       toast.error(message);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     // MAIN CONTAINER: CENTERS FORM VERTICALLY AND HORIZONTALLY
+
     <main className="h-screen flex justify-center items-center">
-      
+      {loading && <ClipLoader size={35} />}
       {/* LOGIN FORM CONTAINER */}
-      <form className={formStyling} onSubmit={handleSubmit(formData)}>
-        
+      {!loading && <form className={formStyling} onSubmit={handleSubmit(formData)}>
         {/* FORM HEADING */}
         <h1 className="text-center text-4xl font-bold mb-6">LogIn</h1>
-        
+
         {/* EMAIL INPUT FIELD */}
         <div className="py-2">
-          <label htmlFor="email" className="text-xl">Email</label> <br />
+          <label htmlFor="email" className="text-xl">
+            Email
+          </label>{" "}
+          <br />
           <input
             id="email"
             type="email"
@@ -68,12 +79,17 @@ function Login() {
             className={inputStyling}
             {...register("email")}
           />
-            {errors.email && (<p className="text-red-500 text-sm">{errors.email.message}</p>)}
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email.message}</p>
+          )}
         </div>
-        
+
         {/* PASSWORD INPUT FIELD */}
         <div className="py-2">
-          <label htmlFor="password" className="text-xl">Password</label> <br />
+          <label htmlFor="password" className="text-xl">
+            Password
+          </label>{" "}
+          <br />
           <input
             id="password"
             type="password"
@@ -81,7 +97,9 @@ function Login() {
             className={inputStyling}
             {...register("password")}
           />
-          {errors.password && (<p className="text-red-500 text-sm">{errors.password.message}</p>)}
+          {errors.password && (
+            <p className="text-red-500 text-sm">{errors.password.message}</p>
+          )}
         </div>
 
         {/* SUBMIT BUTTON */}
@@ -94,11 +112,10 @@ function Login() {
             Sign Up
           </Link>
         </h6>
+      </form> }
 
-      </form>
-      
       {/* BACK BUTTON COMPONENT */}
-      <BackBtn />
+      {!loading && <BackBtn /> }
     </main>
   );
 }

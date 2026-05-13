@@ -4,8 +4,7 @@ import { UserContext } from "../context/UserContext";
 
 export function UserProtectedRoutes() {
   const { user } = useContext(UserContext);
-  const userRole = user?._doc?.role;
-
+  
   if (!user) {
     return <Navigate to="/trendora/login" replace />;
   }
@@ -35,11 +34,11 @@ export function CheckUserAuth(){
     const { user } = useContext(UserContext);
 
     if(user && user?.role === "user"){
-        return <Navigate to="/trendora" replace/>
+      return <Navigate to="/trendora" replace/>
     }
     
     if(user && user?.role === "admin"){
-        return <Navigate to="/trendora/admin" replace/>
+      return <Navigate to="/trendora/admin" replace/>
     }
 
     return <Outlet/>;
