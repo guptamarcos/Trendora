@@ -1,26 +1,29 @@
 import "./App.css";
 import {
   Home,
-  AllOrders,
-  Cart,
   Layout,
+  Login,
+  Signup,
+  AdminDashboard,
+} from "./components/Index.jsx";
+import {
+  Cart,
+  AllOrders,
   About,
   Collection,
   Contact,
-  Login,
-  Signup,
   ProductInfo,
   Profile,
   Checkout,
   Wishlist,
   AdminPageLayout,
-  AdminDashboard,
-  AllUsersInfo,
+  AdminUsersInfo,
   AdminProductInfo,
   AdminOrderInfo,
   AdminAddProduct,
   AdminEditProduct,
-} from "./components/Index.jsx";
+} from "./routes/LazyRoutes.jsx";
+import { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -29,6 +32,7 @@ import {
   AdminProtectedRoutes,
   CheckUserAuth,
 } from "./routes/ProtectedRoutes.jsx";
+import { HomeSkeleton } from "./components/skeletons/Index.jsx";
 
 function App() {
   return (
@@ -56,7 +60,7 @@ function App() {
         <Route path="/trendora/admin" element={<AdminPageLayout />}>
           <Route element={<AdminProtectedRoutes />}>
             <Route path="" element={<AdminDashboard />} />
-            <Route path="users" element={<AllUsersInfo />} />
+            <Route path="users" element={<AdminUsersInfo />} />
             <Route path="products" element={<AdminProductInfo />} />
             <Route path="products/new" element={<AdminAddProduct />} />
             <Route path="orders" element={<AdminOrderInfo />} />
@@ -69,8 +73,9 @@ function App() {
           <Route path="/trendora/signup" element={<Signup />} />
           <Route path="/trendora/login" element={<Login />} />
         </Route>
-      </Routes>
 
+        {/* <Route path="/skeleton" element={<ProductDetailsSkeleton />} /> */}
+      </Routes>
       <ToastContainer />
     </>
   );

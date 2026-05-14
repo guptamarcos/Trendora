@@ -55,17 +55,17 @@ async function loginUser(body) {
     throw new ExpressError(401, "Invalid email or password");
   }
   
-  const emailSent = await loginEmail(email);
+  // const emailSent = await loginEmail(email);
   
-  if (!emailSent) {
-    console.log("Login email could not be sent");
-  }
+  // if (!emailSent) {
+  //   console.log("Login email could not be sent");
+  // }
 
-  const smsSent = await loginSms();
+  // const smsSent = await loginSms();
   
-  if (!smsSent) {
-    console.log("Login Sms could not be sent");
-  }
+  // if (!smsSent) {
+  //   console.log("Login Sms could not be sent");
+  // }
   
   await User.findByIdAndUpdate(findUser._id, { $set: { status: "Active" } });
   

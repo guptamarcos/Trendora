@@ -8,6 +8,7 @@ import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext.jsx";
 import { login } from "../api/authApi.js";
 import { ClipLoader } from "react-spinners";
+import { HomeSkeleton } from "./skeletons/Index.jsx";
 
 // REUSABLE BACK NAVIGATION BUTTON COMPONENT
 function BackBtn() {
@@ -58,65 +59,70 @@ function Login() {
 
   return (
     // MAIN CONTAINER: CENTERS FORM VERTICALLY AND HORIZONTALLY
+    <>
+      {loading && <HomeSkeleton />}
+      {!loading && (
+        <main className="h-screen flex justify-center items-center">
+          {/* LOGIN FORM CONTAINER */}
+          <form className={formStyling} onSubmit={handleSubmit(formData)}>
+            {/* FORM HEADING */}
+            <h1 className="text-center text-4xl font-bold mb-6">LogIn</h1>
 
-    <main className="h-screen flex justify-center items-center">
-      {loading && <ClipLoader size={35} />}
-      {/* LOGIN FORM CONTAINER */}
-      {!loading && <form className={formStyling} onSubmit={handleSubmit(formData)}>
-        {/* FORM HEADING */}
-        <h1 className="text-center text-4xl font-bold mb-6">LogIn</h1>
+            {/* EMAIL INPUT FIELD */}
+            <div className="py-2">
+              <label htmlFor="email" className="text-xl">
+                Email
+              </label>{" "}
+              <br />
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter Your Email"
+                className={inputStyling}
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
+            </div>
 
-        {/* EMAIL INPUT FIELD */}
-        <div className="py-2">
-          <label htmlFor="email" className="text-xl">
-            Email
-          </label>{" "}
-          <br />
-          <input
-            id="email"
-            type="email"
-            placeholder="Enter Your Email"
-            className={inputStyling}
-            {...register("email")}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
-        </div>
+            {/* PASSWORD INPUT FIELD */}
+            <div className="py-2">
+              <label htmlFor="password" className="text-xl">
+                Password
+              </label>{" "}
+              <br />
+              <input
+                id="password"
+                type="password"
+                placeholder="Enter Your Password"
+                className={inputStyling}
+                {...register("password")}
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
 
-        {/* PASSWORD INPUT FIELD */}
-        <div className="py-2">
-          <label htmlFor="password" className="text-xl">
-            Password
-          </label>{" "}
-          <br />
-          <input
-            id="password"
-            type="password"
-            placeholder="Enter Your Password"
-            className={inputStyling}
-            {...register("password")}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
-          )}
-        </div>
+            {/* SUBMIT BUTTON */}
+            <button className={buttonStyling}>LogIn</button>
 
-        {/* SUBMIT BUTTON */}
-        <button className={buttonStyling}>LogIn</button>
+            {/* REDIRECT LINK TO SIGNUP PAGE */}
+            <h6 className="text-center text-lg">
+              Don't have an account?{" "}
+              <Link to="/trendora/signup" className="text-blue-600">
+                Sign Up
+              </Link>
+            </h6>
+          </form>
 
-        {/* REDIRECT LINK TO SIGNUP PAGE */}
-        <h6 className="text-center text-lg">
-          Don't have an account?{" "}
-          <Link to="/trendora/signup" className="text-blue-600">
-            Sign Up
-          </Link>
-        </h6>
-      </form> }
-
-      {/* BACK BUTTON COMPONENT */}
-      {!loading && <BackBtn /> }
-    </main>
+          {/* BACK BUTTON COMPONENT */}
+          <BackBtn />
+        </main>
+      )}
+    </>
   );
 }
 

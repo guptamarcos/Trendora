@@ -114,7 +114,7 @@ function AdminOrderInfo() {
   useEffect(() => {
     fetchOrders();
   }, []);
-
+  console.log(orders);
   return (
     <div className="w-full min-h-screen p-6 bg-gray-100">
       <div className="max-w-6xl mx-auto space-y-6">

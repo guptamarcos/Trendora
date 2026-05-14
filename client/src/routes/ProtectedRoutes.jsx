@@ -3,8 +3,12 @@ import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
 
 export function UserProtectedRoutes() {
-  const { user } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext);
   
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   if (!user) {
     return <Navigate to="/trendora/login" replace />;
   }

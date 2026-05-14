@@ -10,6 +10,7 @@ import { useContext } from "react";
 import { UserContext } from "../context/Index.jsx";
 import { ClipLoader } from "react-spinners";
 
+
 function SizeBox({ text, selectedSize, setSelectedSize }) {
   function handleSelectSize({ text }) {
     const newSelectedSize = Object.keys(selectedSize).reduce((acc, val) => {
@@ -60,18 +61,16 @@ function RelatedProducts({ relatedProducts }) {
   );
 }
 
-function ProductDetails() {
+function ProductDetails({setLoading}) {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
   const { user, getUser } = useContext(UserContext);
-  const [loading, setLoading] = useState(false);
 
   async function getProduct() {
     try {
-      setLoading(true);
       let res = await getProductInfo(productId);
       setProduct(res?.data?.data[0]);
       const sizes = res?.data?.data[0]?.sizes;
@@ -161,114 +160,118 @@ function ProductDetails() {
   }, [product?.category]);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16">
-      {loading && <ClipLoader size={35} />}
-      {/* ================= PRODUCT SECTION ================= */}
-      {!loading && (
-        <section className="grid md:grid-cols-2 gap-12">
-          {/*PRODUCT IMAGE */}
-          <div className="flex justify-center items-start cursor-pointer hover:scale-101 transition">
-            <img
-              src={product?.productImage?.url}
-              alt="Product"
-              className="h-[70vh] w-full max-w-md object-cover rounded-xl shadow-md"
-            />
-          </div>
+    <>
+      
+        <div className="max-w-7xl mx-auto px-6 py-16">
+          {/* ================= PRODUCT SECTION ================= */}
 
-          {/* PRODUCT DETAILS */}
-          <div className="flex flex-col justify-evenly">
-            <h2 className="text-3xl font-semibold text-gray-800">
-              {product?.name}
-            </h2>
-
-            {/* RATINGS */}
-            <div className="flex items-center gap-2">
-              <FaStar className="text-yellow-400" />
-              <FaStar className="text-yellow-400" />
-              <FaStar className="text-yellow-400" />
-              <FaStar className="text-yellow-400" />
-              <FaStar className="text-gray-300" />
-              <span className="text-gray-600 text-sm">
-                {product?.rating?.average || "No ratings"}
-              </span>
+          <section className="grid md:grid-cols-2 gap-12">
+            {/*PRODUCT IMAGE */}
+            <div className="flex justify-center items-start cursor-pointer hover:scale-101 transition">
+              <img
+                src={product?.productImage?.url}
+                alt="Product"
+                className="h-[70vh] w-full max-w-md object-cover rounded-xl shadow-md"
+              />
             </div>
 
-            {/* Price */}
-            <h5 className="text-2xl font-bold text-black">
-              ₹{product?.price || "N/A"}
-            </h5>
+            {/* PRODUCT DETAILS */}
+            <div className="flex flex-col justify-evenly">
+              <h2 className="text-3xl font-semibold text-gray-800">
+                {product?.name}
+              </h2>
 
-            <hr className="border-gray-200" />
-
-            {/* Description */}
-            <p className="text-gray-600 leading-relaxed">
-              {product?.description}
-            </p>
-
-            {/* Sizes */}
-            <div>
-              <h6 className="font-semibold text-gray-700 mb-3">Select Size</h6>
-
-              <div className="flex flex-wrap gap-3">
-                {product?.sizes?.length > 0 &&
-                  product?.sizes?.map((sizeVal) => (
-                    <SizeBox
-                      key={sizeVal}
-                      text={sizeVal}
-                      selectedSize={selectedSize}
-                      setSelectedSize={setSelectedSize}
-                    />
-                  ))}
+              {/* RATINGS */}
+              <div className="flex items-center gap-2">
+                <FaStar className="text-yellow-400" />
+                <FaStar className="text-yellow-400" />
+                <FaStar className="text-yellow-400" />
+                <FaStar className="text-yellow-400" />
+                <FaStar className="text-gray-300" />
+                <span className="text-gray-600 text-sm">
+                  {product?.rating?.average || "No ratings"}
+                </span>
               </div>
-            </div>
 
-            {/* QUANTITY */}
-            <div>
-              <h6 className="font-semibold text-gray-700 mb-3">Quantity</h6>
+              {/* Price */}
+              <h5 className="text-2xl font-bold text-black">
+                ₹{product?.price || "N/A"}
+              </h5>
 
-              <div className="flex items-center gap-4">
+              <hr className="border-gray-200" />
+
+              {/* Description */}
+              <p className="text-gray-600 leading-relaxed">
+                {product?.description}
+              </p>
+
+              {/* Sizes */}
+              <div>
+                <h6 className="font-semibold text-gray-700 mb-3">
+                  Select Size
+                </h6>
+
+                <div className="flex flex-wrap gap-3">
+                  {product?.sizes?.length > 0 &&
+                    product?.sizes?.map((sizeVal) => (
+                      <SizeBox
+                        key={sizeVal}
+                        text={sizeVal}
+                        selectedSize={selectedSize}
+                        setSelectedSize={setSelectedSize}
+                      />
+                    ))}
+                </div>
+              </div>
+
+              {/* QUANTITY */}
+              <div>
+                <h6 className="font-semibold text-gray-700 mb-3">Quantity</h6>
+
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() =>
+                      setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
+                    }
+                    className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
+                  >
+                    -
+                  </button>
+
+                  <span className="text-lg font-medium">{quantity}</span>
+
+                  <button
+                    onClick={() => setQuantity((prev) => prev + 1)}
+                    className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-4 pt-4">
                 <button
-                  onClick={() =>
-                    setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
-                  }
-                  className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
+                  onClick={addInCart}
+                  className="cursor-pointer px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition shadow-sm"
                 >
-                  -
+                  ADD TO CART
                 </button>
 
-                <span className="text-lg font-medium">{quantity}</span>
-
                 <button
-                  onClick={() => setQuantity((prev) => prev + 1)}
-                  className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
+                  onClick={addInWishlist}
+                  className="cursor-pointer px-6 py-3 border border-black text-black rounded-md hover:bg-black hover:text-white transition"
                 >
-                  +
+                  ADD TO WISHLIST
                 </button>
               </div>
             </div>
+          </section>
 
-            {/* Actions */}
-            <div className="flex gap-4 pt-4">
-              <button
-                onClick={addInCart}
-                className="cursor-pointer px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition shadow-sm"
-              >
-                ADD TO CART
-              </button>
-
-              <button
-                onClick={addInWishlist}
-                className="cursor-pointer px-6 py-3 border border-black text-black rounded-md hover:bg-black hover:text-white transition"
-              >
-                ADD TO WISHLIST
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
-
-      <RelatedProducts relatedProducts={relatedProducts} />
-    </div>
+          <RelatedProducts relatedProducts={relatedProducts} />
+        </div>
+     
+    </>
   );
 }
 
