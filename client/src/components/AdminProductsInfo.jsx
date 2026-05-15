@@ -3,6 +3,7 @@ import { deleteProduct } from "../api/adminApi.js";
 import { getAllProducts } from "../api/productApi.js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
 
 
 function TableHead() {
@@ -22,17 +23,26 @@ function TableHead() {
 function TableRow({ product , productInfo}) {
   
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   async function DeleteProduct(){
     try{
+      setLoading(true);
       await deleteProduct(product._id);
       toast.success("Product is deleted successfully");
       productInfo();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
+    }finally{
+      setLoading(false);
     }
   }
-
+  
+  if(loading){
+    return <AdminSectionSkeleton/>;
+  }
+  
   return (
     <tr className="border-t border-gray-200 hover:bg-gray-50 transition">
       {/* PRODUCT */}
@@ -67,14 +77,27 @@ function TableRow({ product , productInfo}) {
 
 function AdminProductInfo() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   async function productInfo(){
-    let res = await getAllProducts();
-    setProducts(res?.data?.data);
+    try{
+      setLoading(true);
+      let res = await getAllProducts();
+      setProducts(res?.data?.data);
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    } finally{
+      setLoading(false);
+    }
   }
   useEffect(()=>{
     productInfo();
-  },[])
+  },[]);
+
+  if(loading){
+    return <AdminSectionSkeleton/>;
+  }
 
   return (
     <main className="w-full min-h-screen bg-gray-100 p-8">

@@ -2,127 +2,241 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "../schemas/LoginSchema.js";
-import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
 import { useContext, useState } from "react";
+import { toast } from "react-toastify";
+
+import { LoginSchema } from "../schemas/LoginSchema.js";
 import { UserContext } from "../context/UserContext.jsx";
-import { login } from "../api/authApi.js";
-import { ClipLoader } from "react-spinners";
+import { login, oauthLogin } from "../api/authApi.js";
 import { HomeSkeleton } from "./skeletons/Index.jsx";
 
-// REUSABLE BACK NAVIGATION BUTTON COMPONENT
+// REUSABLE COMPONENTS
+
 function BackBtn() {
   return (
     <Link
       to="/trendora"
-      className="absolute top-12 left-12 px-4 py-2 rounded-lg border-2 border-gray-400 flex items-center"
+      className="absolute top-8 left-8 px-3 py-2 rounded-lg border-2 border-gray-400 flex items-center gap-2 hover:bg-gray-100 transition"
     >
-      <FaArrowLeft style={{ paddingRight: "0.25rem" }} /> Back
+      <FaArrowLeft />
+      Back
     </Link>
   );
 }
 
-// SHARED TAILWIND STYLES FOR INPUT FIELDS
-const inputStyling = `w-full border-2 border-gray-300 rounded-md mt-1 py-[0.6rem] px-[0.4rem]`;
-const buttonStyling = `w-full text-lg bg-amber-400 cursor-pointer py-[0.5rem] rounded-md my-4`;
-const formStyling = `w-[27.5%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
+function FormInput({
+  id,
+  label,
+  type,
+  placeholder,
+  register,
+  error,
+}) {
+  return (
+    <div className="py-2">
+      <label
+        htmlFor={id}
+        className="text-lg font-medium"
+      >
+        {label}
+      </label>
+
+      <input
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        className="w-full border-2 border-gray-300 rounded-md mt-1 py-2 px-3 outline-none focus:border-amber-400 transition"
+        {...register}
+      />
+
+      {error && (
+        <p className="text-red-500 text-sm mt-1">
+          {error.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// STYLES
+
+const styles = {
+  form:
+    "w-full max-w-[420px] border border-gray-300 shadow-lg px-10 py-8 rounded-xl bg-white",
+
+  button:
+    "w-full text-base bg-amber-400 hover:bg-amber-500 transition cursor-pointer py-2.5 rounded-md my-4 font-medium",
+};
+
+// MAIN COMPONENT
 
 function Login() {
+  const navigate = useNavigate();
+  const { getUser } =
+    useContext(UserContext);
+
+  const [loading, setLoading] =
+    useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(LoginSchema) });
-  const navigate = useNavigate();
-  const { getUser } = useContext(UserContext);
-  const [loading, setLoading] = useState(false);
+  } = useForm({
+    resolver:
+      zodResolver(LoginSchema),
+  });
 
-  async function formData(data) {
+  // HANDLE NORMAL LOGIN
+  async function handleLogin(
+    data
+  ) {
     try {
       setLoading(true);
-      await login({ email: data.email, password: data.password });
-      const loggedUser = await getUser();
-      toast.success("Welcome back! You're now logged in.");
 
-      if (loggedUser?.role === "admin") {
-        navigate("/trendora/admin");
+      await login({
+        email: data.email,
+        password: data.password,
+      });
+
+      const loggedUser =
+        await getUser();
+
+      toast.success(
+        "Welcome back! You're now logged in."
+      );
+
+      if (
+        loggedUser?.role ===
+        "admin"
+      ) {
+        navigate(
+          "/trendora/admin"
+        );
       } else {
         navigate("/trendora");
       }
     } catch (err) {
-      const message = err?.response?.data?.message || "Something went Wrong !!";
+      const message =
+        err?.response?.data
+          ?.message ||
+        "Something went wrong!";
+
       toast.error(message);
     } finally {
       setLoading(false);
     }
   }
 
+  // HANDLE GOOGLE LOGIN
+  async function handleGoogleSuccess(credentialResponse) {
+    try {
+      const token = credentialResponse.credential;
+      const result = await oauthLogin(token);
+      await getUser();
+      toast.success( "Logged in with Google!");
+      navigate("/trendora");
+    } catch (error) {
+      toast.error("Google login failed!");
+    }
+  }
+
+  // SHOW LOADING SKELETON
+  if (loading) {
+    return <HomeSkeleton />;
+  }
+
   return (
-    // MAIN CONTAINER: CENTERS FORM VERTICALLY AND HORIZONTALLY
-    <>
-      {loading && <HomeSkeleton />}
-      {!loading && (
-        <main className="h-screen flex justify-center items-center">
-          {/* LOGIN FORM CONTAINER */}
-          <form className={formStyling} onSubmit={handleSubmit(formData)}>
-            {/* FORM HEADING */}
-            <h1 className="text-center text-4xl font-bold mb-6">LogIn</h1>
+    <main className="min-h-screen flex justify-center items-center bg-gray-50 px-4">
+      {/* LOGIN FORM */}
+      <form
+        className={styles.form}
+        onSubmit={handleSubmit(
+          handleLogin
+        )}
+      >
+        {/* HEADING */}
+        <h1 className="text-center text-3xl font-bold mb-5">
+          Login
+        </h1>
 
-            {/* EMAIL INPUT FIELD */}
-            <div className="py-2">
-              <label htmlFor="email" className="text-xl">
-                Email
-              </label>{" "}
-              <br />
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter Your Email"
-                className={inputStyling}
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
-            </div>
+        {/* EMAIL */}
+        <FormInput
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+          register={register(
+            "email"
+          )}
+          error={errors.email}
+        />
 
-            {/* PASSWORD INPUT FIELD */}
-            <div className="py-2">
-              <label htmlFor="password" className="text-xl">
-                Password
-              </label>{" "}
-              <br />
-              <input
-                id="password"
-                type="password"
-                placeholder="Enter Your Password"
-                className={inputStyling}
-                {...register("password")}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
+        {/* PASSWORD */}
+        <FormInput
+          id="password"
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+          register={register(
+            "password"
+          )}
+          error={errors.password}
+        />
 
-            {/* SUBMIT BUTTON */}
-            <button className={buttonStyling}>LogIn</button>
+        {/* LOGIN BUTTON */}
+        <button
+          type="submit"
+          className={
+            styles.button
+          }
+        >
+          Login
+        </button>
 
-            {/* REDIRECT LINK TO SIGNUP PAGE */}
-            <h6 className="text-center text-lg">
-              Don't have an account?{" "}
-              <Link to="/trendora/signup" className="text-blue-600">
-                Sign Up
-              </Link>
-            </h6>
-          </form>
+        {/* SIGNUP LINK */}
+        <p className="text-center text-sm">
+          Don't have an
+          account?{" "}
+          <Link
+            to="/trendora/signup"
+            className="text-blue-600 hover:underline"
+          >
+            Sign Up
+          </Link>
+        </p>
 
-          {/* BACK BUTTON COMPONENT */}
-          <BackBtn />
-        </main>
-      )}
-    </>
+        {/* DIVIDER */}
+        <div className="my-4 flex items-center">
+          <div className="flex-1 border-t border-gray-300"></div>
+
+          <span className="px-3 text-gray-500 text-sm">
+            OR
+          </span>
+
+          <div className="flex-1 border-t border-gray-300"></div>
+        </div>
+
+        {/* GOOGLE LOGIN */}
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={
+              handleGoogleSuccess
+            }
+            onError={() =>
+              toast.error(
+                "Google login failed!"
+              )
+            }
+            text="signin_with"
+          />
+        </div>
+      </form>
+
+      {/* BACK BUTTON */}
+      <BackBtn />
+    </main>
   );
 }
 

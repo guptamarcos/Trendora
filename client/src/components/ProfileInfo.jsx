@@ -6,7 +6,7 @@ import { ProfileInfoSchema } from "../schemas/ProfileSchema.js";
 import { updateProfileInfo } from "../api/userApi.js";
 import { toast } from "react-toastify";
 
-function ProfileInfo() {
+function ProfileInfo({loading, setLoading}) {
 
   const { user , getUser } = useContext(UserContext);
   const { register, handleSubmit, formState: { errors }  } = useForm({ 
@@ -16,12 +16,15 @@ function ProfileInfo() {
   async function handleFormData(data){
     data.email = user.email;
     try{
+      setLoading(true);
       await updateProfileInfo(data);
       toast.success("Profile Information updated successfully");
       getUser();
     }catch(err){
       const message = err?.response?.data?.message || "Something went Wrong";
       toast.error(message);
+    } finally{
+      setLoading(false);
     }
   };
 

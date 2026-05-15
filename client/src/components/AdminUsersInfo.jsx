@@ -2,6 +2,7 @@ import { getAllUserInfo,deleteUser  } from "../api/adminApi.js";
 import { useState, useEffect } from "react";
 import { defaultProfileImage } from "../assets/Index.jsx";
 import { toast } from "react-toastify";
+import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
 
 function TableHead() {
   return (
@@ -18,16 +19,23 @@ function TableHead() {
 }
 
 function TableRow({ user,getAllUser }) {
-  
+  const[loading,setLoading] = useState(false);
   async function DeleteUser(){
     try{
+      setLoading(true);
       await deleteUser(user._id);
       toast.success("User deleted Successfully");
       getAllUser();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong"; 
       toast.error(message)
+    } finally{
+      setLoading(false);
     }
+  }
+ 
+  if(loading){
+    return <AdminSectionSkeleton/>;
   }
 
   return (
@@ -72,16 +80,30 @@ function TableRow({ user,getAllUser }) {
 function AllUsersInfo() {
  
   const [allUser, setAllUser] = useState();
+  const [loading, setLoading] = useState(false);
   
   async function getAllUser(){
-    let res = await getAllUserInfo();
-    setAllUser(res?.data?.data);
+    try{
+      setLoading(true);
+      let res = await getAllUserInfo();
+      setAllUser(res?.data?.data);
+    }catch(err){
+      const message = err?.response?.data?.message || "Something went wrong"; 
+      toast.error(message)
+    }finally{
+      setLoading(false);
+    }
   }
 
+  
   useEffect(()=>{
     getAllUser();
   },[])
-
+  
+  if(loading){
+    return <AdminSectionSkeleton/>;
+  }
+  
   return (
     <div className="w-full min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto space-y-6">

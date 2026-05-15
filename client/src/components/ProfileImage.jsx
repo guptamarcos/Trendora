@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { UserContext } from "../context/UserContext.jsx";
 import ImageSchema from "../schemas/ImageSchema.js";
 
-function ProfileImage() {
+function ProfileImage({ loading, setLoading }) {
   const { getUser, user } = useContext(UserContext);
 
   async function handleChange(e) {
@@ -14,28 +14,29 @@ function ProfileImage() {
 
     const result = ImageSchema.safeParse(file);
 
-    if(!result.success){
-      toast.error(result?.error?.errors);
+    if (!result.success) {
+      toast.error(JSON.parse(result?.error?.message)[0]?.message);
       return;
     }
-    
+
     const formData = new FormData();
     formData.append("profileImage", file);
 
     try {
+      setLoading(true);
       const res = await uploadProfileImage(formData);
-      console.log(res);
       getUser();
       toast.success("Image uploaded successfully");
     } catch (err) {
       const message = err?.response?.data?.message;
       toast.error(message || "Upload failed");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div className="flex flex-col items-center mb-10">
-      
       <label htmlFor="profileImage" className="cursor-pointer">
         <img
           src={user?.profileImage?.path || defaultProfileImage}

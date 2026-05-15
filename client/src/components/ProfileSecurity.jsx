@@ -6,7 +6,7 @@ import { ProfileSecuritySchema } from "../schemas/ProfileSchema.js";
 import { updateProfilePassword } from "../api/userApi.js";
 import { toast } from "react-toastify";
 
-function ProfileSecurity() {
+function ProfileSecurity({loading, setLoading}) {
   
   const { register , handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver( ProfileSecuritySchema )
@@ -16,12 +16,15 @@ function ProfileSecurity() {
 
   async function handleFormData(data){
     try{
+      setLoading(true);
       const res = await updateProfilePassword(data);
       toast.success("Password updated successfully");
       getUser();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
+    } finally{
+      setLoading(false);
     }
   }
 

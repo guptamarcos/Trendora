@@ -6,20 +6,27 @@ import { editProduct } from "../api/adminApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
+import ImageSchema from "../schemas/ImageSchema.js";
 
 function AdminEditProduct() {
   const [product, setProduct] = useState("");
   const { productId } = useParams();
   const [preview, setPreview] = useState();
   const [file, setFile] = useState("");
+  const [productLoading, setProductLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   async function getProduct() {
     try {
+      setProductLoading(true);
       const res = await getProductInfo(productId);
       setProduct(res?.data?.data[0]);
     } catch (err) {
       const message = err?.message?.response?.data || "Something went wrong";
       toast.error(message);
+    } finally {
+      setProductLoading(false);
     }
   }
 
@@ -38,16 +45,27 @@ function AdminEditProduct() {
 
   async function formData(data) {
     try {
-      const formData = new FormData();
-
-      if (file) {
-        formData.append("productImage", file);
+      if (!file) {
+        toast.error("Product Image is also required");
+        return;
       }
 
+      const result = ImageSchema.safeParse(file);
+      console.log(result);
+
+      if (!result.success) {
+        toast.error(JSON.parse(result?.error?.message)[0]?.message);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("productImage", file);
+      
       Object.keys(data).forEach((key) => {
         formData.append(key, data[key]);
       });
 
+      setSubmitLoading(true);
       await editProduct(formData, product?._id);
       toast.success("Product edited successfully");
       getProduct();
@@ -55,6 +73,8 @@ function AdminEditProduct() {
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
+    } finally {
+      setSubmitLoading(false);
     }
   }
 
@@ -72,6 +92,22 @@ function AdminEditProduct() {
       setPreview(product?.productImage?.url);
     }
   }, [product, reset]);
+
+  if (productLoading) {
+    return (
+      <div className="w-full min-h-screen flex justify-center items-center">
+        <ClipLoader size={40} />
+      </div>
+    );
+  }
+
+  if (submitLoading) {
+    return (
+      <div className="w-full min-h-screen flex justify-center items-center">
+        <ClipLoader size={40} />
+      </div>
+    );
+  }
 
   return (
     <main className="w-full min-h-screen p-8 bg-gray-100">

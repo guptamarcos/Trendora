@@ -1,12 +1,19 @@
-import { UserDropDownContextProvider, UserContextProvider  } from "../context/Index.jsx";
+import {
+  UserDropDownContextProvider,
+  UserContextProvider,
+} from "../context/Index.jsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function AppProviders({ children }) {
+  
   return (
-    <UserDropDownContextProvider>
-      <UserContextProvider>
-        {children}
-      </UserContextProvider>
-    </UserDropDownContextProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_OAUTH_CLIENT_ID}>
+      <UserDropDownContextProvider>
+        <UserContextProvider>
+          {children}
+        </UserContextProvider>
+      </UserDropDownContextProvider>
+    </GoogleOAuthProvider>
   );
 }
 

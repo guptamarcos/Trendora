@@ -12,3 +12,7 @@ export const logoutUser = () => {
   return axiosInstance.post("/auth/logout");
 };
 
+export const oauthLogin = (token) => {
+  return axiosInstance.post("/auth/google", { token });
+};
+

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getDashboardInfo } from "../api/adminApi.js";
 import { toast } from "react-toastify";
+import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
 
 
 function InformationTabs({ text, value }) {
@@ -24,20 +25,28 @@ function RecentActivity({ text, value }) {
 
 function AdminDashboard() {
   const [dashboard, setDashboard] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   async function dashboardInfo(){
     try{
+      setLoading(true);
       const res = await getDashboardInfo();
       setDashboard(res?.data?.DashboardInfo);
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
+    } finally{
+      setLoading(false);
     }
   }
 
   useEffect(()=>{
     dashboardInfo();
   },[]);
+
+  if(loading){
+    return <AdminSectionSkeleton/>;
+  }
 
   return (
     <main className="max-w-6xl mx-auto flex-1 min-h-[90vh] p-8 bg-gray-100 space-y-6">

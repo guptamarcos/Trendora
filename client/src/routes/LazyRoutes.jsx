@@ -1,31 +1,39 @@
 import { lazy } from "react";
+import Loadable from "./Loadable.jsx";
+import { HomeSkeleton } from "../components/skeletons/Index.jsx";
 
-export const About = lazy(() => import("../components/About.jsx"));
+const Loader = () => (
+  <div className="flex justify-center items-center min-h-screen">
+    <ClipLoader size={40} />
+  </div>
+);
 
-export const AllOrders = lazy(() => import("../components/Index.jsx"));
+export const About = Loadable(lazy(() => import("../components/About.jsx")), <HomeSkeleton/>);
 
-export const Cart = lazy(() =>import("../components/Cart.jsx"));
+export const AllOrders = Loadable(lazy(() => import("../components/AllOrders.jsx")));
 
-export const Collection = lazy(() =>import("../components/Collection.jsx"));
+export const Cart = Loadable(lazy(() =>import("../components/Cart.jsx")));
 
-export const Contact = lazy(() =>import("../components/Contact.jsx"));
+export const Collection = Loadable(lazy(() =>import("../components/Collection.jsx")));
 
-export const ProductInfo = lazy(() =>import("../components/ProductInfo.jsx"));
+export const Contact = Loadable(lazy(() =>import("../components/Contact.jsx")));
 
-export const Profile = lazy(() =>import("../components/Profile.jsx"));
+export const ProductInfo = Loadable(lazy(() =>import("../components/ProductInfo.jsx")));
 
-export const Checkout = lazy(() =>import("../components/Checkout.jsx"));
+export const Profile = Loadable(lazy(() =>import("../components/Profile.jsx")));
 
-export const Wishlist = lazy(() =>import("../components/Wishlist.jsx"));
+export const Checkout = Loadable(lazy(() =>import("../components/Checkout.jsx")));
 
-export const AdminPageLayout = lazy(() =>import("../components/AdminPageLayout.jsx"));
+export const Wishlist = Loadable(lazy(() =>import("../components/Wishlist.jsx")));
 
-export const AdminUsersInfo = lazy(() =>import("../components/AdminUsersInfo.jsx"));
+export const AdminPageLayout = Loadable(lazy(() =>import("../components/AdminPageLayout.jsx")));
 
-export const AdminProductInfo = lazy(() =>import("../components/AdminProductsInfo.jsx"));
+export const AdminUsersInfo = Loadable(lazy(() =>import("../components/AdminUsersInfo.jsx")));
 
-export const AdminOrderInfo = lazy(() =>import("../components/AdminOrderInfo.jsx"));
+export const AdminProductInfo = Loadable(lazy(() =>import("../components/AdminProductsInfo.jsx")));
 
-export const AdminAddProduct = lazy(() =>import("../components/AdminAddProduct.jsx"));
+export const AdminOrderInfo = Loadable(lazy(() =>import("../components/AdminOrderInfo.jsx")));
 
-export const AdminEditProduct = lazy(() =>import("../components/AdminEditProduct.jsx"));
+export const AdminAddProduct = Loadable(lazy(() =>import("../components/AdminAddProduct.jsx")));
+
+export const AdminEditProduct = Loadable(lazy(() =>import("../components/AdminEditProduct.jsx")));

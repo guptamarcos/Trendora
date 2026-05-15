@@ -25,11 +25,7 @@ const userBaseSchema = Joi.object({
       "string.min": "Password must be at least 5 characters",
     }),
 
-  bio: Joi.string()
-    .trim()
-    .allow("")
-    .max(200)
-    .messages({
+  bio: Joi.string().trim().allow("").max(200).messages({
     "string.max": "Bio must be less than 200 characters",
   }),
 });
@@ -44,10 +40,10 @@ const signupSchemaValidator = Joi.object({
 // LOGIN SCHEMA VALIDATION
 const loginSchemaValidator = Joi.object({
   email: userBaseSchema.extract("email"),
-  password: userBaseSchema.extract("password") ,
+  password: userBaseSchema.extract("password"),
 });
 
-// PROFILE VALIDATION SCHEMA 
+// PROFILE VALIDATION SCHEMA
 const ProfileInfoSchemaValidator = Joi.object({
   username: userBaseSchema.extract("username"),
   email: userBaseSchema.extract("email"),
@@ -57,13 +53,25 @@ const ProfileInfoSchemaValidator = Joi.object({
 // PASSWORD VALIDATION SCHEMA
 const PasswordSchemaValidator = Joi.object({
   oldPassword: userBaseSchema.extract("password"),
-  newPassword: userBaseSchema.extract("password")
-  .invalid(Joi.ref("oldPassword"))
-  .messages({
-    "any.invalid": "New password must be different from old password",
+  newPassword: userBaseSchema
+    .extract("password")
+    .invalid(Joi.ref("oldPassword"))
+    .messages({
+      "any.invalid": "New password must be different from old password",
+    }),
+});
+
+const GoogleAuthSchemaValidator = Joi.object({
+  token: Joi.string().trim().required().messages({
+    "string.empty": "Google token is required",
+    "any.required": "Google token is required",
   }),
-})
+});
 
-
-module.exports = { signupSchemaValidator, loginSchemaValidator, 
-  ProfileInfoSchemaValidator , PasswordSchemaValidator};
+module.exports = {
+  signupSchemaValidator,
+  loginSchemaValidator,
+  ProfileInfoSchemaValidator,
+  PasswordSchemaValidator,
+  GoogleAuthSchemaValidator
+};

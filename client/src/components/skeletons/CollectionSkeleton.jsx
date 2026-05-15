@@ -3,7 +3,7 @@ import { ProductCardSkeleton } from "./Index.jsx";
 function CollectionSkeleton() {
 
   return (
-    <main className="mt-20 px-[7.5vw] animate-pulse">
+    <main className="mt-10 px-[7.5vw] animate-pulse">
       <section className="mb-40 min-h-screen flex gap-8">
        
         <div className="flex-1">

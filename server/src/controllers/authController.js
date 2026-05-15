@@ -8,7 +8,7 @@ async function register(req, res) {
 
 async function login(req, res) {
   const result = await authServices.loginUser(req.body);
-  
+
   res.cookie("token", result?.token, {
     httpOnly: true,
     secure: false,
@@ -37,8 +37,26 @@ async function logout(req, res) {
   return res.status(200).json(result);
 }
 
+async function oauthLogin(req, res) {
+  const result = await authServices.oauthLoginUser(req.body);
+  
+  res.cookie("token", result?.token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+    signed: true,
+  });
+
+  return res.status(200).json({
+    success: result?.success,
+    message: result?.message,
+  });
+}
+
 module.exports = {
   register,
   login,
   logout,
+  oauthLogin,
 };

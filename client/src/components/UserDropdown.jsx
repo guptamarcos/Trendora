@@ -29,7 +29,7 @@ const UserDropDown = forwardRef((props, ref) => {
       ref={ref}>
       {/* User Info */}
       <div className="border-b pb-3 mb-3">
-        <p className="font-semibold text-gray-800">{user?.username}</p>
+        <p className="font-semibold text-gray-800">{user?.username || "Not available"}</p>
         <p className="text-sm text-gray-500 truncate">{user?.email}</p>
       </div>
 

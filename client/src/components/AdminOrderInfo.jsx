@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAllOrder } from "../api/adminApi.js";
 import { toast } from "react-toastify";
+import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
 
 function StatusDropdown({ value, onChange }) {
   const statuses = ["Pending", "Shipped", "Delivered", "Cancelled"];
@@ -114,9 +115,13 @@ function AdminOrderInfo() {
   useEffect(() => {
     fetchOrders();
   }, []);
-  console.log(orders);
+
+  if(loading){
+    return <AdminSectionSkeleton/>;
+  }
+
   return (
-    <div className="w-full min-h-screen p-6 bg-gray-100">
+    <main className="w-full min-h-screen p-6 bg-gray-100">
       <div className="max-w-6xl mx-auto space-y-6">
 
         {/* HEADER */}
@@ -175,7 +180,7 @@ function AdminOrderInfo() {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

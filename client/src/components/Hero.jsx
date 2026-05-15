@@ -2,8 +2,8 @@ import { hero_img } from "../assets/Index";
 
 function Hero() {
   return (
-    <section className="flex border-2 border-t-0 border-gray-300">
-      <div className="w-[50%] flex flex-col justify-center items-center">
+    <section className="h-[60vh] flex border-2 border-t-0 border-gray-300">
+      <div className="h-full w-[50%] flex flex-col justify-center items-center">
         <div>
           <div className="font-outfit flex items-center">
             <hr className="w-[20%] border-t-2 border-black" />
@@ -16,7 +16,7 @@ function Hero() {
           </div>
         </div>
       </div>
-      <img src={hero_img} className="h-[60%] w-[50%]"></img>
+      <img src={hero_img} className="h-full w-[50%]"></img>
     </section>
   );
 }

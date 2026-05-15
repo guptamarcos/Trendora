@@ -1,4 +1,4 @@
-import { ProductCardSkeleton } from "./Index.jsx";
+import { ProductSectionSkeleton } from "./Index.jsx";
 
 function HomeSkeleton() {
   return (
@@ -34,14 +34,8 @@ function HomeSkeleton() {
         </div>
       </section>
 
-      {/* Product Skeletons */}
-      <section className="mt-30 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 p-6">
-        <ProductCardSkeleton />
-        <ProductCardSkeleton />
-        <ProductCardSkeleton />
-        <ProductCardSkeleton />
-        <ProductCardSkeleton />
-      </section>
+     
+      <ProductSectionSkeleton/>
     </main>
   );
 }

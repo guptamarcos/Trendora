@@ -46,11 +46,14 @@ function Cart() {
   const total = subtotal + shippingFee;
 
   return (
-    <section className="min-h-screen pt-16 mb-32">
-      {loading && <div>Loading...</div>}
-      {/* HEADER */}
+    <>
+      {loading && (
+        <div className="flex justify-center items-center min-h-screen">
+          Loading...
+        </div>
+      )}
       {!loading && (
-        <>
+        <main className="min-h-screen pt-16 mb-32">
           <h2 className="text-3xl font-semibold mb-8 flex items-center">
             <span className="text-gray-600">YOUR</span>&nbsp;CART&nbsp;
             <hr className="w-[5%] border-t-2 border-black" />
@@ -102,9 +105,9 @@ function Cart() {
               </div>
             </div>
           )}
-        </>
+        </main>
       )}
-    </section>
+    </>
   );
 }
 

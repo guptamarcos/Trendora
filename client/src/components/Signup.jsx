@@ -1,114 +1,177 @@
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useForm } from "react-hook-form";
-import { SignupSchema } from "../schemas/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
 import { useContext } from "react";
-import { UserContext } from "../context/UserContext.jsx";
-import { registerUser, login } from "../api/authApi.js";
+import { toast } from "react-toastify";
 
-// REUSABLE BACK NAVIGATION BUTTON COMPONENT
+import { SignupSchema } from "../schemas/SignupSchema";
+import { UserContext } from "../context/UserContext.jsx";
+import { registerUser, login, oauthLogin } from "../api/authApi.js";
+
+// REUSABLE COMPONENTS
+
 function BackBtn() {
   return (
-    <Link to="/trendora"
-      className="absolute top-12 left-12 px-4 py-2 rounded-lg border-2 border-gray-400 flex items-center"
+    <Link
+      to="/trendora"
+      className="absolute top-8 left-8 px-3 py-2 rounded-lg border-2 border-gray-400 flex items-center gap-2 hover:bg-gray-100 transition"
     >
-      <FaArrowLeft style={{ paddingRight: "0.25rem" }} /> Back
+      <FaArrowLeft />
+      Back
     </Link>
   );
 }
 
-// SHARED TAILWIND STYLES 
-const inputStyling = `w-full border-2 border-gray-300 rounded-md mt-1 py-[0.6rem] px-[0.4rem]`;
-const buttonStyling = `w-full text-lg bg-amber-400 cursor-pointer py-[0.5rem] rounded-md my-4`;
-const formStyling = `w-[30%] border-2 border-gray-300 shadow-lg px-10 py-12 rounded-lg`;
+function FormInput({ id, label, type, placeholder, register, error }) {
+  return (
+    <div className="py-2">
+      <label htmlFor={id} className="text-lg font-medium">
+        {label}
+      </label>
+
+      <input
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        className="w-full border-2 border-gray-300 rounded-md mt-1 py-2 px-3 outline-none focus:border-amber-400 transition"
+        {...register}
+      />
+
+      {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+    </div>
+  );
+}
+
+// STYLES
+
+const styles = {
+  form: "w-full max-w-[420px] border border-gray-300 shadow-lg px-10 py-8 rounded-xl bg-white",
+
+  button:
+    "w-full text-base bg-amber-400 hover:bg-amber-500 transition cursor-pointer py-2.5 rounded-md my-4 font-medium",
+};
+
+// MAIN COMPONENT
 
 function Signup() {
-
-  const { register, handleSubmit, formState: { errors } } = useForm({resolver: zodResolver(SignupSchema)});
   const navigate = useNavigate();
-  const {getUser } = useContext(UserContext);
+  const { getUser } = useContext(UserContext);
 
-  async function formData(data){
-    try{
-      const res = await registerUser(data);
-      console.log(res);
-      await login({email: data.email, password: data.password});
-      getUser();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(SignupSchema),
+  });
+
+  // HANDLE NORMAL SIGNUP
+  async function handleSignup(data) {
+    try {
+      await registerUser(data);
+
+      await login({
+        email: data.email,
+        password: data.password,
+      });
+
+      await getUser();
+
       toast.success("Account created successfully!");
+
       navigate("/trendora");
-    }catch(err){
-      const message = err?.response?.data?.message || "Something went Wrong !!";
+    } catch (err) {
+      const message = err?.response?.data?.message || "Something went wrong!";
+
       toast.error(message);
     }
   }
 
+  // HANDLE GOOGLE LOGIN/SIGNUP
+  async function handleGoogleSuccess(credentialResponse) {
+    try {
+      const token = credentialResponse.credential;
+      const result = await oauthLogin(token);
+      await getUser();
+      toast.success("Logged in with Google!");
+      navigate("/trendora");
+    } catch (error) {
+      toast.error("Google signup failed!");
+    }
+  }
+
   return (
-    // MAIN CONTAINER: CENTERS THE FORM BOTH VERTICALLY AND HORIZONTALLY
-    <main className="h-screen flex justify-center items-center">
-      
-      {/* SIGNUP FORM CONTAINER */}
-      <form className={formStyling} onSubmit={handleSubmit(formData)}>
+    <main className="min-h-screen flex justify-center items-center bg-gray-50 px-4">
+      {/* SIGNUP FORM */}
+      <form className={styles.form} onSubmit={handleSubmit(handleSignup)}>
+        {/* HEADING */}
+        <h1 className="text-center text-3xl font-bold mb-5">Signup</h1>
 
-        {/* FORM HEADING */}
-        <h1 className="text-center text-4xl font-bold mb-6">Signup</h1>
+        {/* USERNAME */}
+        <FormInput
+          id="username"
+          label="Username"
+          type="text"
+          placeholder="Enter your username"
+          register={register("username")}
+          error={errors.username}
+        />
 
-        {/* USERNAME FIELD */}
-        <div className="py-2">
-          <label htmlFor="username" className="text-xl">Username</label> <br />
-          <input
-            id="username"
-            type="text"
-            placeholder="Enter Your Username"
-            className={inputStyling}
-            required
-            {...register("username")}
-          />
-          {errors.username && (<p className="text-red-500 text-sm">{errors.username.message}</p>)}
-        </div>
+        {/* EMAIL */}
+        <FormInput
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+          register={register("email")}
+          error={errors.email}
+        />
 
-        {/* EMAIL FIELD */}
-        <div className="py-2">
-          <label htmlFor="email" className="text-xl">Email</label> <br />
-          <input
-            id="email"
-            type="email"
-            placeholder="Enter Your Email"
-            className={inputStyling}
-            required
-            {...register("email")}
-          />
-          {errors.email && (<p className="text-red-500 text-sm">{errors.email.message}</p>)}
-        </div>
-
-        {/* PASSWORD FIELD */}
-        <div className="py-2">
-          <label htmlFor="password" className="text-xl">Password</label><br />
-          <input 
-            id="password"
-            type="password"
-            placeholder="Enter Your Password"
-            className={inputStyling}
-            required
-            {...register("password")}
-          />
-          {errors.password && (<p className="text-red-500 text-sm">{errors.password.message}</p>)}
-        </div>
+        {/* PASSWORD */}
+        <FormInput
+          id="password"
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+          register={register("password")}
+          error={errors.password}
+        />
 
         {/* SUBMIT BUTTON */}
-        <button className={buttonStyling}>Register</button>
+        <button type="submit" className={styles.button}>
+          Register
+        </button>
 
-        {/* REDIRECT TO LOGIN PAGE */}
-        <h6 className="text-center text-lg">
+        {/* LOGIN REDIRECT */}
+        <p className="text-center text-sm">
           Already have an account?{" "}
-          <Link to="/trendora/login" className="text-blue-600">
-            LogIn
+          <Link to="/trendora/login" className="text-blue-600 hover:underline">
+            Login
           </Link>
-        </h6>
+        </p>
+
+        {/* DIVIDER */}
+        <div className="my-4 flex items-center">
+          <div className="flex-1 border-t border-gray-300"></div>
+
+          <span className="px-3 text-gray-500 text-sm">OR</span>
+
+          <div className="flex-1 border-t border-gray-300"></div>
+        </div>
+
+        {/* GOOGLE SIGNUP */}
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => toast.error("Google login failed!")}
+            text="signup_with"
+          />
+        </div>
       </form>
 
-      {/* BACK NAVIGATION BUTTON */}
+      {/* BACK BUTTON */}
       <BackBtn />
     </main>
   );
