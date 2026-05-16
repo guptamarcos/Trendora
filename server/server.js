@@ -12,11 +12,10 @@ const connectDb = require("./src/config/dbConfig.js");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const {
-  verifyAndCheckUserToken,
-  verifyAndCheckAdminToken,
-} = require("./src/middleware/authMiddleware.js");
+const { verifyAndCheckUserToken, verifyAndCheckAdminToken} = require("./src/middleware/authMiddleware.js");
 const errorMiddleware = require("./src/middleware/errorMiddleware.js");
+const apiLimiter = require("./src/config/rateLimiter.js");
+const helmet = require("helmet");
 
 const authRoutes = require("./src/routes/authRoutes.js");
 const userRoutes = require("./src/routes/userRoutes.js");
@@ -32,6 +31,8 @@ app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.SIGNED_COOKIE_SECRET));
+// app.use(helmet()); // PRODUCTION ONLY
+app.use(apiLimiter);
 
 // WE ONLY NEED IT WHEN WE LOCALLY UPLOADING THE IMAGES
 // app.use("/uploads", express.static(path.join(__dirname, "uploads")));

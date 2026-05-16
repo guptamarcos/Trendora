@@ -105,14 +105,15 @@ async function oauthLoginUser(body) {
     audience: process.env.OAUTH_CLIENT_ID,
   });
 
-  const { email, sub, name } = ticket.getPayload();
+  const { email, sub, name} = ticket.getPayload();
 
   const existingUser1 = await User.findOne({ googleId: sub });
   
-
+  
   // IF USER IS ALREADY EXIST
   if (existingUser1) {
     const token1 = existingUser1.generateToken();
+    await User.findByIdAndUpdate({_id: existingUser1._id}, {status: "Active"});
     return { token : token1, success: true, message: "User logged in successfully" };
   }
 
@@ -120,12 +121,14 @@ async function oauthLoginUser(body) {
   
   if (existingUser2) {
     existingUser2.googleId = sub;
+    existingUser2.status = "Active";
     await existingUser2.save();
     const token2 = existingUser2.generateToken();
     return {token: token2, success: true, message: "User logged in successfully" };
   }
 
   const newUser = await User.create({
+    username : "Not Available", 
     email,
     googleId: sub,
     authProvider: "google",
