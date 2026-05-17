@@ -1,9 +1,3 @@
-const Product = require("../models/productSchema.js");
-const User = require("../models/userSchema.js");
-const {
-  productSchemaValidator,
-} = require("../validations/productSchemaValidator.js");
-const cloudinary = require("cloudinary").v2;
 const productServices = require("../services/productServices.js");
 
 
@@ -64,6 +58,14 @@ async function deleteProduct(req, res) {
   return res.status(200).json(result);
 }
 
+async function updateProductRating(req,res){
+  const { productId } = req.params;
+  const { rating } = req.body;
+
+  const result = await productServices.updateProductRating(productId,rating);
+
+  return res.status(201).json(result);
+}
 
 module.exports = {
   addProduct,
@@ -74,4 +76,5 @@ module.exports = {
   getBestSeller,
   getRelatedProducts,
   getAllProducts,
+  updateProductRating
 };

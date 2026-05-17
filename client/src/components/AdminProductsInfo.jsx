@@ -23,25 +23,18 @@ function TableHead() {
 function TableRow({ product , productInfo}) {
   
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-
+ 
   async function DeleteProduct(){
     try{
-      setLoading(true);
       await deleteProduct(product._id);
       toast.success("Product is deleted successfully");
       productInfo();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
-    }finally{
-      setLoading(false);
     }
   }
   
-  if(loading){
-    return <AdminSectionSkeleton/>;
-  }
   
   return (
     <tr className="border-t border-gray-200 hover:bg-gray-50 transition">

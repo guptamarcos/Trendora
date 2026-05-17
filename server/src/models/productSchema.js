@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const productSchema = new mongoose.Schema({
+const productSchema = new mongoose.Schema(
+  {
     name: {
       type: String,
       required: [true, "Product Name is required"],
@@ -56,16 +57,26 @@ const productSchema = new mongoose.Schema({
       type: Number,
       min: [0, "Stock can't be negative"],
       required: [true, "Product Stock is required"],
-      default: 0,
     },
     rating: {
       average: {
         type: Number,
         default: 0,
+        min: 0,
+        max: 5,
       },
+
       count: {
         type: Number,
         default: 0,
+      },
+
+      distribution: {
+        oneStar: { type: Number, default: 0 },
+        twoStar: { type: Number, default: 0 },
+        threeStar: { type: Number, default: 0 },
+        fourStar: { type: Number, default: 0 },
+        fiveStar: { type: Number, default: 0 },
       },
     },
     owner: {

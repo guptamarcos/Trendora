@@ -19,23 +19,17 @@ function TableHead() {
 }
 
 function TableRow({ user,getAllUser }) {
-  const[loading,setLoading] = useState(false);
+  
   async function DeleteUser(){
     try{
-      setLoading(true);
+     
       await deleteUser(user._id);
       toast.success("User deleted Successfully");
       getAllUser();
     }catch(err){
       const message = err?.response?.data?.message || "Something went wrong"; 
       toast.error(message)
-    } finally{
-      setLoading(false);
-    }
-  }
- 
-  if(loading){
-    return <AdminSectionSkeleton/>;
+    } 
   }
 
   return (

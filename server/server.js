@@ -25,6 +25,7 @@ const cartRoutes = require("./src/routes/cartRoutes.js");
 const wishlistRoutes = require("./src/routes/wishlistRoutes.js");
 const orderRoutes = require("./src/routes/orderRoutes.js");
 const securityRoutes = require("./src/routes/securityRoutes.js");
+const reviewRoutes = require("./src/routes/reviewRoutes.js");
 
 // MIDDLEWARE SETUP
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
@@ -56,6 +57,7 @@ connectDb()
 app.use("/api/admin", verifyAndCheckAdminToken, adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", verifyAndCheckUserToken, userRoutes);
+app.use("/api/products/:productId/reviews",reviewRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart/items", verifyAndCheckUserToken, cartRoutes);
 app.use("/api/wishlist/items", verifyAndCheckUserToken, wishlistRoutes);

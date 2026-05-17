@@ -61,7 +61,7 @@ function RelatedProducts({ relatedProducts }) {
   );
 }
 
-function ProductDetails({setLoading}) {
+function ProductDetails({setLoading,setProductId}) {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState(null);
@@ -72,7 +72,8 @@ function ProductDetails({setLoading}) {
   async function getProduct() {
     try {
       let res = await getProductInfo(productId);
-      setProduct(res?.data?.data[0]);
+      setProduct(res?.data?.data[0]); 
+      setProductId(productId);
       const sizes = res?.data?.data[0]?.sizes;
       const obj = sizes?.reduce((acc, val) => {
         acc[val] = false;

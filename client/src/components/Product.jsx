@@ -12,7 +12,7 @@ function Product({ product }) {
     <div className="cursor-pointer hover:scale-104 transition" onClick={handleClick}>
       <img
         src={product?.productImage?.url}
-        className="h-[32.5vh] w-[95%] rounded-lg"
+        className="h-[35vh] w-[95%] rounded-lg"
         alt={product?.name}
       />
 

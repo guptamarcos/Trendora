@@ -9,24 +9,25 @@ function CartItem({ cartItem, getUserCartItems }) {
   const { getUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  async function deleteCartItem(){
-    try{
+  async function deleteCartItem() {
+    try {
       const res = await removeCartItem(cartItem._id);
       toast.success("Product is removed from cart");
-      getUserCartItems(); getUser();
-    }catch(err){
+      getUserCartItems();
+      getUser();
+    } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
     }
   }
- 
+
   return (
-    <div onClick={()=> navigate(`/trendora/products/${cartItem?.product?._id}`)}
-      className="w-full flex justify-between items-center border-b border-gray-200 py-4">
-
+    <div className="w-full flex justify-between items-center border-b border-gray-200 py-4">
       {/* LEFT: Product Info */}
-      <div className="flex items-center gap-4">
-
+      <div
+        className="flex items-center gap-4"
+        onClick={() => navigate(`/trendora/products/${cartItem?.product?._id}`)}
+      >
         {/* Image */}
         <img
           src={cartItem?.product?.productImage?.url || ""}
@@ -34,7 +35,7 @@ function CartItem({ cartItem, getUserCartItems }) {
           className="cursor-pointer h-20 w-20 object-cover rounded"
         />
 
-        {/* Details */} 
+        {/* Details */}
         <div className="flex flex-col gap-6 cursor-pointer">
           <h6 className="font-semibold text-lg text-gray-700">
             {cartItem?.product?.name}
@@ -51,7 +52,6 @@ function CartItem({ cartItem, getUserCartItems }) {
 
       {/* RIGHT: Actions */}
       <div className="flex items-center gap-6">
-
         {/* Quantity */}
         <input
           type="number"
@@ -62,10 +62,12 @@ function CartItem({ cartItem, getUserCartItems }) {
         />
 
         {/* Delete */}
-        <button onClick={deleteCartItem} className="cursor-pointer text-red-500 hover:text-red-600 transition">
+        <button
+          onClick={deleteCartItem}
+          className="cursor-pointer text-red-500 hover:text-red-600 transition"
+        >
           <FaTrash size={18} />
         </button>
-
       </div>
     </div>
   );

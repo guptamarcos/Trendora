@@ -8,7 +8,7 @@ const ExpressError = require("../utils/ExpressError.js");
 
 async function getProductInfo(productId) {
   const product = await Product.find({ _id: productId });
-  
+
   if (!product) {
     throw new ExpressError(400, "Product not found");
   }
@@ -175,6 +175,41 @@ async function deleteProduct(productId) {
   };
 }
 
+async function updateProductRating(productId, rating) {
+  rating = Number(rating);
+  if (rating < 1 || rating > 5) {
+    throw new ExpressError(400, "Invalid rating value");
+  }
+
+  const ratingMap = {
+    1: "oneStar",
+    2: "twoStar",
+    3: "threeStar",
+    4: "fourStar",
+    5: "fiveStar",
+  };
+
+  const fieldToUpdate = `rating.distribution.${ratingMap[rating]}`;
+
+  const product = await Product.findByIdAndUpdate(
+    productId,
+    {
+      $inc: {
+        "rating.count": 1,
+        [fieldToUpdate]: 1,
+      },
+    },
+    { new: true },
+  );
+
+
+  return {
+    success: true,
+    message: "Product rating added successfully",
+  };
+  
+}
+
 module.exports = {
   addProduct,
   deleteProduct,
@@ -184,4 +219,5 @@ module.exports = {
   getBestSeller,
   getRelatedProducts,
   getAllProducts,
+  updateProductRating,
 };

@@ -1,11 +1,12 @@
 import "./App.css";
-import  Home from "./components/Home.jsx";
+import Home from "./components/Home.jsx";
 import Layout from "./components/Layout.jsx";
 import Login from "./components/Login.jsx";
 import Signup from "./components/Signup.jsx";
 import AdminDashboard from "./components/AdminDashboard.jsx";
+import AdminPageLayout from "./components/AdminPageLayout.jsx";
 import { Cart, AllOrders, About, Collection, Contact, ProductInfo, Profile, Checkout, Wishlist,
-  AdminPageLayout, AdminUsersInfo, AdminProductInfo, AdminOrderInfo, AdminAddProduct, AdminEditProduct,
+   AdminUsersInfo, AdminProductInfo, AdminOrderInfo, AdminAddProduct, AdminEditProduct,
 } from "./routes/LazyRoutes.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";

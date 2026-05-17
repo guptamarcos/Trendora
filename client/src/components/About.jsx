@@ -15,8 +15,8 @@ function About() {
       </h6>
       
       {/* IMAGE AND CONTENT */}
-      <div className="flex my-16">
-        <img src={about_img} className="w-[50%] h-[80vh] "></img>
+      <div className="flex mt-8 mb-12">
+        <img src={about_img} className="w-[50%] h-[75vh] rounded-lg"></img>
         <p className="flex-1 p-16 text-justify text-gray-600">
           Trendora was born out of a passion for innovation and a desire to
           revolutionize the way people shop online. Our journey began with a

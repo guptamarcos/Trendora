@@ -12,7 +12,7 @@ function AdminPageLayout() {
         <AdminSidebar />
 
         {/* MAIN CONTENT */}
-        <div className="pl-64 ">
+        <div className="pl-64">
           <Outlet />
         </div>
       </div>

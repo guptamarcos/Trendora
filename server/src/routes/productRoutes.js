@@ -7,6 +7,7 @@ const {
   getBestSeller,
   getRelatedProducts,
   getAllProducts,
+  updateProductRating
 } = require("../controllers/productController.js");
 const upload = require("../middleware/multerMiddleware.js");
 
@@ -15,5 +16,6 @@ router.get("/latest", wrapAsync(latestCollections));
 router.get("/best-sellers", wrapAsync(getBestSeller));
 router.get("/:productId/related", wrapAsync(getRelatedProducts));
 router.get("/:productId", wrapAsync(getProductInfo));
+router.post("/:productId/rating",wrapAsync(updateProductRating));
 
 module.exports = router;

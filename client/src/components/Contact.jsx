@@ -15,7 +15,7 @@ function Contact() {
       </h6>
 
       {/* IMAGE AND CONTENT */}
-      <div className="flex my-20 gap-12 items-center">
+      <div className="flex mt-12 mb-20 gap-12 items-center">
         {/* Left Image */}
         <img src={contact_img} className="w-1/2 h-[70vh] object-cover rounded-lg" alt="contact"/>
 

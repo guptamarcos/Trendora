@@ -135,7 +135,7 @@ function Login() {
       const token = credentialResponse.credential;
       const result = await oauthLogin(token);
       await getUser();
-      toast.success( "Logged in with Google!");
+      toast.success( "Logged in successfully");
       navigate("/trendora");
     } catch (error) {
       toast.error("Google login failed!");

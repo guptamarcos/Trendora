@@ -12,7 +12,7 @@ import ImageSchema from "../schemas/ImageSchema.js";
 function AdminEditProduct() {
   const [product, setProduct] = useState("");
   const { productId } = useParams();
-  const [preview, setPreview] = useState();
+  const [preview, setPreview] = useState("");
   const [file, setFile] = useState("");
   const [productLoading, setProductLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -45,22 +45,20 @@ function AdminEditProduct() {
 
   async function formData(data) {
     try {
-      if (!file) {
-        toast.error("Product Image is also required");
-        return;
-      }
-
-      const result = ImageSchema.safeParse(file);
-      console.log(result);
-
-      if (!result.success) {
-        toast.error(JSON.parse(result?.error?.message)[0]?.message);
-        return;
-      }
-
       const formData = new FormData();
-      formData.append("productImage", file);
-      
+
+      if (file) {
+
+        const result = ImageSchema.safeParse(file);
+        
+        if (!result.success) {
+          toast.error(JSON.parse(result?.error?.message)[0]?.message);
+          return;
+        }
+
+        formData.append("productImage", file);
+      }
+
       Object.keys(data).forEach((key) => {
         formData.append(key, data[key]);
       });
