@@ -14,7 +14,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const { verifyAndCheckUserToken, verifyAndCheckAdminToken} = require("./src/middleware/authMiddleware.js");
 const errorMiddleware = require("./src/middleware/errorMiddleware.js");
-const apiLimiter = require("./src/config/rateLimiter.js");
+const apiLimiter = require("./src/config/rateLimiterConfig.js");
 const helmet = require("helmet");
 
 const authRoutes = require("./src/routes/authRoutes.js");
@@ -26,6 +26,7 @@ const wishlistRoutes = require("./src/routes/wishlistRoutes.js");
 const orderRoutes = require("./src/routes/orderRoutes.js");
 const securityRoutes = require("./src/routes/securityRoutes.js");
 const reviewRoutes = require("./src/routes/reviewRoutes.js");
+const paymentRoutes = require("./src/routes/paymentRoutes.js");
 
 // MIDDLEWARE SETUP
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
@@ -63,6 +64,7 @@ app.use("/api/cart/items", verifyAndCheckUserToken, cartRoutes);
 app.use("/api/wishlist/items", verifyAndCheckUserToken, wishlistRoutes);
 app.use("/api/orders", verifyAndCheckUserToken, orderRoutes);
 app.use("/api/security", securityRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // WHEN API ENDPOINT NOT EXIST
 app.use((req, res, next) => {

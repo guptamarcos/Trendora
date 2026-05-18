@@ -1,28 +1,28 @@
-const Product = require("../models/productSchema.js");
-const User = require("../models/userSchema.js");
 const wishlistServices = require("../services/wishlistServices.js");
+const isValidDocumentId = require("../utils/Validator.js");
+const ExpressError = require("../utils/ExpressError.js");
 
 async function getWishlistItems(req, res) {
-
   const result = await wishlistServices.getWishlistItems(req.user._id);
 
   return res.status(200).json(result);
 }
 
 async function addToWishlist(req, res) {
-
   const result = await wishlistServices.addToWishlist(req.body, req.user._id);
 
   return res.status(201).json(result);
 }
 
-
 async function removeWishlistItem(req, res) {
-
   const userId = req.user._id;
   const { itemId } = req.params;
 
-  const result = await wishlistServices.removeWishlistItem(userId,itemId);
+  if (!isValidDocumentId(itemId)) {
+    throw new ExpressError(400, "Invalid Item Id");
+  }
+
+  const result = await wishlistServices.removeWishlistItem(userId, itemId);
 
   return res.status(200).json(result);
 }

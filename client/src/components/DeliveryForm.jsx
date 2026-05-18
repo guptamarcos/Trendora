@@ -4,53 +4,166 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { addOrder } from "../api/orderApi.js";
 import { toast } from "react-toastify";
+import { UserContext } from "../context/UserContext.jsx";
+import { useContext } from "react";
+import { createOrder, verifyPayment } from "../api/paymentApi.js";
 
-function DeliveryForm({paymentMethod}) {
-  const { register, handleSubmit, formState: { errors }} = useForm({ resolver: zodResolver(DeliveryAddressSchema) });
-  
+function DeliveryForm({ paymentMethod, amount }) {
+  const navigate = useNavigate();
+  const { getUser } = useContext(UserContext);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(DeliveryAddressSchema),
+  });
+
   async function formData(data) {
-    data.paymentMethod = paymentMethod;
-    
-    try{
-      const res = await addOrder(data);
-      console.log(res);
-    }catch(err){
-      const message = err?.response?.data?.message || "Something went wrong";
-      toast.error(message);
+    const orderAddress = { ...data, paymentMethod };
+
+    if (paymentMethod === "stripe") {
+      toast.error("Payment option is currently unavailable");
+      return;
+    }
+
+    if (paymentMethod === "cod") {
+      try {
+        await addOrder(orderAddress);
+
+        toast.success("Order placed successfully");
+
+        // Refresh user/cart
+        await getUser();
+
+        navigate("/trendora/orders");
+      } catch (err) {
+        console.log(err);
+        const message = err?.response?.data?.message || "Something went wrong";
+        toast.error(message);
+      }
+    }
+
+    if (paymentMethod === "razorpay") {
+      try {
+        // Create Razorpay Order
+        const res = await createOrder(Number(amount));
+        const { order } = res?.data;
+
+        // Razorpay SDK check
+        if (!window.Razorpay) {
+          toast.error("Razorpay SDK failed to load");
+          return;
+        }
+
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          amount: order.amount,
+          currency: order.currency,
+          name: "Trendora",
+          description: "Order Payment",
+          order_id: order.id,
+
+          handler: async function (response) {
+            try {
+              // Verify payment
+              const verify = await verifyPayment(response);
+
+              if (verify?.data?.success) {
+                // Add order only after successful payment
+                await addOrder(orderAddress);
+
+                toast.success("Order placed successfully");
+
+                // Refresh user/cart
+                await getUser();
+
+                navigate("/trendora/orders");
+              } else {
+                toast.error("Payment verification failed");
+              }
+            } catch (err) {
+              console.log(err);
+
+              const message =
+                err?.response?.data?.message || "Payment verification failed";
+
+              toast.error(message);
+            }
+          },
+
+          prefill: {
+            name: `${data.firstName} ${data.lastName}`,
+            email: data.email,
+            contact: data.phone,
+          },
+
+          theme: {
+            color: "#3399cc",
+          },
+
+          modal: {
+            ondismiss: function () {
+              toast.info("Payment cancelled");
+            },
+          },
+        };
+
+        const razor = new window.Razorpay(options);
+
+        // Payment failed event
+        razor.on("payment.failed", function (response) {
+          console.log(response);
+
+          toast.error(response.error.description || "Payment failed");
+        });
+
+        razor.open();
+      } catch (err) {
+        console.log(err);
+
+        const message = err?.response?.data?.message || "Something went wrong";
+
+        toast.error(message);
+      }
     }
   }
 
   return (
     <form id="deliveryAddressForm" onSubmit={handleSubmit(formData)}>
-
       {/* FIRST NAME AND LAST NAME */}
       <div className="flex justify-between gap-4 mb-6">
         <div>
-          {/* FIRST NAME INPUT */}
           <input
             id="firstName"
             type="text"
             placeholder="First Name"
-            className=" flex-1 border border-gray-300 rounded-sm px-2 py-2"
+            className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
             {...register("firstName")}
           />
-          {errors.firstName && ( <p className="text-red-500 text-sm">{errors.firstName.message}</p>)}
+
+          {errors.firstName && (
+            <p className="text-red-500 text-sm">{errors.firstName.message}</p>
+          )}
         </div>
 
         <div>
-          {/* LAST NAME INPUT */}
           <input
             id="lastName"
             type="text"
             placeholder="Last Name"
-            className=" flex-1 border border-gray-300 rounded-sm px-2 py-2"
+            className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
             {...register("lastName")}
           />
-          {errors.lastName && ( <p className="text-red-500 text-sm">{errors.lastName.message}</p>)}
+
+          {errors.lastName && (
+            <p className="text-red-500 text-sm">{errors.lastName.message}</p>
+          )}
         </div>
       </div>
 
-      {/* EMAIL ADDRESS */}
+      {/* EMAIL */}
       <div className="mb-6">
         <input
           id="email"
@@ -59,10 +172,13 @@ function DeliveryForm({paymentMethod}) {
           className="w-full border border-gray-300 rounded-sm px-2 py-2"
           {...register("email")}
         />
-        {errors.email && ( <p className="text-red-500 text-sm">{errors.email.message}</p>)}
+
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email.message}</p>
+        )}
       </div>
 
-      {/* STREET ADDRESS */}
+      {/* STREET */}
       <div className="mb-6">
         <input
           id="street"
@@ -71,13 +187,15 @@ function DeliveryForm({paymentMethod}) {
           className="w-full border border-gray-300 rounded-sm px-2 py-2"
           {...register("street")}
         />
-        {errors.street && ( <p className="text-red-500 text-sm">{errors.street.message}</p>)}
+
+        {errors.street && (
+          <p className="text-red-500 text-sm">{errors.street.message}</p>
+        )}
       </div>
 
-      {/* CITY AND STATE */}
+      {/* CITY & STATE */}
       <div className="flex justify-between gap-4 mb-6">
         <div>
-          {/* CITY INPUT */}
           <input
             id="city"
             type="text"
@@ -85,11 +203,13 @@ function DeliveryForm({paymentMethod}) {
             className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
             {...register("city")}
           />
-          {errors.city && ( <p className="text-red-500 text-sm">{errors.city.message}</p>)}
+
+          {errors.city && (
+            <p className="text-red-500 text-sm">{errors.city.message}</p>
+          )}
         </div>
 
         <div>
-          {/* STATE INPUT */}
           <input
             id="state"
             type="text"
@@ -97,29 +217,33 @@ function DeliveryForm({paymentMethod}) {
             className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
             {...register("state")}
           />
-          {errors.state && ( <p className="text-red-500 text-sm">{errors.state.message}</p>)}
+
+          {errors.state && (
+            <p className="text-red-500 text-sm">{errors.state.message}</p>
+          )}
         </div>
       </div>
 
-      {/* ZIP CODE AND COUNTRY */}
+      {/* ZIPCODE & COUNTRY */}
       <div className="flex justify-between gap-4 mb-6">
         <div>
-          {/* ZIP CODE INPUT */}
           <input
             id="zipcode"
             type="tel"
             inputMode="numeric"
             pattern="[0-9]*"
-            maxLength="6"
+            maxLength={6}
             placeholder="Zip Code"
             className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
             {...register("zipcode")}
           />
-          {errors.zipcode && ( <p className="text-red-500 text-sm">{errors.zipcode.message}</p>)}
+
+          {errors.zipcode && (
+            <p className="text-red-500 text-sm">{errors.zipcode.message}</p>
+          )}
         </div>
 
         <div>
-          {/* COUNTRY INPUT */}
           <input
             id="country"
             type="text"
@@ -127,25 +251,30 @@ function DeliveryForm({paymentMethod}) {
             className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
             {...register("country")}
           />
-          {errors.country && ( <p className="text-red-500 text-sm">{errors.country.message}</p>)}
+
+          {errors.country && (
+            <p className="text-red-500 text-sm">{errors.country.message}</p>
+          )}
         </div>
       </div>
 
-      {/* PHONE NUMBER */}
+      {/* PHONE */}
       <div className="mb-6">
         <input
           id="phone"
           type="tel"
           inputMode="numeric"
           pattern="[0-9]*"
-          maxLength="10"
+          maxLength={10}
           placeholder="Phone"
           className="w-full border border-gray-300 rounded-sm px-2 py-2"
           {...register("phone")}
         />
-        {errors.phone && ( <p className="text-red-500 text-sm">{errors.phone.message}</p>)}
-      </div>
 
+        {errors.phone && (
+          <p className="text-red-500 text-sm">{errors.phone.message}</p>
+        )}
+      </div>
     </form>
   );
 }
