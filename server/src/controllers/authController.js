@@ -9,18 +9,7 @@ async function register(req, res) {
 async function login(req, res) {
   const result = await authServices.loginUser(req.body);
 
-  res.cookie("token", result?.token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    maxAge: 1 * 24 * 60 * 60 * 1000,
-    signed: true,
-  });
-
-  return res.status(200).json({
-    success: result?.success,
-    message: result?.message,
-  });
+  return res.status(200).json(result);
 }
 
 async function logout(req, res) {
@@ -54,9 +43,24 @@ async function oauthLogin(req, res) {
   });
 }
 
+async function otpVerify(req,res){
+  const result = await authServices.verifyOtp(body);
+
+  res.cookie("token", result?.token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+    signed: true,
+  });
+  
+  return res.status(200).json(result);
+}
+
 module.exports = {
   register,
   login,
   logout,
   oauthLogin,
+  otpVerify
 };

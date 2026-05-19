@@ -32,4 +32,14 @@ function getExactTime({ createdAt }) {
   }
 }
 
-module.exports = getExactTime;
+const otpGenerator = () => {
+  let otp = "";
+  for (let i = 0; i < 6; i++) {
+    const otpNum = Math.floor(Math.random() * 10);
+    otp += otpNum;
+  }
+  return otp;
+};
+
+
+module.exports = { getExactTime , otpGenerator};

@@ -1,7 +1,7 @@
 const User = require("../models/userSchema.js");
 const Order = require("../models/orderSchema.js");
 const Product = require("../models/productSchema.js");
-const getExactTime = require("../utils/Helper.js");
+const { getExactTime } = require("../utils/Helper.js");
 
 async function getUserInfo() {
   const user = await User.findOne()

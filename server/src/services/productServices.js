@@ -50,7 +50,7 @@ async function getRelatedProducts(productId) {
 }
 
 async function getAllProducts() {
-  const allProducts = await Product.find({});
+  const allProducts = await Product.find({}).limit(10);
 
   return {
     success: true,
