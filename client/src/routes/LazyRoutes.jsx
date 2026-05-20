@@ -7,11 +7,11 @@ import {
   CollectionSkeleton,
   UserInfoPageSkeleton,
   ProductDetailsSkeleton,
-} from "../components/skeletons/Index.jsx";
+} from "../components/skeletons/Index.jsx";    
 
 export const About = Loadable(
   lazy(() => import("../components/About.jsx")),
-  <UserInfoPageSkeleton />,
+  <UserInfoPageSkeleton/>,
 );
 
 export const AllOrders = Loadable(
@@ -21,22 +21,22 @@ export const AllOrders = Loadable(
 
 export const Cart = Loadable(
   lazy(() => import("../components/Cart.jsx")),
-  <Loader />,
+  <Loader />
 );
 
 export const Collection = Loadable(
   lazy(() => import("../components/Collection.jsx")),
-  <CollectionSkeleton />,
+  <CollectionSkeleton />
 );
 
 export const Contact = Loadable(
   lazy(() => import("../components/Contact.jsx")),
-  <UserInfoPageSkeleton />,
+  <UserInfoPageSkeleton />
 );
 
 export const ProductInfo = Loadable(
   lazy(() => import("../components/ProductInfo.jsx")),
-  <ProductDetailsSkeleton />,
+  <ProductDetailsSkeleton />
 );
 
 export const Profile = Loadable(

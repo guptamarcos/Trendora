@@ -29,7 +29,7 @@ async function verifyPayment(body) {
     {
       order_id: razorpay_order_id,
       payment_id: razorpay_payment_id,
-    },
+    },   
     razorpay_signature,
     process.env.RAZORPAY_KEY_SECRET,
   );

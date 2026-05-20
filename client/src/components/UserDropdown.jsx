@@ -1,41 +1,67 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaUser, FaBox, FaSignOutAlt } from "react-icons/fa";
-import { useContext, forwardRef} from "react";
+import { useContext, useRef, useEffect } from "react";
 import { logoutUser } from "../api/authApi.js";
-import { UserContext, UserDropDownContext } from "../context/Index.jsx";
+import { UserContext } from "../context/Index.jsx";
 import { toast } from "react-toastify";
 
-
-const UserDropDown = forwardRef((props, ref) => {
-
-  const { user,getUser } = useContext(UserContext);
-  const { setIsOpen } = useContext(UserDropDownContext);
+function UserDropDown({ isOpen, setIsOpen, buttonRef }) {
+  const dropDownRef = useRef(null);
+  const { user, getUser } = useContext(UserContext);
   const navigate = useNavigate();
-  
-  async function logout(){
-    try{
+
+  async function logout() {
+    try {
       const res = await logoutUser();
-      getUser(); 
+      getUser();
       toast.success("You have been logged out successfully");
-      navigate("/trendora")
+      navigate("/trendora");
       setIsOpen(false);
-    } catch(err){
-      console.log(err);
+    } catch (err) {
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
     }
   }
-  
+
+  useEffect(() => {
+    
+    function closeDropdown(evt) {
+      
+      if(buttonRef?.current?.contains(evt.target)){
+        return;
+      }
+
+      if(!dropDownRef?.current?.contains(evt.target)){
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", closeDropdown);
+
+    return () => {
+      document.removeEventListener("mousedown", closeDropdown);
+    };
+  }, []);
+
+  // console.log(ref.current);
+
   return (
-    <div className="absolute right-2 top-14 w-56 p-4 flex flex-col bg-white rounded-xl border border-gray-200 shadow-lg z-50"
-      ref={ref}>
+    <div
+      className={`absolute right-2 top-14 w-56 p-4 flex flex-col bg-white rounded-xl border border-gray-200 shadow-lg z-50 ${isOpen ? "" : "hidden"}`}
+      ref={dropDownRef}
+    >
       {/* User Info */}
       <div className="border-b pb-3 mb-3">
-        <p className="font-semibold text-gray-800">{user?.username || "Not available"}</p>
+        <p className="font-semibold text-gray-800">
+          {user?.username || "Not available"}
+        </p>
         <p className="text-sm text-gray-500 truncate">{user?.email}</p>
       </div>
 
       {/* Links */}
       <NavLink
-        to="/trendora/profile" className={({ isActive }) =>
+        to="/trendora/profile"
+        className={({ isActive }) =>
           `flex items-center gap-2 p-2 rounded-md text-base transition ${
             isActive
               ? "bg-gray-100 text-black"
@@ -62,12 +88,15 @@ const UserDropDown = forwardRef((props, ref) => {
       </NavLink>
 
       {/* Logout */}
-      <button onClick={logout} className="flex items-center gap-2 p-2 rounded-md text-base text-red-500 hover:bg-red-100 transition">
+      <button
+        onClick={logout}
+        className="flex items-center gap-2 p-2 rounded-md text-base text-red-500 hover:bg-red-100 transition"
+      >
         <FaSignOutAlt />
         Logout
       </button>
     </div>
   );
-});
+}
 
 export default UserDropDown;

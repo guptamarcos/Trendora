@@ -112,7 +112,7 @@ function AdminProductInfo() {
           <div className="flex w-full md:w-auto gap-2">
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search Products..."
               className="h-11 w-full md:w-72 border border-gray-200 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-black bg-white"
             />
             <button className="h-11 px-6 rounded-md border border-gray-200 text-gray-700 bg-white hover:bg-gray-100 transition">

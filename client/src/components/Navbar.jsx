@@ -1,39 +1,23 @@
-import { NavLink} from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { FiUserPlus, FiLogIn } from "react-icons/fi";
-import { FaUserAlt, FaRegHeart,FaHeart } from "react-icons/fa";
+import { FaUserAlt, FaRegHeart, FaHeart } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { UserDropDown } from "./Index.jsx";
-import { useContext, useRef, useEffect } from "react";
-import { UserDropDownContext,UserContext } from "../context/Index.jsx";
+import { useContext, useRef, useState } from "react";
+import { UserContext } from "../context/Index.jsx";
 
 function Navbar() {
-  const { isOpen, setIsOpen } = useContext(UserDropDownContext);
-  const inputRef = useRef(null);
   const buttonRef = useRef(null);
-  
+  const [isOpen, setIsOpen] = useState(false);
+
   const { user } = useContext(UserContext);
 
   const itemsInCart = user?.cart?.length;
   const itemsInWishlist = user?.wishlist?.length === 0;
-  
-  useEffect(() => {
-    function closeDropdown(e) {
-      if(inputRef.current && !inputRef.current.contains(e.target) && buttonRef.current &&
-        !buttonRef.current.contains(e.target)){
-        setIsOpen(false);
-      }
-    }
-    
-    document.addEventListener("mousedown", closeDropdown);
-
-    return () => {
-      document.removeEventListener("mousedown", closeDropdown);
-    };
-  }, [setIsOpen]);
 
   return (
-    <header className="h-[10vh] border-b-2 border-gray-300 w-full">
-      <nav className="h-full flex justify-between items-center">
+    <header className="h-[10vh] w-full px-[7.5vw] bg-white fixed top-0 left-0 z-10">
+      <nav className="h-full flex justify-between items-center border-b-2 border-gray-300">
         {/* WEBSITE LOGO  */}
         <h1 className="font-semibold font-heading text-4xl">Trendora</h1>
 
@@ -75,39 +59,56 @@ function Navbar() {
         </div>
 
         {/* OPTIONS BEFORE LOGIN  */}
-        {((!user) || (user?.role === "admin")) && <div>
-          <NavLink to="/trendora/login" className="bg-transparent text-base mr-2 border px-[0.8rem] py-[0.5rem] rounded-xl border-[#CBD5E1] text-[#374151] hover:bg-[#F1F5F9] hover:text-[#1D4ED8]">
-            <FiLogIn className="inline-block mr-2 text-xl" />
-            Log In
-          </NavLink>
-          <NavLink to="/trendora/signup" className="bg-[#2563EB] text-base text-[#FFFFFF] px-[0.8rem] py-[0.55rem] rounded-xl hover:bg-[#1E40AF]">
-            <FiUserPlus className="inline-block mr-2 text-xl" />
-            Get Started
-          </NavLink>
-        </div>
-        }
+        {(!user || user?.role === "admin") && (
+          <div>
+            <NavLink
+              to="/trendora/login"
+              className="bg-transparent text-base mr-2 border px-[0.8rem] py-[0.5rem] rounded-xl border-[#CBD5E1] text-[#374151] hover:bg-[#F1F5F9] hover:text-[#1D4ED8]"
+            >
+              <FiLogIn className="inline-block mr-2 text-xl" />
+              Log In
+            </NavLink>
+            <NavLink
+              to="/trendora/signup"
+              className="bg-[#2563EB] text-base text-[#FFFFFF] px-[0.8rem] py-[0.55rem] rounded-xl hover:bg-[#1E40AF]"
+            >
+              <FiUserPlus className="inline-block mr-2 text-xl" />
+              Get Started
+            </NavLink>
+          </div>
+        )}
 
         {/* OPTIONS AFTER LOGIN */}
-        {(user &&  user?.role !== "admin") && <div className="flex items-center gap-8 relative">
-          <NavLink to="/trendora/cart">
-            <HiOutlineShoppingBag size={26} color="black" />
-          </NavLink>
-          {itemsInCart !== 0 && <p className="absolute bg-black text-xs text-white left-4 top-4 rounded-[50%] px-1 flex justify-center items-center">
-            {itemsInCart}
-          </p>}
-          <NavLink to="/trendora/wishlist">
-            {itemsInWishlist && <FaRegHeart size={24} color="black" />}
-            {!itemsInWishlist && <FaHeart size={24} color="black" /> }
-          </NavLink>
-          <button onClick={() => setIsOpen(!isOpen)} ref={buttonRef} className="cursor-pointer">
-            <FaUserAlt size={24} color="black" />
-          </button>
-        </div> 
-        }
-
+        {user && user?.role !== "admin" && (
+          <div className="flex items-center gap-8 relative">
+            <NavLink to="/trendora/cart">
+              <HiOutlineShoppingBag size={26} color="black" />
+            </NavLink>
+            {itemsInCart !== 0 && (
+              <p className="absolute bg-black text-xs text-white left-4 top-4 rounded-[50%] px-1 flex justify-center items-center">
+                {itemsInCart}
+              </p>
+            )}
+            <NavLink to="/trendora/wishlist">
+              {itemsInWishlist && <FaRegHeart size={24} color="black" />}
+              {!itemsInWishlist && <FaHeart size={24} color="black" />}
+            </NavLink>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              ref={buttonRef}
+              className="cursor-pointer"
+            >
+              <FaUserAlt size={24} color="black" />
+            </button>
+          </div>
+        )}
       </nav>
 
-      {isOpen && <UserDropDown ref={inputRef} />}
+      <UserDropDown
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        buttonRef={buttonRef}
+      />
     </header>
   );
 }

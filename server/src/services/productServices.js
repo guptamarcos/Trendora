@@ -23,7 +23,7 @@ async function getBestSeller() {
   const bestSellers = await Product.find({})
     .select("productImage rating price name")
     .sort({ "rating.average": -1 })
-    .limit(5);
+    .limit(10);
 
   return {
     success: true,

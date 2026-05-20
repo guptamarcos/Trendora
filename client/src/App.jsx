@@ -17,9 +17,10 @@ import {
   CheckUserAuth,
 } from "./routes/ProtectedRoutes.jsx";
 import {AdminSectionSkeleton } from "./components/skeletons/Index.jsx"
+import VerifyOtpForm from "./components/VerifyOtpForm.jsx";
+
 
 function App() {
-
   return (
     <>
       <Routes>
@@ -59,7 +60,8 @@ function App() {
           <Route path="/trendora/login" element={<Login />} />
         </Route>
 
-        <Route path="/skeleton" element={<AdminSectionSkeleton />} />
+        <Route path="/trendora/otpform" element={<VerifyOtpForm/>}/>
+
       </Routes>
       <ToastContainer />
     </>
