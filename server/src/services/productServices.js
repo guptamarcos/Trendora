@@ -49,8 +49,8 @@ async function getRelatedProducts(productId) {
   };
 }
 
-async function getAllProducts() {
-  const allProducts = await Product.find({}).limit(10);
+async function getAllUserProducts() {
+  const allProducts = await Product.find({});
 
   return {
     success: true,
@@ -210,6 +210,25 @@ async function updateProductRating(productId, rating) {
   
 }
 
+async function getAllProduct(search, category, limit){
+ 
+  let query = {};
+  if(search){
+    query.name = search;
+  }
+  if(category){
+    query.category = category.toLowerCase();
+  }
+  
+  const allProducts = await Product.find(query).limit(Number(limit));
+
+
+  return {
+    success: true,
+    data: allProducts,
+  };
+} 
+
 module.exports = {
   addProduct,
   deleteProduct,
@@ -218,6 +237,7 @@ module.exports = {
   latestCollections,
   getBestSeller,
   getRelatedProducts,
-  getAllProducts,
+  getAllUserProducts,
+  getAllProduct,
   updateProductRating,
 };

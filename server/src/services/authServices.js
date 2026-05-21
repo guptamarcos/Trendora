@@ -59,25 +59,30 @@ async function loginUser(body) {
     throw new ExpressError(401, "Invalid email or password");
   }
 
-  const otp = otpGenerator();
+  // const otp = otpGenerator();
 
-  const otpEmail = await sendOtpEmail(email, otp);
+  // const otpEmail = await sendOtpEmail(email, otp);
 
-  if (!otpEmail) {
-    console.log("Otp is not sent");
-    throw new ExpressError(500, "Internal server error");
-  }
+  // if (!otpEmail) {
+  //   console.log("Otp is not sent");
+  //   throw new ExpressError(500, "Internal server error");
+  // }
 
-  await OTP.deleteOne({ email: email });
-  const hashedOtp = await bcrypt.hash(otp, 10);
+  // await OTP.deleteOne({ email: email });
+  // const hashedOtp = await bcrypt.hash(otp, 10);
 
-  await OTP.create({
-    email,
-    expiresAt: Date.now() + 1000 * 60 * 5,
-    otp: hashedOtp,
-  });
+  // await OTP.create({
+  //   email,
+  //   expiresAt: Date.now() + 1000 * 60 * 5,
+  //   otp: hashedOtp,
+  // });
+
+  await User.findByIdAndUpdate(findUser._id, { $set: { status: "Active" } });
+
+  const token = findUser.generateToken();
 
   return {
+    token,
     success: true,
     message: "Credentials verified",
   };

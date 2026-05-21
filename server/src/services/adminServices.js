@@ -3,6 +3,7 @@ const Order = require("../models/orderSchema.js");
 const Product = require("../models/productSchema.js");
 const { getExactTime } = require("../utils/Helper.js");
 
+// THESE ARE THE SUBPART OF DASHBOARD INFO FUNCTION
 async function getUserInfo() {
   const user = await User.findOne()
     .sort({ createdAt: -1 })
