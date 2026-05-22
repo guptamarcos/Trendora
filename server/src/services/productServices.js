@@ -210,12 +210,14 @@ async function updateProductRating(productId, rating) {
   
 }
 
-async function getAllProduct(search, category, limit){
- 
+async function getProducts(search, category, limit){
+
   let query = {};
+
   if(search){
-    query.name = search;
+    query.name = {$regex: search, $options: "i"};
   }
+
   if(category){
     query.category = category.toLowerCase();
   }
@@ -238,6 +240,6 @@ module.exports = {
   getBestSeller,
   getRelatedProducts,
   getAllUserProducts,
-  getAllProduct,
+  getProducts,
   updateProductRating,
 };

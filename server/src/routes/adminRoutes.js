@@ -7,7 +7,7 @@ const {
   addProduct,
   editProductInfo,
   deleteProduct,
-  getAllProduct
+  getProducts
 } = require("../controllers/productController.js");
 const wrapAsync = require("../utils/WrapAsync.js");
 const upload = require("../middleware/multerMiddleware.js");
@@ -17,7 +17,7 @@ const csrfProtection = require("../config/csrfConfig.js");
 
 router.get("/users", wrapAsync(getAllUser));
 router.get("/orders", wrapAsync(getAllOrder));
-router.get("/products", wrapAsync(getAllProduct));
+router.get("/products", wrapAsync(getProducts));
 router.get("/dashboard", wrapAsync(DashboardInfo)); // SORTED
 router.post("/products", csrfProtection,upload.single("productImage"), wrapAsync(addProduct)); // SORTED
 router.patch(

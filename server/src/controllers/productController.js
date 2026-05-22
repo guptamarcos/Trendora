@@ -91,9 +91,9 @@ async function updateProductRating(req, res) {
   return res.status(201).json(result);
 }
 
-async function getAllProduct(req, res) {
+async function getProducts(req, res) {
   const { search, category, limit } = req.query;
-  const result = await productServices.getAllProduct(search, category, limit);
+  const result = await productServices.getProducts(search, category, limit);
   return res.status(200).json(result);
 }
 
@@ -106,6 +106,6 @@ module.exports = {
   getBestSeller,
   getRelatedProducts,
   getAllUserProducts,
-  getAllProduct,
+  getProducts,
   updateProductRating,
 };
