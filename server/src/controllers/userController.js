@@ -9,7 +9,8 @@ async function getUser(req, res) {
 }
 
 async function getAllUser(req, res) {
-  const result = await userServices.getAllUser();
+  const { search, status, limit } = req.query;
+  const result = await userServices.getAllUser(search,status, limit);
 
   return res.status(200).json(result);
 }

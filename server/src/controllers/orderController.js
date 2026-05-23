@@ -7,10 +7,6 @@ async function getUserOrder(req, res) {
   return res.status(200).json(result);
 }
 
-async function getAllOrder(req, res) {
-  const result = await orderServices.getAllOrder();
-  return res.status(200).json(result);
-}
 
 async function addOrder(req, res) {
   const userId = req.user._id;
@@ -20,5 +16,12 @@ async function addOrder(req, res) {
   return res.status(201).json(result);
 }
 
+async function getOrders(req,res){
 
-module.exports = { addOrder, getUserOrder, getAllOrder };
+  const { search, status, limit } = req.query;
+  const result = await orderServices.getOrders(search, status, limit );
+  return res.status(200).json(result);
+}
+
+
+module.exports = { addOrder, getUserOrder, getOrders };

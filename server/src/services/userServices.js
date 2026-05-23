@@ -20,14 +20,27 @@ function getUser(userInfo) {
   };
 }
 
-async function getAllUser() {
-  const allUser = await User.find({}).select(
+async function getAllUser(search, status, limit) {
+
+  const query = {};
+  
+  if(search){
+    query.username = { $regex: search, $options: "i"};
+  }
+
+  if(status){
+    query.status = status[0].toUpperCase() + status.slice(1, status.length);
+  }
+  
+  const matchedUsersCount = await User.countDocuments(query);
+  const allUser = await User.find(query).limit(Number(limit)).select(
     "username email role profileImage status",
   );
 
   return {
     success: true,
     data: allUser,
+    matchedUsersCount,
   };
 }
 

@@ -211,23 +211,25 @@ async function updateProductRating(productId, rating) {
 }
 
 async function getProducts(search, category, limit){
-
+ 
   let query = {};
 
   if(search){
     query.name = {$regex: search, $options: "i"};
   }
-
+  
   if(category){
     query.category = category.toLowerCase();
   }
-  
+
   const allProducts = await Product.find(query).limit(Number(limit));
+  const matchedProductsCount = await Product.countDocuments(query);
 
 
   return {
     success: true,
     data: allProducts,
+    matchedProductsCount
   };
 } 
 

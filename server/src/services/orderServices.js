@@ -17,26 +17,7 @@ async function getUserOrder(userId) {
   };
 }
 
-async function getAllOrder() {
-  const allOrders = await Order.find({})
-    .select("createdAt totalAmount product paymentStatus user")
-    .sort({ createdAt: -1 })
-    .populate({
-      path: "user",
-      select: "username",
-    })
-    .populate({
-      path: "product",
-      select: "productImage name",
-    });
-
-  return {
-    success: true,
-    allOrders,
-  };
-}
-
-async function addOrder(body,userId) {
+async function addOrder(body, userId) {
   // CHECK CART NOT EMPTY
 
   const Cart = await User.findById(userId).select("cart").populate({
@@ -91,10 +72,45 @@ async function addOrder(body,userId) {
     { $pull: { cart: { _id: { $in: cartItemIds } } } },
   );
 
-  return{
+  return {
     success: true,
     message: "Order crated successfully",
   };
 }
 
-module.exports = { addOrder, getUserOrder, getAllOrder };
+async function getOrders(search, status, limit) {
+  let query = {};
+
+  if (status) {
+    query.paymentStatus =
+      status[0].toUpperCase() + status.slice(1);
+  }
+
+  if (search) {
+    const users = await User.find({
+      username: {
+        $regex: search,
+        $options: "i",
+      },
+    }).select("_id");
+
+    query.user = {
+      $in: users.map((u) => u._id),
+    };
+  }
+
+  const matchedOrdersCount =
+    await Order.countDocuments(query);
+
+  const orders = await Order.find(query)
+    .populate("user")
+    .limit(Number(limit));
+
+  return {
+    success: true,
+    data: orders,
+    matchedOrdersCount,
+  };
+}
+
+module.exports = { addOrder, getUserOrder, getOrders };
