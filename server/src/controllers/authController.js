@@ -53,10 +53,18 @@ async function otpVerify(req, res) {
   return res.status(200).json(result);
 }
 
+
+async function resendOtp(req,res){
+  const result = await authServices.resendOtp(req.body);
+ 
+  return res.status(200).json(result);
+}
+
 module.exports = {
   register,
   login,
   logout,
   oauthLogin,
   otpVerify,
+  resendOtp,
 };

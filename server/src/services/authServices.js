@@ -31,6 +31,23 @@ async function registerUser(body) {
 
   const createdUser = await User.create({ username, email, password });
 
+  const otp = otpGenerator();
+
+  const otpEmail = await sendOtpEmail(email, otp);
+
+  if (!otpEmail) {
+    console.log("Otp is not sent");
+    throw new ExpressError(500, "Internal server error");
+  }
+
+  const hashedOtp = await bcrypt.hash(otp, 10);
+
+  await OTP.create({
+    email,
+    expiresAt: Date.now() + 1000 * 60 * 5,
+    otp: hashedOtp,
+  });
+
   return {
     success: true,
     message: "User created successfully!!",
@@ -98,8 +115,6 @@ async function logoutUser(userId) {
 }
 
 async function oauthLoginUser(body) {
-  const { token } = body;
-
   const { error, value } = GoogleAuthSchemaValidator.validate(body, {
     abortEarly: false,
   });
@@ -108,12 +123,14 @@ async function oauthLoginUser(body) {
     throw new ExpressError(400, "Invalid Google Id");
   }
 
+  const { token } = value;
+
   const ticket = await client.verifyIdToken({
     idToken: token,
     audience: process.env.OAUTH_CLIENT_ID,
   });
 
-  const { email, sub, name } = ticket.getPayload();
+  const { email, sub, name } = ticket?.getPayload();
 
   const otp = otpGenerator();
 
@@ -142,9 +159,7 @@ async function oauthLoginUser(body) {
       { _id: existingUser1._id },
       { status: "Active" },
     );
-    // const token1 = existingUser1.generateToken();
     return {
-      // token: token1,
       email,
       success: true,
       message: "User logged in successfully",
@@ -157,9 +172,7 @@ async function oauthLoginUser(body) {
     existingUser2.googleId = sub;
     existingUser2.status = "Active";
     await existingUser2.save();
-    // const token2 = existingUser2.generateToken();
     return {
-      // token: token2,
       email,
       success: true,
       message: "User logged in successfully",
@@ -167,16 +180,14 @@ async function oauthLoginUser(body) {
   }
 
   const newUser = await User.create({
-    username: "Not Available",
+    username: name,
     email,
     googleId: sub,
     authProvider: "google",
     status: "Active",
   });
 
-  // const token3 = newUser.generateToken();
   return {
-    // token: token3,
     email,
     success: true,
     message: "User logged in successfully",
@@ -203,7 +214,6 @@ async function verifyOtp(body) {
     throw new ExpressError(400, "Otp expires");
   }
 
-  console.log(otp, findOtp.otp);
   const checkOtp = await bcrypt.compare(otp, findOtp?.otp);
 
   if (!checkOtp) {
@@ -236,10 +246,54 @@ async function verifyOtp(body) {
   };
 }
 
+async function resendOtp(body){
+  const { email } = body;
+  if(!email){
+    throw new ExpressError(400, "Email is required");
+  }
+
+  const checkUser = await User.findOne({email: email});
+  if(!checkUser){
+    throw new ExpressError(404, "User not found");
+  };
+  
+  const existingOtp = await OTP.findOne({email})
+  
+  if(existingOtp?.expiresAt - Date.now() > 270000){
+    throw new ExpressError(429, "Please wait 30 seconds before requesting OTP again" );
+  }
+
+  await OTP.deleteOne({email: email});
+
+  const otp = otpGenerator();
+
+  const otpEmail = await sendOtpEmail(email, otp);
+
+  if (!otpEmail) {
+    console.log("Otp is not sent");
+    throw new ExpressError(500, "Internal server error");
+  }
+
+  const hashedOtp = await bcrypt.hash(otp, 10);
+
+  await OTP.create({
+    email,
+    expiresAt: Date.now() + 1000 * 60 * 5,
+    otp: hashedOtp,
+  });
+
+  return {
+    success: true,
+    message: "Credentials verified",
+  };
+
+}
+
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
   oauthLoginUser,
   verifyOtp,
+  resendOtp,
 };

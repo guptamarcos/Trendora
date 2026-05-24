@@ -44,7 +44,7 @@ connectDb()
   .then(() => {
     // CREATE AND START THE SERVER
     app.listen(port, () => {
-      console.log(`Server is listening on the port ${port}`);
+      console.log(`Server is listening on the port ${port}`); // breakpoint here
     });
 
     console.log("Database Connected Successfully!!");
