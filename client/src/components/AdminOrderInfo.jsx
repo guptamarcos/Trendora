@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getAllOrder } from "../api/adminApi.js";
 import { toast } from "react-toastify";
 import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
+import { getAllOrders } from "../api/adminApi.js";
 
 function StatusDropdown({ value, onChange }) {
   const statuses = ["Pending", "Shipped", "Delivered", "Cancelled"];
@@ -10,7 +10,7 @@ function StatusDropdown({ value, onChange }) {
     <select
       value={value}
       onChange={onChange}
-      className="border border-gray-200 px-3 py-2 rounded-md text-gray-700 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+      className="h-11 rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
     >
       {statuses.map((status) => (
         <option key={status}>{status}</option>
@@ -30,10 +30,13 @@ function TableHead() {
   ];
 
   return (
-    <thead className="bg-gray-50 text-gray-600 text-sm">
+    <thead className="bg-gray-50 border-b border-gray-200">
       <tr>
         {headings.map((head) => (
-          <th key={head} className="py-3 px-6 font-semibold">
+          <th
+            key={head}
+            className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
+          >
             {head}
           </th>
         ))}
@@ -45,14 +48,8 @@ function TableHead() {
 function TableRow({ order }) {
   if (!order) return null;
 
-  const {
-    _id,
-    user,
-    totalAmount,
-    createdAt,
-    orderStatus,
-    paymentStatus,
-  } = order;
+  const { _id, user, totalAmount, createdAt, orderStatus, paymentStatus } =
+    order;
 
   const formattedDate = new Date(createdAt).toLocaleDateString("en-IN", {
     day: "numeric",
@@ -60,36 +57,63 @@ function TableRow({ order }) {
     year: "numeric",
   });
 
-  const getPaymentColor = (status) => {
+  const getPaymentStyles = (status) => {
     switch (status) {
       case "Completed":
-        return "text-green-600";
+        return "bg-green-100 text-green-700";
+
       case "Pending":
-        return "text-orange-500";
+        return "bg-yellow-100 text-yellow-700";
+
       case "Cancelled":
-        return "text-red-500";
+        return "bg-red-100 text-red-700";
+
       default:
-        return "text-gray-500";
+        return "bg-gray-100 text-gray-600";
     }
   };
 
   return (
-    <tr className="hover:bg-gray-50 transition">
-      <td className="px-6 py-3 font-medium text-gray-800">{_id}</td>
+    <tr className="border-b border-gray-100 hover:bg-gray-50 transition duration-200">
+      {/* ORDER ID */}
+      <td className="px-6 py-4">
+        <div>
+          <p className="font-medium text-gray-800">#{_id.slice(-8)}</p>
 
-      <td className="px-6 py-3">{user?.username}</td>
-
-      <td className="px-6 py-3">₹ {totalAmount}</td>
-
-      <td className={`px-6 py-3 text-sm font-medium ${getPaymentColor(paymentStatus)}`}>
-        {paymentStatus}
+          <p className="text-xs text-gray-500">{_id}</p>
+        </div>
       </td>
 
-      <td className="px-6 py-3 text-sm text-gray-500">
-        {formattedDate}
+      {/* CUSTOMER */}
+      <td className="px-6 py-4">
+        <div className="flex flex-col">
+          <p className="font-medium text-gray-800">
+            {user?.username || "Unknown User"}
+          </p>
+
+          <p className="text-sm text-gray-500">Customer</p>
+        </div>
       </td>
 
-      <td className="px-6 py-3">
+      {/* AMOUNT */}
+      <td className="px-6 py-4 font-medium text-gray-800">₹{totalAmount}</td>
+
+      {/* PAYMENT */}
+      <td className="px-6 py-4">
+        <span
+          className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getPaymentStyles(
+            paymentStatus,
+          )}`}
+        >
+          {paymentStatus}
+        </span>
+      </td>
+
+      {/* DATE */}
+      <td className="px-6 py-4 text-sm text-gray-600">{formattedDate}</td>
+
+      {/* STATUS */}
+      <td className="px-6 py-4">
         <StatusDropdown value={orderStatus} />
       </td>
     </tr>
@@ -99,12 +123,22 @@ function TableRow({ order }) {
 function AdminOrderInfo() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [matchedOrdersCount, setMatchedOrdersCount] = useState(10);
+
+  // search + filter state
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [limit, setLimit] = useState(10);
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const res = await getAllOrder();
-      setOrders(res?.data?.allOrders || []);
+
+      const res = await getAllOrders(search, status, limit);
+
+      const orderData = res?.data?.data || [];
+      setOrders(orderData);
+      setMatchedOrdersCount(res?.data?.matchedOrdersCount);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed to fetch orders");
     } finally {
@@ -114,69 +148,112 @@ function AdminOrderInfo() {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [status, limit]);
 
-  if(loading){
-    return <AdminSectionSkeleton/>;
+  if (loading) {
+    return <AdminSectionSkeleton />;
   }
 
   return (
-    <main className="w-full min-h-screen p-6 bg-gray-100">
-      <div className="max-w-6xl mx-auto space-y-6">
-
+    <main className="min-h-screen bg-gray-100 px-4 py-8 md:px-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* HEADER */}
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-800">Orders</h1>
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold text-gray-800">Orders</h1>
+
           <p className="text-gray-500">Manage customer orders</p>
         </div>
 
-        {/* SEARCH + FILTER */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
-          <input
-            type="text"
-            placeholder="Search users..."
-            className="h-10 w-full md:w-72 border border-gray-200 px-4 rounded-md focus:ring-2 focus:ring-black"
-          />
+        {/* KEEP SAME SEARCH + FILTER STRUCTURE */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex w-full md:w-auto gap-2">
+            <input
+              type="text"
+              placeholder="Search Customer..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-11 w-full md:w-72 border border-gray-200 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-black bg-white"
+            />
 
-          <StatusDropdown />
+            <button
+              onClick={() => {
+                setLimit(10);
+                fetchOrders();
+              }}
+              className="cursor-pointer h-11 px-6 rounded-md border border-gray-200 text-gray-700 bg-white hover:bg-gray-100 transition"
+            >
+              Search
+            </button>
+          </div>
+
+          {/* SAME DROPDOWN STYLE */}
+          <select
+            value={status}
+            onChange={(e) => {
+              setLimit(10);
+              setStatus(e.target.value);
+            }}
+            className="h-11 border border-gray-200 px-4 rounded-md text-gray-700 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+          >
+            <option value="">All</option>
+            <option value="Completed">Completed</option>
+            <option value="Pending">Pending</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        {/* ORDER COUNT */}
+        <div>
+          <p className="text-sm text-gray-600">
+            Showing <span className="font-semibold text-gray-800">{orders?.length}</span> of{" "}
+            <span className="font-semibold text-gray-800"> { matchedOrdersCount } </span>{" "}
+            orders
+          </p>
         </div>
 
         {/* TABLE */}
-        <div className="bg-white rounded-xl overflow-hidden">
-          <table className="w-full text-left">
-            <TableHead />
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[950px] border-collapse">
+              <TableHead />
 
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="6" className="text-center py-6">
-                    Loading...
-                  </td>
-                </tr>
-              ) : orders.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="text-center py-6 text-gray-500">
-                    No orders found
-                  </td>
-                </tr>
-              ) : (
-                orders.map((order) => (
-                  <TableRow key={order._id} order={order} />
-                ))
-              )}
-            </tbody>
-          </table>
+              <tbody>
+                {orders?.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="py-10 text-center text-gray-500">
+                      No orders found
+                    </td>
+                  </tr>
+                )}
+
+                {orders?.length > 0 &&
+                  orders?.map((order, idx) => {
+                    return <TableRow order={order} key={idx} />;
+                  })}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* PAGINATION */}
-        <div className="flex justify-between items-center text-sm text-gray-600">
-          <p>
-            Showing <span className="font-medium">1–10</span> of{" "}
-            <span className="font-medium">{orders.length}</span>
-          </p>
+        {/* PAGINATION */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 pt-5">
+          <button
+            onClick={() => setLimit((prev) => prev - 10)}
+            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition ${orders?.length > 10 ? "" : "invisible"}`}
+          >
+            Show Less
+          </button>
 
-          <button className="px-4 py-2 border rounded-md hover:bg-gray-100">
-            Show more
+          <button
+            onClick={() => {
+              setLimit((prev) => prev + 10);
+            }}
+            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl bg-black text-white hover:opacity-90 transition ${orders?.length < matchedOrdersCount ? "" : "invisible"}`}
+          >
+            Show More
           </button>
         </div>
       </div>

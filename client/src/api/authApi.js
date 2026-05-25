@@ -16,3 +16,10 @@ export const oauthLogin = (token) => {
   return axiosInstance.post("/auth/google", { token });
 };
 
+export const verifyOtp = (email, otp) =>{
+  return axiosInstance.post("/auth/otp/verify", {email, otp});
+}
+
+export const resendOtp = (email) =>{
+  return axiosInstance.post("/auth/otp/resend", {email});
+}

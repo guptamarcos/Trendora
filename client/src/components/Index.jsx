@@ -37,12 +37,13 @@ import Product from "./Product.jsx";
 import Signup from "./Signup.jsx";
 import Subscribe from "./Subscribe.jsx";
 import UserDropDown from "./UserDropdown.jsx";
+import VerifyOtpForm from "./VerifyOtpForm.jsx";
 import Wishlist from "./Wishlist.jsx";
 import WishlistItem from "./WishlistItem.jsx";
 
 export { About, AdminDashboard, AdminNavbar,AdminPageLayout, AdminProductInfo, AdminSidebar, AdminAddProduct,
   DeliveryForm, Collection, CommentCard, Contact, Filters, Footer, Hero, Home, AdminOrderInfo,
   LatestCollections, Layout, Login, Navbar, OrderCard, Policy, ProductDetails, Cart, CartItem, Checkout,
-  ProductInfo, Profile, ProfileImage, ProfileInfo, ProfileSecurity, Product, Signup,
+  ProductInfo, Profile, ProfileImage, ProfileInfo, ProfileSecurity, Product, Signup, VerifyOtpForm,
   Subscribe, UserDropDown, Wishlist, WishlistItem, AllOrders,AllUsersInfo, BestSeller,AdminEditProduct
 };

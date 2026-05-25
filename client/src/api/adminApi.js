@@ -1,11 +1,15 @@
 import axiosInstance from "./axiosInstance.js";
 
-export const getAllUserInfo = () => {
-  return axiosInstance.get("/admin/users");
+export const getAllUser = (search , status , limit) => {
+  return axiosInstance.get(`/admin/users?search=${search}&status=${status}&limit=${limit}`);
 };
 
-export const getAllOrder = () => {
-  return axiosInstance.get("/admin/orders");
+export const getAllProduct = (search, category, limit) => {
+  return axiosInstance.get(`/admin/products?search=${search}&category=${category}&limit=${limit}`);
+} 
+
+export const getAllOrders = (search, statusFilter, limit) => {
+  return axiosInstance.get(`/admin/orders?search=${search}&status=${statusFilter}&limit=${limit}`);
 } 
  
 export const getDashboardInfo = () => {

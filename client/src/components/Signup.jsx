@@ -3,12 +3,12 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GoogleLogin } from "@react-oauth/google";
-import { useContext } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 import { SignupSchema } from "../schemas/SignupSchema";
-import { UserContext } from "../context/UserContext.jsx";
 import { registerUser, login, oauthLogin } from "../api/authApi.js";
+import Loader from "./loaders/Loader.jsx";
 
 // REUSABLE COMPONENTS
 
@@ -57,7 +57,7 @@ const styles = {
 
 function Signup() {
   const navigate = useNavigate();
-  const { getUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -70,36 +70,49 @@ function Signup() {
   // HANDLE NORMAL SIGNUP
   async function handleSignup(data) {
     try {
-      await registerUser(data);
+      setLoading(true);
+      const result = await registerUser(data);
 
-      await login({
-        email: data.email,
-        password: data.password,
-      });
+      if (result?.data?.success) {
+        navigate("/trendora/auth/verify-otp", {
+          state: {
+            email: data.email,
+          },
+        });
+      }
 
-      await getUser();
-
-      toast.success("Account created successfully!");
-
-      navigate("/trendora");
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong!";
 
       toast.error(message);
+    } finally {
+      setLoading(false);
     }
   }
 
   // HANDLE GOOGLE LOGIN/SIGNUP
   async function handleGoogleSuccess(credentialResponse) {
     try {
+      setLoading(true);
       const token = credentialResponse.credential;
       const result = await oauthLogin(token);
-      await getUser();
-      toast.success("Logged in with Google!");
-      navigate("/trendora");
+      if (result?.data?.success) {
+        navigate("/trendora/auth/verify-otp", {
+          state: {
+            email: result?.data?.email,
+          },
+        });
+      }
     } catch (error) {
       toast.error("Google signup failed!");
+    } finally{
+      setLoading(false);
     }
+  }
+
+  // SHOW LOADING SKELETON
+  if (loading) {
+    return <Loader />;
   }
 
   return (
