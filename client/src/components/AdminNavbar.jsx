@@ -23,7 +23,7 @@ function AdminNavbar() {
   }
 
   return (
-    <header className="fixed h-[10vh] min-w-full bg-white border-b border-gray-200">
+    <header className="fixed h-[10vh] min-w-full bg-white border-b border-gray-200 z-99">
       <nav className="h-full flex justify-between items-center px-16">
         <h1 className="text-4xl font-bold text-gray-800 tracking-wide">
           Trendora

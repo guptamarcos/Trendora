@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getDashboardInfo } from "../api/adminApi.js";
 import { toast } from "react-toastify";
-import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
+import { AdminDashboardSkeleton } from "./skeletons/Index.jsx";
 
 function InformationTabs({ text, value }) {
   return (
@@ -64,7 +64,7 @@ function AdminDashboard() {
   }, []);
 
   if (loading) {
-    return <AdminSectionSkeleton />;
+    return <AdminDashboardSkeleton />;
   }
 
   return (

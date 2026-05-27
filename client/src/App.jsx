@@ -6,7 +6,7 @@ import Signup from "./components/Signup.jsx";
 import AdminDashboard from "./components/AdminDashboard.jsx";
 import AdminPageLayout from "./components/AdminPageLayout.jsx";
 import { Cart, AllOrders, About, Collection, Contact, ProductInfo, Profile, Checkout, Wishlist,
-   AdminUsersInfo, AdminProductInfo, AdminOrderInfo, AdminAddProduct, AdminEditProduct,
+   AdminUsersInfo, AdminProductInfo, AdminOrderInfo, AdminAddProduct, AdminEditProduct, VerifyOtpForm
 } from "./routes/LazyRoutes.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -17,8 +17,6 @@ import {
   CheckUserAuth,
 } from "./routes/ProtectedRoutes.jsx";
 import {AdminSectionSkeleton } from "./components/skeletons/Index.jsx"
-import VerifyOtpForm from "./components/VerifyOtpForm.jsx";
-
 
 function App() {
   return (

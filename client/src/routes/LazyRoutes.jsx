@@ -78,3 +78,8 @@ export const AdminEditProduct = Loadable(
   lazy(() => import("../components/AdminEditProduct.jsx")),
   <Loader />,
 );
+
+export const VerifyOtpForm = Loadable(
+  lazy(() => import("../components/VerifyOtpForm.jsx")),
+  <Loader />,
+);

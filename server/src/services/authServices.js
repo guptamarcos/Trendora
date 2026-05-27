@@ -66,6 +66,26 @@ async function loginUser(body) {
   const { email, password } = value;
   const findUser = await User.findOne({ email }).select("+password");
 
+
+  // CHECK ADMIN OR NOT 
+  if (findUser.email === "admin@gmail.com") {
+    const checkPassword = await bcrypt.compare(password, findUser.password);
+
+    if (!checkPassword) {
+      throw new ExpressError(401, "Invalid Credentials");
+    }
+
+    await User.findByIdAndUpdate(findUser._id, { $set: { status: "Active" } });
+
+    const token = findUser.generateToken();
+
+    return {
+      success: true,
+      message: "Credentials verified",
+      token,
+    };
+  }
+
   if (!findUser) {
     throw new ExpressError(404, "Invalid Credentials");
   }
@@ -100,6 +120,7 @@ async function loginUser(body) {
   });
 
   return {
+    token : null, 
     success: true,
     message: "Credentials verified",
   };
@@ -246,24 +267,27 @@ async function verifyOtp(body) {
   };
 }
 
-async function resendOtp(body){
+async function resendOtp(body) {
   const { email } = body;
-  if(!email){
+  if (!email) {
     throw new ExpressError(400, "Email is required");
   }
 
-  const checkUser = await User.findOne({email: email});
-  if(!checkUser){
+  const checkUser = await User.findOne({ email: email });
+  if (!checkUser) {
     throw new ExpressError(404, "User not found");
-  };
-  
-  const existingOtp = await OTP.findOne({email})
-  
-  if(existingOtp?.expiresAt - Date.now() > 270000){
-    throw new ExpressError(429, "Please wait 30 seconds before requesting OTP again" );
   }
 
-  await OTP.deleteOne({email: email});
+  const existingOtp = await OTP.findOne({ email });
+
+  if (existingOtp?.expiresAt - Date.now() > 270000) {
+    throw new ExpressError(
+      429,
+      "Please wait 30 seconds before requesting OTP again",
+    );
+  }
+
+  await OTP.deleteOne({ email: email });
 
   const otp = otpGenerator();
 
@@ -286,7 +310,6 @@ async function resendOtp(body){
     success: true,
     message: "Credentials verified",
   };
-
 }
 
 module.exports = {

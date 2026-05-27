@@ -4,7 +4,7 @@ import { useRef, useState, useContext } from "react";
 import { verifyOtp, resendOtp } from "../api/authApi.js";
 import { toast } from "react-toastify";
 import { UserContext } from "../context/UserContext.jsx";
-import { HomeSkeleton } from "./skeletons/Index.jsx";
+import Loader from "./loaders/Loader.jsx";
 import { useEffect } from "react";
 
 // STYLES
@@ -147,7 +147,7 @@ function VerifyOtpForm() {
     }
 
     if (otpExpiryTime.minutes === 0 && otpExpiryTime.seconds === 0) {
-      return;    
+      return;
     }
 
     try {
@@ -157,18 +157,11 @@ function VerifyOtpForm() {
       navigate("/trendora");
 
       toast.success("Welcome back! You're now logged in.");
-
-      if (loggedUser?.role === "admin") {
-        navigate("/trendora/admin");
-      } else {
-        navigate("/trendora");
-      }
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
-    } finally {
       setLoading(false);
-    }
+    } 
   }
 
   async function resendOTP() {
@@ -183,6 +176,12 @@ function VerifyOtpForm() {
       toast.error(message);
     }
   }
+
+  useEffect(() => {
+    if (!email) {
+      navigate("/trendora/login");
+    }
+  }, [email, navigate]);
 
   useEffect(() => {
     let interval = setInterval(() => {
@@ -210,10 +209,9 @@ function VerifyOtpForm() {
       toast.error("Otp expires");
     }
   }, [otpExpiryTime.minutes, otpExpiryTime.seconds]);
- 
-  
+
   if (loading) {
-    return <HomeSkeleton />;
+    return <Loader />;
   }
 
   return (

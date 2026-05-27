@@ -7,8 +7,22 @@ async function register(req, res) {
 }
 
 async function login(req, res) {
-  const result = await authServices.loginUser(req.body);
-  return res.status(200).json(result);
+  const { success, message, token } = await authServices.loginUser(req.body);
+
+  if (token) {
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      signed: true,
+    });
+  }
+
+  return res.status(200).json({
+    success,
+    message
+  });
 }
 
 async function logout(req, res) {
@@ -28,14 +42,6 @@ async function logout(req, res) {
 async function oauthLogin(req, res) {
   const result = await authServices.oauthLoginUser(req.body);
 
-  // res.cookie("token", result?.token, {
-  //   httpOnly: true,
-  //   secure: false,
-  //   sameSite: "lax",
-  //   maxAge: 1 * 24 * 60 * 60 * 1000,
-  //   signed: true,
-  // });
-
   return res.status(200).json(result);
 }
 
@@ -53,10 +59,9 @@ async function otpVerify(req, res) {
   return res.status(200).json(result);
 }
 
-
-async function resendOtp(req,res){
+async function resendOtp(req, res) {
   const result = await authServices.resendOtp(req.body);
- 
+
   return res.status(200).json(result);
 }
 

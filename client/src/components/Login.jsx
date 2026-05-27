@@ -3,12 +3,13 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GoogleLogin } from "@react-oauth/google";
-import { useState } from "react";
+import { useState,useContext } from "react";
 import { toast } from "react-toastify";
 
 import { LoginSchema } from "../schemas/LoginSchema.js";
 import { login, oauthLogin } from "../api/authApi.js";
 import Loader from "./loaders/Loader.jsx";
+import { UserContext } from "../context/UserContext.jsx";
 
 // REUSABLE COMPONENTS
 
@@ -58,6 +59,7 @@ const styles = {
 function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { getUser } = useContext(UserContext);
 
   const {
     register,
@@ -77,20 +79,29 @@ function Login() {
         password: data.password,
       });
 
-      if (result?.data?.success) {
+      const isAdmin = (data.email.toLowerCase() === "admin@gmail.com");
+       
+      if(isAdmin){
+        await getUser();
+        navigate("/trendora/admin");
+        return;
+      }
+
+      if (!isAdmin && result?.data?.success) {
         navigate("/trendora/auth/verify-otp", {
           state: {
             email: data.email,
           },
         });
+        return ;
       }
 
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong!";
       toast.error(message);
-    } finally {
       setLoading(false);
-    }
+    } 
+    
   }
 
   // HANDLE GOOGLE LOGIN
@@ -109,9 +120,8 @@ function Login() {
       }
     } catch (error) {
       toast.error("Google login failed!");
-    } finally{
       setLoading(false);
-    }
+    } 
   }
 
   // SHOW LOADING SKELETON
