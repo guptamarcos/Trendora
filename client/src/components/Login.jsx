@@ -1,9 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GoogleLogin } from "@react-oauth/google";
-import { useState,useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { toast } from "react-toastify";
 
 import { LoginSchema } from "../schemas/LoginSchema.js";
@@ -60,6 +60,7 @@ function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { getUser } = useContext(UserContext);
+  const location = useLocation();
 
   const {
     register,
@@ -79,9 +80,9 @@ function Login() {
         password: data.password,
       });
 
-      const isAdmin = (data.email.toLowerCase() === "admin@gmail.com");
-       
-      if(isAdmin){
+      const isAdmin = data.email.toLowerCase() === "admin@gmail.com";
+
+      if (isAdmin) {
         await getUser();
         navigate("/trendora/admin");
         return;
@@ -93,15 +94,13 @@ function Login() {
             email: data.email,
           },
         });
-        return ;
+        return;
       }
-
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong!";
       toast.error(message);
       setLoading(false);
-    } 
-    
+    }
   }
 
   // HANDLE GOOGLE LOGIN
@@ -110,7 +109,7 @@ function Login() {
       setLoading(true);
       const token = credentialResponse.credential;
       const result = await oauthLogin(token);
-      
+
       if (result?.data?.success) {
         navigate("/trendora/auth/verify-otp", {
           state: {
@@ -121,9 +120,18 @@ function Login() {
     } catch (error) {
       toast.error("Google login failed!");
       setLoading(false);
-    } 
+    }
   }
 
+  useEffect(() => {
+    if (location.state?.message) {
+      toast.error(location.state.message, {
+        toastId: "otp-session",
+      });
+    }
+  }, [location.state]);
+
+  
   // SHOW LOADING SKELETON
   if (loading) {
     return <Loader />;

@@ -3,25 +3,34 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { logoutUser } from "../api/authApi.js";
 import { UserContext } from "../context/Index.jsx";
 import { toast } from "react-toastify";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import Loader from "./loaders/Loader.jsx";
 
 
 function AdminNavbar() {
 
   const navigate = useNavigate();
-
   const { getUser } = useContext(UserContext);
-  async function logout() {
+  const [loading, setLoading ] = useState(false);
+
+  async function handleLogout() {
     try {
+      setLoading(true)
       const res = await logoutUser();
       getUser();
       toast.success("You have been logged out successfully");
       navigate("/trendora");
     } catch (err) {
       console.log(err);
+    } finally{
+      setLoading(false)
     }
   }
-
+  
+  if(loading){
+    return <Loader/>
+  }
+  
   return (
     <header className="fixed h-[10vh] min-w-full bg-white border-b border-gray-200 z-99">
       <nav className="h-full flex justify-between items-center px-16">
@@ -46,7 +55,7 @@ function AdminNavbar() {
           </NavLink>
 
           {/* 🔥 Logout UI (no logic) */}
-          <button onClick={logout} className="flex items-center gap-2 cursor-pointer text-red-500 border border-red-400 px-3 py-1 rounded-md hover:bg-red-50">
+          <button onClick={handleLogout} className="flex items-center gap-2 cursor-pointer text-red-500 border border-red-400 px-3 py-1 rounded-md hover:bg-red-50">
             <FiLogOut size={20} />
             Logout
           </button>

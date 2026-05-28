@@ -8,6 +8,7 @@ const {
 const cloudinary = require("cloudinary").v2;
 const ExpressError = require("../utils/ExpressError.js");
 const bcrypt = require("bcrypt");
+const { passwordUpdateEmail } = require("./emailServices.js");
 
 function getUser(userInfo) {
   const user = userInfo.toObject();
@@ -86,6 +87,12 @@ async function updateProfilePassword(body, user) {
 
   user.password = newPassword;
   await user.save();
+
+  const updatePasswordEmail = await passwordUpdateEmail(user?.email);
+
+  if(!updatePasswordEmail){
+    console.log("Update password email is not sent");
+  }
 
   return {
     success: true,

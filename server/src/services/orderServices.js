@@ -2,6 +2,7 @@ const User = require("../models/userSchema.js");
 const Order = require("../models/orderSchema.js");
 const { addressSchema } = require("../validations/addressSchemaValidator.js");
 const ExpressError = require("../utils/ExpressError.js");
+const { orderConfirmationEmail } = require("./emailServices.js");
 
 async function getUserOrder(userId) {
   const userOrders = await Order.find({ user: userId })
@@ -19,19 +20,20 @@ async function getUserOrder(userId) {
 
 async function addOrder(body, userId) {
   // CHECK CART NOT EMPTY
+  const user = await User.findById(userId)
+    .select("cart email name")
+    .populate({
+      path: "cart.product",
+    });
 
-  const Cart = await User.findById(userId).select("cart").populate({
-    path: "cart.product",
-  });
-
-  if (!Cart.cart || Cart.cart.length === 0) {
+  if (!user.cart || user.cart.length === 0) {
     throw new ExpressError(404, "Please select the item for order");
   }
 
   const { paymentMethod, ...address } = body;
 
   // CHECK ADDRESS IS VALID
-  const { error, value } = addressSchema.validate(address, {
+  const { error } = addressSchema.validate(address, {
     abortEarly: false,
   });
 
@@ -41,40 +43,84 @@ async function addOrder(body, userId) {
 
   // CHECK PAYMENT METHOD IS VALID
   const paymentMethods = ["cod", "razorpay", "stripe"];
+
   if (!paymentMethods.includes(paymentMethod)) {
     throw new ExpressError(400, "Invalid payment method");
   }
 
-  const paymentStatus = paymentMethod === "cod" ? "Pending" : "Completed";
+  const paymentStatus =
+    paymentMethod === "cod" ? "Pending" : "Completed";
 
-  const allOrders = Cart.cart.map((cartItem) => {
-    return {
-      user: userId,
-      product: cartItem.product._id,
-      quantity: cartItem.quantity,
-      priceAtOrder: cartItem.product.price,
-      size: cartItem.size,
-      totalAmount: cartItem.quantity * cartItem.product.price,
-      paymentMethod,
-      paymentStatus,
-      shippingAddress: address,
-    };
-  });
+  // CREATE ORDER DATA
+  const allOrders = user.cart.map((cartItem) => ({
+    user: userId,
+    product: cartItem.product._id,
+    quantity: cartItem.quantity,
+    priceAtOrder: cartItem.product.price,
+    size: cartItem.size,
+    totalAmount:
+      cartItem.quantity * cartItem.product.price,
+    paymentMethod,
+    paymentStatus,
+    shippingAddress: address,
+  }));
 
-  const Orders = await Order.create(allOrders);
+  // SAVE ORDERS
+  const orders = await Order.create(allOrders);
 
-  const cartItemIds = Cart.cart.map((cartItem) => {
-    return cartItem._id;
-  });
+  // EMAIL DATA (only necessary info)
+  const orderDetails = {
+    customerName: user.name,
+
+    products: user.cart.map((item) => ({
+      name: item.product.title,
+      image: item.product.image,
+      quantity: item.quantity,
+      size: item.size,
+      price: item.product.price,
+      total:
+        item.quantity * item.product.price,
+    })),
+
+    paymentMethod,
+    paymentStatus,
+    shippingAddress: address,
+
+    totalAmount: user.cart.reduce(
+      (sum, item) =>
+        sum + item.quantity * item.product.price,
+      0
+    ),
+
+    orderDate: new Date().toLocaleDateString(),
+  };
+
+  // SEND EMAIL
+  const OrderConfirmationEmail =  await orderConfirmationEmail(user?.email,orderDetails);
+  
+  if(!OrderConfirmationEmail){
+    console.log("Order confirmation email is not sent");
+  }
+
+  // REMOVE CART ITEMS
+  const cartItemIds = user.cart.map(
+    (cartItem) => cartItem._id
+  );
 
   await User.updateOne(
     { _id: userId },
-    { $pull: { cart: { _id: { $in: cartItemIds } } } },
+    {
+      $pull: {
+        cart: {
+          _id: { $in: cartItemIds },
+        },
+      },
+    }
   );
 
   return {
     success: true,
-    message: "Order crated successfully",
+    message: "Order created successfully",
   };
 }
 
@@ -112,5 +158,9 @@ async function getOrders(search, status, limit) {
     matchedOrdersCount,
   };
 }
+
+// async function updateOrderStatus(){
+
+// }
 
 module.exports = { addOrder, getUserOrder, getOrders };

@@ -56,9 +56,9 @@ function App() {
         <Route element={<CheckUserAuth />}>
           <Route path="/trendora/signup" element={<Signup />} />
           <Route path="/trendora/login" element={<Login />} />
+          <Route path="/trendora/auth/verify-otp" element={<VerifyOtpForm/>}/>
         </Route>
 
-        <Route path="/trendora/auth/verify-otp" element={<VerifyOtpForm/>}/>
 
       </Routes>
       <ToastContainer />

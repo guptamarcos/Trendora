@@ -1,6 +1,5 @@
 const orderServices = require("../services/orderServices.js");
 
-
 async function getUserOrder(req, res) {
   const result = await orderServices.getUserOrder(req.user._id);
   
@@ -23,5 +22,11 @@ async function getOrders(req,res){
   return res.status(200).json(result);
 }
 
+// async function updateOrderStatus(req,res){
 
-module.exports = { addOrder, getUserOrder, getOrders };
+//   const result = await orderServices.updateOrderStatus();
+//   return res.status(200).json(result);
+// }
+
+
+module.exports = { addOrder, getUserOrder, getOrders};

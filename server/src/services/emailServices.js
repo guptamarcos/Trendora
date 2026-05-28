@@ -1,6 +1,6 @@
 const transporter = require("../utils/transporter.js");
 
-const loginEmail = async (to) => {
+const loginEmail = async function (to) {
   try {
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -115,7 +115,7 @@ const loginEmail = async (to) => {
   }
 };
 
-const sendOtpEmail = async (to, otp) => {
+const sendOtpEmail = async function (to, otp) {
   try {
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -152,12 +152,156 @@ const sendOtpEmail = async (to, otp) => {
     const info = await transporter.sendMail(mailOptions);
 
     return info?.accepted?.length > 0;
+  } catch (err) {
+    console.log("Email service error: ", err.message);
+    return false;
+  }
+};
 
+const passwordUpdateEmail = async function (to) {
+  try {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject: "🔐 Your Password Has Been Updated Successfully",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e5e5e5; border-radius: 10px; background-color: #f9f9f9;">
+          
+          <h2 style="color: #333; text-align: center;">
+            Password Updated Successfully
+          </h2>
+
+          <p style="font-size: 16px; color: #555;">
+            Hello,
+          </p>
+
+          <p style="font-size: 16px; color: #555;">
+            This is to confirm that your account password was successfully updated.
+          </p>
+
+          <div style="background: #fff; padding: 15px; border-left: 4px solid #4CAF50; margin: 20px 0;">
+            <p style="margin: 0; color: #333;">
+              ✅ Your password has been changed successfully.
+            </p>
+          </div>
+
+          <p style="font-size: 15px; color: #555;">
+            If you made this change, no further action is required.
+          </p>
+
+          <p style="font-size: 15px; color: #d9534f; font-weight: bold;">
+            Didn’t update your password?
+          </p>
+
+          <p style="font-size: 15px; color: #555;">
+            Please reset your password immediately and contact support if you believe your account has been compromised.
+          </p>
+
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
+
+          <p style="font-size: 13px; color: #999; text-align: center;">
+            This is an automated security email. Please do not reply.
+          </p>
+
+        </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    return info?.accepted?.length > 0;
   } catch (err) {
     console.log("Email service error:", err.message);
     return false;
   }
 };
 
+const orderConfirmationEmail = async function ( to, orderInformation) {
+  try {
+    const { customerName, products, paymentMethod, totalAmount, orderDate } = orderInformation;
 
-module.exports = { loginEmail,sendOtpEmail };
+    const productHTML = products
+      .map(
+        (product) => `
+          <li style="margin-bottom:8px;">
+            ${product.name} 
+            (Qty: ${product.quantity}) 
+            - ₹${product.total}
+          </li>
+        `
+      )
+      .join("");
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      subject: "Order Confirmed 🎉",
+
+      html: `
+      <div style="
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+      ">
+
+        <h2 style="color:#333;">
+          Order Confirmed 🎉
+        </h2>
+
+        <p>Hello ${customerName},</p>
+
+        <p>
+          Your order has been placed successfully.
+        </p>
+
+        <p>
+          <strong>Order Date:</strong> ${orderDate}
+        </p>
+
+        <h3>Items Ordered</h3>
+
+        <ul style="padding-left:20px;">
+          ${productHTML}
+        </ul>
+
+        <p>
+          <strong>Payment:</strong> 
+          ${paymentMethod.toUpperCase()}
+        </p>
+
+        <p>
+          <strong>Total Amount:</strong> 
+          ₹${totalAmount}
+        </p>
+
+        <p style="
+          margin-top:20px;
+          color:#666;
+          font-size:14px;
+        ">
+          Thank you for shopping with us ❤️
+        </p>
+
+      </div>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    return info?.accepted?.length > 0;
+  } catch (err) {
+    console.log(
+      "Error occurred in order confirmation email:",
+      err.message
+    );
+    return false;
+  }
+};
+
+module.exports = {
+  loginEmail,
+  sendOtpEmail,
+  passwordUpdateEmail,
+  orderConfirmationEmail,
+};

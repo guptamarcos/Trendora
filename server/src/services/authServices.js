@@ -245,7 +245,6 @@ async function verifyOtp(body) {
 
   if (!emailSent) {
     console.log("Email is not sent");
-    throw new ExpressError(500, "Internal server error");
   }
 
   const smsSent = await loginSms();

@@ -80,7 +80,6 @@ function Signup() {
           },
         });
       }
-
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong!";
 
@@ -105,7 +104,7 @@ function Signup() {
       }
     } catch (error) {
       toast.error("Google signup failed!");
-    } finally{
+    } finally {
       setLoading(false);
     }
   }

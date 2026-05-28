@@ -10,7 +10,6 @@ import { useContext } from "react";
 import { UserContext } from "../context/Index.jsx";
 import { ClipLoader } from "react-spinners";
 
-
 function SizeBox({ text, selectedSize, setSelectedSize }) {
   function handleSelectSize({ text }) {
     const newSelectedSize = Object.keys(selectedSize).reduce((acc, val) => {
@@ -61,7 +60,7 @@ function RelatedProducts({ relatedProducts }) {
   );
 }
 
-function ProductDetails({setLoading,setProductId}) {
+function ProductDetails({ setLoading, setProductId }) {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState(null);
@@ -72,7 +71,7 @@ function ProductDetails({setLoading,setProductId}) {
   async function getProduct() {
     try {
       let res = await getProductInfo(productId);
-      setProduct(res?.data?.data[0]); 
+      setProduct(res?.data?.data[0]);
       setProductId(productId);
       const sizes = res?.data?.data[0]?.sizes;
       const obj = sizes?.reduce((acc, val) => {
@@ -162,51 +161,57 @@ function ProductDetails({setLoading,setProductId}) {
 
   return (
     <>
-      
-        <div className="max-w-7xl mx-auto px-6 py-16">
-          {/* ================= PRODUCT SECTION ================= */}
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {/* ================= PRODUCT SECTION ================= */}
 
-          <section className="grid md:grid-cols-2 gap-12">
-            {/*PRODUCT IMAGE */}
-            <div className="flex justify-center items-start cursor-pointer hover:scale-101 transition">
-              <img
-                src={product?.productImage?.url}
-                alt="Product"
-                className="h-[70vh] w-full max-w-md object-cover rounded-xl shadow-md"
-              />
+        <section className="grid md:grid-cols-2 gap-12">
+          {/*PRODUCT IMAGE */}
+          <div className="flex justify-center items-start cursor-pointer hover:scale-101 transition">
+            <img
+              src={product?.productImage?.url}
+              alt="Product"
+              className="h-[70vh] w-full max-w-md object-cover rounded-xl shadow-md"
+            />
+          </div>
+
+          {/* PRODUCT DETAILS */}
+          <div className="flex flex-col justify-evenly">
+            <h2 className="text-3xl font-semibold text-gray-800">
+              {product?.name}
+            </h2>
+
+            {/* RATINGS */}
+            <div className="flex items-center gap-2">
+              <FaStar className="text-yellow-400" />
+              <FaStar className="text-yellow-400" />
+              <FaStar className="text-yellow-400" />
+              <FaStar className="text-yellow-400" />
+              <FaStar className="text-gray-300" />
+              <span className="text-gray-600 text-sm">
+                {product?.rating?.average || "No ratings"}
+              </span>
             </div>
 
-            {/* PRODUCT DETAILS */}
-            <div className="flex flex-col justify-evenly">
-              <h2 className="text-3xl font-semibold text-gray-800">
-                {product?.name}
-              </h2>
+            {/* Price */}
+            <h5 className="text-2xl font-bold text-black">
+              ₹{product?.price || "N/A"}
+            </h5>
 
-              {/* RATINGS */}
-              <div className="flex items-center gap-2">
-                <FaStar className="text-yellow-400" />
-                <FaStar className="text-yellow-400" />
-                <FaStar className="text-yellow-400" />
-                <FaStar className="text-yellow-400" />
-                <FaStar className="text-gray-300" />
-                <span className="text-gray-600 text-sm">
-                  {product?.rating?.average || "No ratings"}
-                </span>
-              </div>
-
-              {/* Price */}
-              <h5 className="text-2xl font-bold text-black">
-                ₹{product?.price || "N/A"}
-              </h5>
-
-              <hr className="border-gray-200" />
-
-              {/* Description */}
-              <p className="text-gray-600 leading-relaxed">
-                {product?.description}
+            {product?.stock > 0 && product?.stock <= 5 && (
+              <p className="text-orange-600 font-medium text-sm mt-1">
+                Only {product?.stock}{" "}
+                {product?.stock === 1 ? "item is" : "items are"} left
               </p>
+            )}
 
-              {/* Sizes */}
+            <hr className="border-gray-200" />
+
+            {/* Description */}
+            <p className="text-gray-600 leading-relaxed">
+              {product?.description}
+            </p>
+
+            {product?.stock > 0 && (
               <div>
                 <h6 className="font-semibold text-gray-700 mb-3">
                   Select Size
@@ -224,8 +229,18 @@ function ProductDetails({setLoading,setProductId}) {
                     ))}
                 </div>
               </div>
+            )}
 
-              {/* QUANTITY */}
+            {product?.stock === 0 && (
+              <div className="min-h-30 ">
+                <span className="px-4 py-2 w-max bg-red-50 text-red-600 border border-red-200 rounded-md font-medium">
+                  Out of Stock
+                </span>
+              </div>
+            )}
+
+            {/* QUANTITY */}
+            {product?.stock > 0 && (
               <div>
                 <h6 className="font-semibold text-gray-700 mb-3">Quantity</h6>
 
@@ -242,15 +257,26 @@ function ProductDetails({setLoading,setProductId}) {
                   <span className="text-lg font-medium">{quantity}</span>
 
                   <button
-                    onClick={() => setQuantity((prev) => prev + 1)}
+                    onClick={() => {
+                      if (!(product?.stock > quantity)) {
+                        toast.error(
+                          `Only ${product?.stock} items are available`,
+                        );
+                        return;
+                      }
+                      setQuantity((prev) => prev + 1);
+                    }}
                     className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
                   >
                     +
                   </button>
                 </div>
               </div>
+            )}
 
-              {/* Actions */}
+            {/* Actions */}
+
+            {product?.stock > 0 && (
               <div className="flex gap-4 pt-4">
                 <button
                   onClick={addInCart}
@@ -266,12 +292,12 @@ function ProductDetails({setLoading,setProductId}) {
                   ADD TO WISHLIST
                 </button>
               </div>
-            </div>
-          </section>
+            )}
+          </div>
+        </section>
 
-          <RelatedProducts relatedProducts={relatedProducts} />
-        </div>
-     
+        <RelatedProducts relatedProducts={relatedProducts} />
+      </div>
     </>
   );
 }

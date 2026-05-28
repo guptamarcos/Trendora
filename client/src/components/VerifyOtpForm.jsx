@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useRef, useState, useContext } from "react";
 import { verifyOtp, resendOtp } from "../api/authApi.js";
@@ -154,17 +154,22 @@ function VerifyOtpForm() {
       setLoading(true);
       const result = await verifyOtp(email, finalOtp);
       const loggedUser = await getUser();
-      navigate("/trendora");
 
+      navigate("/trendora");
       toast.success("Welcome back! You're now logged in.");
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
       setLoading(false);
-    } 
+    }
   }
 
   async function resendOTP() {
+    if (finalOtp.length < 6) {
+      toast.error("Please fill the complete OTP");
+      return;
+    }
+
     try {
       const result = await resendOtp(email);
       toast.success("Otp is resend successfully");
@@ -177,11 +182,17 @@ function VerifyOtpForm() {
     }
   }
 
-  useEffect(() => {
-    if (!email) {
-      navigate("/trendora/login");
-    }
-  }, [email, navigate]);
+  if (!email) {
+    return (
+      <Navigate
+        to="/trendora/login"
+        replace
+        state={{
+          message: "Invalid OTP session. Please login or signup again.",
+        }}
+      />
+    );
+  }
 
   useEffect(() => {
     let interval = setInterval(() => {
