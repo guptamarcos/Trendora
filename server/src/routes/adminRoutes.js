@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { DashboardInfo } = require("../controllers/adminController.js");
-const { getOrders} = require("../controllers/orderController.js");
+const { getOrders,updateOrderStatus} = require("../controllers/orderController.js");
 const { getAllUser, deleteUser } = require("../controllers/userController.js");
 const {
   addProduct,
@@ -18,15 +18,16 @@ const csrfProtection = require("../config/csrfConfig.js");
 router.get("/users", wrapAsync(getAllUser));
 router.get("/products", wrapAsync(getProducts));
 router.get("/orders", wrapAsync(getOrders));
-router.get("/dashboard", wrapAsync(DashboardInfo)); // SORTED
-router.post("/products", csrfProtection,upload.single("productImage"), wrapAsync(addProduct)); // SORTED
+router.get("/dashboard", wrapAsync(DashboardInfo)); 
+router.post("/products", csrfProtection,upload.single("productImage"), wrapAsync(addProduct)); 
 router.patch(
   "/products/:productId",
   csrfProtection,
   upload.single("productImage"),
   wrapAsync(editProductInfo),
-); // SORTED
-router.delete("/users/:userId",csrfProtection, wrapAsync(deleteUser)); // SORTED
-router.delete("/products/:productId",csrfProtection, wrapAsync(deleteProduct)); // SORTED
+); 
+router.patch("/orders/:orderId/status", csrfProtection, wrapAsync(updateOrderStatus));
+router.delete("/users/:userId",csrfProtection, wrapAsync(deleteUser)); 
+router.delete("/products/:productId",csrfProtection, wrapAsync(deleteProduct)); 
 
 module.exports = router;

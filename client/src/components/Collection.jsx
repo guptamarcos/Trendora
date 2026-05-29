@@ -8,12 +8,9 @@ function Collection() {
   const [allProducts, setAllProducts] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState({
-    men: false,
-    women: false,
-    girl: false,
-    boy: false,
+    men: false, women: false, girl: false, boy: false,
   });
-
+    
   async function getProductInfo() {
     try {
       setLoading(true);

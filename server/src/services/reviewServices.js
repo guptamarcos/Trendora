@@ -45,9 +45,15 @@ async function addReviews(body, productId, userId) {
     5: "fiveStar",
   };
 
+  const { average, count } = existingProduct.rating;
+
+  const newAverage = ((average * count) + rating) / (count+1);
+  existingProduct.rating.average = newAverage;
+  await existingProduct.save();
+
   const fieldToUpdate = `rating.distribution.${ratingMap[rating]}`;
 
-  const product = await Product.findByIdAndUpdate(
+  const updatedProduct = await Product.findByIdAndUpdate(
     productId,
     {
       $inc: {

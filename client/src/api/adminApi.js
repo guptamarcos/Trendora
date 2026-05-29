@@ -24,6 +24,10 @@ export const editProduct = (data, productId) =>{
   return axiosInstance.patch(`/admin/products/${productId}`, data);
 }
 
+export const updateOrderStatus = (data, orderId) =>{
+  return axiosInstance.patch(`/admin/orders/${orderId}/status`,{ status: data});
+}
+
 export const deleteUser = ( userId ) => {
   return axiosInstance.delete(`/admin/users/${userId}`);
 }
@@ -31,4 +35,5 @@ export const deleteUser = ( userId ) => {
 export const deleteProduct = (productId) =>{
   return axiosInstance.delete(`/admin/products/${productId}`);
 }
+
 

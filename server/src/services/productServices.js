@@ -5,6 +5,7 @@ const {
 } = require("../validations/productSchemaValidator.js");
 const cloudinary = require("cloudinary").v2;
 const ExpressError = require("../utils/ExpressError.js");
+const isValidDocumentId = require("../utils/Validator.js");
 
 async function getProductInfo(productId) {
   const product = await Product.find({ _id: productId });
@@ -176,9 +177,14 @@ async function deleteProduct(productId) {
 }
 
 async function updateProductRating(productId, rating) {
+  if (!isValidDocumentId(productId)) {
+    throw new ExpressError(400, "Invalid product id");
+  }
+
   rating = Number(rating);
+
   if (rating < 1 || rating > 5) {
-    throw new ExpressError(400, "Invalid rating value");
+    throw new ExpressError(400, "Invalid rating");
   }
 
   const ratingMap = {
@@ -189,9 +195,21 @@ async function updateProductRating(productId, rating) {
     5: "fiveStar",
   };
 
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new ExpressError(404, "Product not found");
+  }
+
+  const { average, count } = product.rating;
+
+  const newAverage = ((average * count) + rating) / (count+1);
+  product.rating.average = newAverage;
+  await product.save();
+
   const fieldToUpdate = `rating.distribution.${ratingMap[rating]}`;
 
-  const product = await Product.findByIdAndUpdate(
+  const updatedProduct = await Product.findByIdAndUpdate(
     productId,
     {
       $inc: {
@@ -202,36 +220,32 @@ async function updateProductRating(productId, rating) {
     { new: true },
   );
 
-
   return {
     success: true,
     message: "Product rating added successfully",
   };
-  
 }
 
-async function getProducts(search, category, limit){
- 
+async function getProducts(search, category, limit) {
   let query = {};
 
-  if(search){
-    query.name = {$regex: search, $options: "i"};
+  if (search) {
+    query.name = { $regex: search, $options: "i" };
   }
-  
-  if(category){
+
+  if (category) {
     query.category = category.toLowerCase();
   }
 
   const allProducts = await Product.find(query).limit(Number(limit));
   const matchedProductsCount = await Product.countDocuments(query);
 
-
   return {
     success: true,
     data: allProducts,
-    matchedProductsCount
+    matchedProductsCount,
   };
-} 
+}
 
 module.exports = {
   addProduct,

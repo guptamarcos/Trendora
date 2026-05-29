@@ -1,4 +1,4 @@
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { getProductInfo, getRelatedProducts } from "../api/productApi.js";
 import { addToWishlist } from "../api/wishlistApi.js";
@@ -181,16 +181,31 @@ function ProductDetails({ setLoading, setProductId }) {
             </h2>
 
             {/* RATINGS */}
-            <div className="flex items-center gap-2">
-              <FaStar className="text-yellow-400" />
-              <FaStar className="text-yellow-400" />
-              <FaStar className="text-yellow-400" />
-              <FaStar className="text-yellow-400" />
-              <FaStar className="text-gray-300" />
-              <span className="text-gray-600 text-sm">
-                {product?.rating?.average || "No ratings"}
+            {product?.rating?.average > 0 && (
+              <div className="flex items-center gap-2">
+                {}
+                <FaStar className="text-yellow-400" />
+                <FaStar className="text-yellow-400" />
+                <FaStar className="text-yellow-400" />
+                <FaStar className="text-yellow-400" />
+                {product?.rating?.average -
+                  Math.floor(product?.rating?.average) >
+                0.5 ? (
+                  <FaStarHalfAlt className="text-yellow-400" />
+                ) : (
+                  <FaStar className="text-gray-400" />
+                )}
+                <span className="text-gray-600 text-sm">
+                  {product?.rating?.average.toFixed(1)}
+                </span>
+              </div>
+            )}
+
+            {product?.rating?.average === 0 && (
+              <span className="text-gray-500 text-base italic">
+                No ratings available
               </span>
-            </div>
+            )}
 
             {/* Price */}
             <h5 className="text-2xl font-bold text-black">

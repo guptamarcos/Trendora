@@ -22,11 +22,12 @@ async function getOrders(req,res){
   return res.status(200).json(result);
 }
 
-// async function updateOrderStatus(req,res){
+async function updateOrderStatus(req,res){
+  const { orderId } = req.params;
+  const { status } = req.body;
+  const result = await orderServices.updateOrderStatus(orderId, status);
+  return res.status(200).json(result);
+}
 
-//   const result = await orderServices.updateOrderStatus();
-//   return res.status(200).json(result);
-// }
 
-
-module.exports = { addOrder, getUserOrder, getOrders};
+module.exports = { addOrder, getUserOrder, getOrders, updateOrderStatus};

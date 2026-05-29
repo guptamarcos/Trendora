@@ -1,23 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
-import { getAllOrders } from "../api/adminApi.js";
-
-function StatusDropdown({ value, onChange }) {
-  const statuses = ["Pending", "Shipped", "Delivered", "Cancelled"];
-
-  return (
-    <select
-      value={value}
-      onChange={onChange}
-      className="h-11 rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
-    >
-      {statuses.map((status) => (
-        <option key={status}>{status}</option>
-      ))}
-    </select>
-  );
-}
+import { getAllOrders, updateOrderStatus } from "../api/adminApi.js";
 
 function TableHead() {
   const headings = [
@@ -26,7 +10,7 @@ function TableHead() {
     "Amount",
     "Payment",
     "Order Date",
-    "Status",
+    "Order Status",
   ];
 
   return (
@@ -45,10 +29,10 @@ function TableHead() {
   );
 }
 
-function TableRow({ order }) {
+function TableRow({ order, setOrders }) {
   if (!order) return null;
 
-  const { _id, user, totalAmount, createdAt, orderStatus, paymentStatus } =
+  const { _id, user, totalAmount, createdAt, paymentStatus, orderStatus } =
     order;
 
   const formattedDate = new Date(createdAt).toLocaleDateString("en-IN", {
@@ -65,13 +49,53 @@ function TableRow({ order }) {
       case "Pending":
         return "bg-yellow-100 text-yellow-700";
 
-      case "Cancelled":
+      case "Failed":
         return "bg-red-100 text-red-700";
+
+      case "Refunded":
+        return "bg-purple-100 text-purple-700";
+
+      case "Cancelled":
+        return "bg-gray-200 text-gray-700";
 
       default:
         return "bg-gray-100 text-gray-600";
     }
   };
+
+  const orderStatusVal = [
+    "Completed",
+    "Pending",
+    "Shipped",
+    "Delivered",
+    "Cancelled",
+  ];
+
+  async function handleOrderStatusChange(e) {
+    const newStatus = e.target.value;
+
+    try {
+      await updateOrderStatus(newStatus, _id);
+
+      // update only the changed order
+      setOrders((prevOrders) =>
+        prevOrders.map((item) =>
+          item._id === _id
+            ? {
+                ...item,
+                orderStatus: newStatus,
+              }
+            : item,
+        ),
+      );
+
+      toast.success("Order status updated successfully");
+    } catch (err) {
+      const message = err?.response?.data?.message || "Something went wrong";
+
+      toast.error(message);
+    }
+  }
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition duration-200">
@@ -114,7 +138,17 @@ function TableRow({ order }) {
 
       {/* STATUS */}
       <td className="px-6 py-4">
-        <StatusDropdown value={orderStatus} />
+        <select
+          value={orderStatus}
+          onChange={handleOrderStatusChange}
+          className="h-11 rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+        >
+          {orderStatusVal.map((status, idx) => (
+            <option value={status} key={idx}>
+              {status}
+            </option>
+          ))}
+        </select>
       </td>
     </tr>
   );
@@ -124,8 +158,6 @@ function AdminOrderInfo() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [matchedOrdersCount, setMatchedOrdersCount] = useState(10);
-
-  // search + filter state
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [limit, setLimit] = useState(10);
@@ -137,8 +169,10 @@ function AdminOrderInfo() {
       const res = await getAllOrders(search, status, limit);
 
       const orderData = res?.data?.data || [];
+
       setOrders(orderData);
-      setMatchedOrdersCount(res?.data?.matchedOrdersCount);
+
+      setMatchedOrdersCount(res?.data?.matchedOrdersCount || 0);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed to fetch orders");
     } finally {
@@ -164,7 +198,7 @@ function AdminOrderInfo() {
           <p className="text-gray-500">Manage customer orders</p>
         </div>
 
-        {/* KEEP SAME SEARCH + FILTER STRUCTURE */}
+        {/* SEARCH + FILTER */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex w-full md:w-auto gap-2">
             <input
@@ -186,7 +220,6 @@ function AdminOrderInfo() {
             </button>
           </div>
 
-          {/* SAME DROPDOWN STYLE */}
           <select
             value={status}
             onChange={(e) => {
@@ -204,14 +237,16 @@ function AdminOrderInfo() {
           </select>
         </div>
 
-        {/* ORDER COUNT */}
-        <div>
-          <p className="text-sm text-gray-600">
-            Showing <span className="font-semibold text-gray-800">{orders?.length}</span> of{" "}
-            <span className="font-semibold text-gray-800"> { matchedOrdersCount } </span>{" "}
-            orders
-          </p>
-        </div>
+        {/* COUNT */}
+        <p className="text-sm text-gray-600">
+          Showing{" "}
+          <span className="font-semibold text-gray-800">{orders.length}</span>{" "}
+          of{" "}
+          <span className="font-semibold text-gray-800">
+            {matchedOrdersCount}
+          </span>{" "}
+          orders
+        </p>
 
         {/* TABLE */}
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
@@ -220,7 +255,7 @@ function AdminOrderInfo() {
               <TableHead />
 
               <tbody>
-                {orders?.length === 0 && (
+                {orders.length === 0 && (
                   <tr>
                     <td colSpan="6" className="py-10 text-center text-gray-500">
                       No orders found
@@ -228,30 +263,34 @@ function AdminOrderInfo() {
                   </tr>
                 )}
 
-                {orders?.length > 0 &&
-                  orders?.map((order, idx) => {
-                    return <TableRow order={order} key={idx} />;
-                  })}
+                {orders.map((order) => (
+                  <TableRow
+                    key={order._id}
+                    order={order}
+                    setOrders={setOrders}
+                  />
+                ))}
               </tbody>
             </table>
           </div>
         </div>
 
         {/* PAGINATION */}
-        {/* PAGINATION */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 pt-5">
           <button
             onClick={() => setLimit((prev) => prev - 10)}
-            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition ${orders?.length > 10 ? "" : "invisible"}`}
+            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition ${
+              orders.length > 10 ? "" : "invisible"
+            }`}
           >
             Show Less
           </button>
 
           <button
-            onClick={() => {
-              setLimit((prev) => prev + 10);
-            }}
-            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl bg-black text-white hover:opacity-90 transition ${orders?.length < matchedOrdersCount ? "" : "invisible"}`}
+            onClick={() => setLimit((prev) => prev + 10)}
+            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl bg-black text-white hover:opacity-90 transition ${
+              orders.length < matchedOrdersCount ? "" : "invisible"
+            }`}
           >
             Show More
           </button>

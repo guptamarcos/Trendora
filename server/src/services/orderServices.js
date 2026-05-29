@@ -2,7 +2,8 @@ const User = require("../models/userSchema.js");
 const Order = require("../models/orderSchema.js");
 const { addressSchema } = require("../validations/addressSchemaValidator.js");
 const ExpressError = require("../utils/ExpressError.js");
-const { orderConfirmationEmail } = require("./emailServices.js");
+const { orderConfirmationEmail} = require("./emailServices.js");
+const isValidDocumentId = require("../utils/validator.js");
 
 async function getUserOrder(userId) {
   const userOrders = await Order.find({ user: userId })
@@ -128,7 +129,7 @@ async function getOrders(search, status, limit) {
   let query = {};
 
   if (status) {
-    query.paymentStatus =
+    query.orderStatus =
       status[0].toUpperCase() + status.slice(1);
   }
 
@@ -159,8 +160,27 @@ async function getOrders(search, status, limit) {
   };
 }
 
-// async function updateOrderStatus(){
+async function updateOrderStatus(orderId, status){
+  
+  if(!status){
+    throw new ExpressError(400, "Invalid order status");
+  }
 
-// }
+  if(!isValidDocumentId(orderId)){
+    throw new ExpressError(400, "Invalid order id");
+  }
 
-module.exports = { addOrder, getUserOrder, getOrders };
+
+  const updatedOrder = await Order.findByIdAndUpdate(orderId, {$set: { orderStatus: status}});
+
+  if(!updatedOrder){
+    throw new ExpressError(404, "Order not found");
+  }
+
+  return {
+    success: true,
+    message: "Order status updated successfully",
+  }
+}
+
+module.exports = { addOrder, getUserOrder, getOrders, updateOrderStatus };

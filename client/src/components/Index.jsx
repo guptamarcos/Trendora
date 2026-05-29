@@ -25,6 +25,7 @@ import LatestCollections from "./LatestCollections.jsx";
 import Layout from "./Layout.jsx";
 import Login from "./Login.jsx";
 import Navbar from "./Navbar.jsx";
+import NotFound from "./NotFound.jsx";
 import OrderCard from "./OrderCard.jsx";
 import Policy from "./Policy.jsx";
 import ProductDetails from "./ProductDetails.jsx";
@@ -43,7 +44,7 @@ import WishlistItem from "./WishlistItem.jsx";
 
 export { About, AdminDashboard, AdminNavbar,AdminPageLayout, AdminProductInfo, AdminSidebar, AdminAddProduct,
   DeliveryForm, Collection, CommentCard, Contact, Filters, Footer, Hero, Home, AdminOrderInfo,
-  LatestCollections, Layout, Login, Navbar, OrderCard, Policy, ProductDetails, Cart, CartItem, Checkout,
+  LatestCollections, Layout, Login, Navbar,NotFound, OrderCard, Policy, ProductDetails, Cart, CartItem, Checkout,
   ProductInfo, Profile, ProfileImage, ProfileInfo, ProfileSecurity, Product, Signup, VerifyOtpForm,
   Subscribe, UserDropDown, Wishlist, WishlistItem, AllOrders,AllUsersInfo, BestSeller,AdminEditProduct
 };

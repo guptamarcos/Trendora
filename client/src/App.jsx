@@ -5,6 +5,7 @@ import Login from "./components/Login.jsx";
 import Signup from "./components/Signup.jsx";
 import AdminDashboard from "./components/AdminDashboard.jsx";
 import AdminPageLayout from "./components/AdminPageLayout.jsx";
+import NotFound from "./components/NotFound.jsx";
 import { Cart, AllOrders, About, Collection, Contact, ProductInfo, Profile, Checkout, Wishlist,
    AdminUsersInfo, AdminProductInfo, AdminOrderInfo, AdminAddProduct, AdminEditProduct, VerifyOtpForm
 } from "./routes/LazyRoutes.jsx";
@@ -57,9 +58,10 @@ function App() {
           <Route path="/trendora/signup" element={<Signup />} />
           <Route path="/trendora/login" element={<Login />} />
           <Route path="/trendora/auth/verify-otp" element={<VerifyOtpForm/>}/>
-        </Route>
-
-
+        </Route> 
+        
+        {/* invalid routes */}
+        <Route path="*" element={<NotFound/>}/>
       </Routes>
       <ToastContainer />
     </>
