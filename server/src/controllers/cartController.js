@@ -1,6 +1,4 @@
 const cartServices = require("../services/cartServices.js");
-const isValidDocumentId = require("../utils/Validator.js");
-const ExpressError = require("../utils/ExpressError.js");
 
 async function getCartItems(req, res) {
   const userId = req.user._id;
@@ -20,10 +18,6 @@ async function addToCart(req, res) {
 async function removeCartItem(req, res) {
   const userId = req.user._id;
   const { itemId } = req.params;
-
-  if(!isValidDocumentId(itemId)){
-    throw new ExpressError(400, "Invalid itemId");
-  }
 
   const result = await cartServices.removeCartItem(userId, itemId);
 

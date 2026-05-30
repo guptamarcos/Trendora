@@ -10,6 +10,10 @@ const isValidDocumentId = require("../utils/Validator.js");
 async function getProductInfo(productId) {
   const product = await Product.find({ _id: productId });
 
+  if (!isValidDocumentId(productId)) {
+    throw new ExpressError(400, "Invalid Product Id");
+  }
+
   if (!product) {
     throw new ExpressError(400, "Product not found");
   }
@@ -34,6 +38,10 @@ async function getBestSeller() {
 
 async function getRelatedProducts(productId) {
   const product = await Product.findById(productId);
+
+  if (!isValidDocumentId(productId)) {
+    throw new ExpressError(400, "Invalid Product Id");
+  }
 
   if (!product) {
     throw new ExpressError(400, "Product not found");
@@ -104,6 +112,10 @@ async function addProduct(body, file) {
 }
 
 async function editProductInfo(body, file, productId) {
+  if (!isValidDocumentId(productId)) {
+    throw new ExpressError(400, "Invalid Product Id");
+  }
+
   const product = await Product.findById(productId);
   if (!product) {
     throw new ExpressError(404, "Product not found");
@@ -162,67 +174,19 @@ async function editProductInfo(body, file, productId) {
 }
 
 async function deleteProduct(productId) {
-  const findProduct = await Product.find({ _id: productId });
-
-  if (!findProduct) {
-    throw new ExpressError(404, "Product not found");
+  if (!isValidDocumentId(productId)) {
+    throw new ExpressError(400, "Invalid Product Id");
   }
 
-  const deleteProduct = await Product.deleteOne({ _id: productId });
+  const deletedProduct = await Product.findByIdAndDelete(productId);
+
+  if (!deletedProduct) {
+    throw new ExpressError(404, "Product not found");
+  }
 
   return {
     success: true,
     message: "Product deleted successfully",
-  };
-}
-
-async function updateProductRating(productId, rating) {
-  if (!isValidDocumentId(productId)) {
-    throw new ExpressError(400, "Invalid product id");
-  }
-
-  rating = Number(rating);
-
-  if (rating < 1 || rating > 5) {
-    throw new ExpressError(400, "Invalid rating");
-  }
-
-  const ratingMap = {
-    1: "oneStar",
-    2: "twoStar",
-    3: "threeStar",
-    4: "fourStar",
-    5: "fiveStar",
-  };
-
-  const product = await Product.findById(productId);
-
-  if (!product) {
-    throw new ExpressError(404, "Product not found");
-  }
-
-  const { average, count } = product.rating;
-
-  const newAverage = ((average * count) + rating) / (count+1);
-  product.rating.average = newAverage;
-  await product.save();
-
-  const fieldToUpdate = `rating.distribution.${ratingMap[rating]}`;
-
-  const updatedProduct = await Product.findByIdAndUpdate(
-    productId,
-    {
-      $inc: {
-        "rating.count": 1,
-        [fieldToUpdate]: 1,
-      },
-    },
-    { new: true },
-  );
-
-  return {
-    success: true,
-    message: "Product rating added successfully",
   };
 }
 
@@ -257,5 +221,4 @@ module.exports = {
   getRelatedProducts,
   getAllUserProducts,
   getProducts,
-  updateProductRating,
 };

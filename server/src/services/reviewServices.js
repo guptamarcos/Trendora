@@ -1,10 +1,17 @@
 const Review = require("../models/reviewSchema.js");
 const Product = require("../models/productSchema.js");
 const ExpressError = require("../utils/ExpressError.js");
+const isValidDocumentId = require("../utils/Validator.js");
 
 async function getReviews(productId) {
-  const allReviews = await Review.find({ productId: productId })
-    .populate("userId", "username profileImage")
+  if (!isValidDocumentId(productId)) {
+    throw new ExpressError(400, "Invalid Product Id");
+  }
+
+  const allReviews = await Review.find({ productId: productId }).populate(
+    "userId",
+    "username profileImage",
+  );
 
   return {
     success: true,
@@ -13,6 +20,10 @@ async function getReviews(productId) {
 }
 
 async function addReviews(body, productId, userId) {
+  if (!isValidDocumentId(productId)) {
+    throw new ExpressError(400, "Invalid Product Id");
+  }
+
   let { content, rating } = body;
   rating = Number(rating);
 
@@ -27,7 +38,18 @@ async function addReviews(body, productId, userId) {
 
   const existingReview = await Review.findOne({ productId, userId });
   if (existingReview) {
-    throw new ExpressError(400, "You already reviewed this product");
+    if (existingReview.content === "" && content !== "") {
+      existingReview.content = content;
+      await existingReview.save();
+      return {
+        success: true,
+        message: "Review added successfully",
+      };
+    } else if (existingReview.content === "" && content === "") {
+      throw new ExpressError(400, "You already rated the product");
+    } else {
+      throw new ExpressError(400, "You already reviewed this product");
+    }
   }
 
   const newReview = await Review.create({
@@ -47,7 +69,7 @@ async function addReviews(body, productId, userId) {
 
   const { average, count } = existingProduct.rating;
 
-  const newAverage = ((average * count) + rating) / (count+1);
+  const newAverage = (average * count + rating) / (count + 1);
   existingProduct.rating.average = newAverage;
   await existingProduct.save();
 
@@ -71,13 +93,31 @@ async function addReviews(body, productId, userId) {
 }
 
 async function deleteReviews(productId, reviewId) {
+  if (!isValidDocumentId(productId)) {
+    throw new ExpressError(400, "Invalid Product Id");
+  }
+
+  if (!isValidDocumentId(reviewId)) {
+    throw new ExpressError(400, "Invalid review Id");
+  }
+  
+  const product = await Product.findById(productId);
   const deletedReview = await Review.findByIdAndDelete(reviewId);
 
   if (!deletedReview) {
     throw new ExpressError(404, "Review not found");
   }
 
+  if (!product) {
+    throw new ExpressError(404, "Product not found");
+  }
+
+  const { average, count } = product.rating;
   const rating = deletedReview.rating;
+
+  const newAverage = (average * count - rating) / (count - 1);
+  product.rating.average = newAverage;
+  await existingProduct.save();
 
   const ratingMap = {
     1: "oneStar",
@@ -89,7 +129,7 @@ async function deleteReviews(productId, reviewId) {
 
   const fieldToUpdate = `rating.distribution.${ratingMap[rating]}`;
 
-  const product = await Product.findByIdAndUpdate(
+  await Product.findByIdAndUpdate(
     productId,
     {
       $inc: {

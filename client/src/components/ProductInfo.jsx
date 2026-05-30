@@ -4,7 +4,6 @@ import { ProductDetailsSkeleton } from "./skeletons/Index.jsx";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext.jsx";
 import { toast } from "react-toastify";
-import { updateProductRating } from "../api/productApi.js";
 import { getAllReviews, addReview } from "../api/reviewApi.js";
 import Loader from "./loaders/Loader.jsx";
 
@@ -17,32 +16,19 @@ function ProductInfo() {
   const [allReviews, setAllReviews] = useState([]);
   const [content, setContent] = useState("");
   const [reviewLoading, setReviewLoading] = useState(false);
-
-  async function handleRatingSubmit() {
-    if (!user) {
-      navigate("/trendora/login");
-      toast.error("Please log In to add product rating");
-      return;
-    }
-
-    if (rating === 0) {
-      toast.error("Please give some rating");
-      return;
-    }
-
-    try {
-      const result = await updateProductRating(productId, rating);
-    } catch (err) {
-      console.log(err);
-      const message = err?.response?.data?.message || "Something went wrong";
-      toast.error(message);
-    }
-  }
+  const [refreshProduct, setRefreshProduct] = useState(false);
 
   async function getAllProductReviews() {
     try {
       const res = await getAllReviews(productId);
-      setAllReviews(res?.data?.allReviews);
+      const showReviews = res?.data?.allReviews.filter((review)=>{
+        if(review.userId._id === user._id){
+          setRating(review.rating);
+        }
+        return review.content !== "" ; 
+      })
+      setAllReviews(showReviews);
+      setRefreshProduct((prev) => !prev);
     } catch (err) {
       console.log(err);
       const message = err?.response?.data?.message || "Something went wrong";
@@ -58,24 +44,16 @@ function ProductInfo() {
       return;
     }
 
-    if (content.trim().length === 0) {
-      toast.error("Review section is empty");
-      return;
-    }
-
-    if (content.trim().length < 4) {
-      toast.error("Review is too short");
-      return;
-    }
-
     if (rating === 0) {
       toast.error("Please give some rating");
       return;
     }
+
     try {
       setReviewLoading(true);
       const res = await addReview(productId, { content, rating });
-      toast.success("Comment added successfully")
+      const message = content === "" ? "Rating added successfully": "Comment added successfully";
+      toast.success(message)
       getAllProductReviews();
     } catch (err) {
       console.log(err);
@@ -96,7 +74,7 @@ function ProductInfo() {
       {loading && <ProductDetailsSkeleton />}
 
       <main className={loading ? "hidden" : "block min-h-screen mb-30"}>
-        <ProductDetails setLoading={setLoading} setProductId={setProductId} />
+        <ProductDetails setLoading={setLoading} setProductId={setProductId} refreshProduct={refreshProduct}/>
 
         <section className="mt-10 mb-20">
           {/* HEADING */}
@@ -139,7 +117,7 @@ function ProductInfo() {
 
               <button
                 type="button"
-                onClick={handleRatingSubmit}
+                onClick={createNewReview}
                 className="w-fit px-6 py-2.5 border border-black rounded-full hover:bg-gray-100 transition cursor-pointer text-sm font-medium"
               >
                 Submit Rating

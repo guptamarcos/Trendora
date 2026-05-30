@@ -1,6 +1,4 @@
 const userServices = require("../services/userServices.js");
-const isValidDocumentId = require("../utils/Validator.js");
-const ExpressError = require("../utils/ExpressError.js");
 
 async function getUser(req, res) {
   const result = await userServices.getUser(req.user);
@@ -36,10 +34,6 @@ async function uploadProfileImage(req, res) {
 
 async function deleteUser(req, res) {
   const { userId } = req.params;
-
-  if (!isValidDocumentId(userId)) {
-    throw new ExpressError(400, "Invalid user Id");
-  }
 
   const result = await userServices.deleteUser(req.params.userId);
 

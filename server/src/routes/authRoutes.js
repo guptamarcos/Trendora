@@ -5,7 +5,7 @@ const { register, login, logout, oauthLogin, otpVerify, resendOtp } = require(".
 const { verifyAndCheckUserToken } = require("../middleware/authMiddleware.js");
 const csrfProtection = require("../config/csrfConfig.js");
 
-router.post("/register",wrapAsync(register));
+router.post("/register",csrfProtection, wrapAsync(register));
 router.post("/login", csrfProtection, wrapAsync(login));
 router.post("/logout", csrfProtection,verifyAndCheckUserToken, wrapAsync(logout));
 router.post("/google", csrfProtection, wrapAsync(oauthLogin));

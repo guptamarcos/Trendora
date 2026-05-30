@@ -1,6 +1,7 @@
 const Product = require("../models/productSchema.js");
 const User = require("../models/userSchema.js");
 const ExpressError = require("../utils/ExpressError.js");
+const isValidDocumentId = require("../utils/Validator.js");
 
 async function getWishlistItems(userId) {
   const wishlist = await User.findById(userId).select("wishlist").populate({
@@ -16,7 +17,11 @@ async function getWishlistItems(userId) {
 
 async function addToWishlist(body, userId) {
   const { productId, size, quantity } = body;
- 
+  
+  if(!isValidDocumentId(productId)){
+    throw new ExpressError(400, "Invalid product id");
+  }
+  
   const product = await Product.findById(productId);
 
   if (!product) {
@@ -27,7 +32,7 @@ async function addToWishlist(body, userId) {
     throw new ExpressError(400, "Product is out of stock");
   }
 
-  if (product.stock < quantity){
+  if (product.stock < quantity) {
     throw new ExpressError(400, "Product is unavailable");
   }
 
@@ -55,6 +60,11 @@ async function addToWishlist(body, userId) {
 }
 
 async function removeWishlistItem(userId, itemId) {
+
+  if (!isValidDocumentId(itemId)) {
+    throw new ExpressError(400, "Invalid Item Id");
+  }
+
   const item = await User.updateOne(
     { _id: userId },
     {

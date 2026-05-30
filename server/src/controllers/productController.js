@@ -1,13 +1,7 @@
 const productServices = require("../services/productServices.js");
-const isValidDocumentId = require("../utils/Validator.js");
-const ExpressError = require("../utils/ExpressError.js");
 
 async function getProductInfo(req, res) {
   const { productId } = req.params;
-
-  if (!isValidDocumentId(productId)) {
-    throw new ExpressError(400, "Invalid Product Id");
-  }
 
   const result = await productServices.getProductInfo(productId);
 
@@ -22,10 +16,6 @@ async function getBestSeller(req, res) {
 
 async function getRelatedProducts(req, res) {
   let { productId } = req.params;
-
-  if (!isValidDocumentId(productId)) {
-    throw new ExpressError(400, "Invalid Product Id");
-  }
 
   const result = await productServices.getRelatedProducts(productId);
 
@@ -53,10 +43,6 @@ async function addProduct(req, res) {
 async function editProductInfo(req, res) {
   const { productId } = req.params;
 
-  if (!isValidDocumentId(productId)) {
-    throw new ExpressError(400, "Invalid Product Id");
-  }
-
   const result = await productServices.editProductInfo(
     req.body,
     req.file,
@@ -69,26 +55,9 @@ async function editProductInfo(req, res) {
 async function deleteProduct(req, res) {
   const { productId } = req.params;
 
-  if (!isValidDocumentId(productId)) {
-    throw new ExpressError(400, "Invalid Product Id");
-  }
-
   const result = await productServices.deleteProduct(productId);
 
   return res.status(200).json(result);
-}
-
-async function updateProductRating(req, res) {
-  const { productId } = req.params;
-  const { rating } = req.body;
-
-  if (!isValidDocumentId(productId)) {
-    throw new ExpressError(400, "Invalid Product Id");
-  }
-
-  const result = await productServices.updateProductRating(productId, rating);
-
-  return res.status(201).json(result);
 }
 
 async function getProducts(req, res) {
@@ -106,6 +75,5 @@ module.exports = {
   getBestSeller,
   getRelatedProducts,
   getAllUserProducts,
-  getProducts,
-  updateProductRating,
+  getProducts
 };

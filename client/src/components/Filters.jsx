@@ -3,20 +3,26 @@ import { FaStar } from "react-icons/fa";
 const categories = ["men", "women", "girl", "boy"];
 
 const priceSort = [
-  { label: "Low to High", value: "lowToHigh" },
-  { label: "High to Low", value: "highToLow" },
+  { label: "All", value: 0},
+  { label: "Low to High", value: 1 },
+  { label: "High to Low", value: -1 },
 ];
 
 const ratings = [5, 4, 3, 2, 1];
 
-function Filters({ activeFilter, setActiveFilter }) {
-  function handleChange(evt) {
+function Filters({ setSortOrder, sortOrder, setCategoryFilter }) {
+
+  function handleCategoryChange(evt) {
     const currSelectedCategory = evt.target.value;
 
-    setActiveFilter((prev) => ({
+    setCategoryFilter((prev) => ({
       ...prev,
       [currSelectedCategory]: !prev[currSelectedCategory],
     }));
+  }
+
+  function handleSortOrder(evt){
+    Number(evt.target.value) === sortOrder ? setSortOrder(0): setSortOrder(Number(evt.target.value))
   }
 
   return (
@@ -40,7 +46,7 @@ function Filters({ activeFilter, setActiveFilter }) {
                 value={category}
                 id={category}
                 className="mr-2"
-                onChange={handleChange}
+                onChange={handleCategoryChange}
               />
               {category}
             </label>
@@ -61,11 +67,13 @@ function Filters({ activeFilter, setActiveFilter }) {
               className="pl-2 cursor-pointer"
             >
               <input
-                type="checkbox"
+                type="radio"
+                defaultChecked={item.value === 0}
+                name="priceSort"
                 value={item.value}
                 id={item.value}
                 className="mr-2"
-                onChange={handleChange}
+                onChange={handleSortOrder}
               />
               {item.label}
             </label>

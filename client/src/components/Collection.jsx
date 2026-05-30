@@ -4,14 +4,38 @@ import { toast } from "react-toastify";
 import { getAllProducts } from "../api/productApi.js";
 import { CollectionSkeleton } from "./skeletons/Index.jsx";
 
+function getShowProducts(sortOrder, categoryFilter, allProducts) {
+  let showProducts = allProducts?.filter((product) => {
+    const productCategory = product.category;
+    return categoryFilter[productCategory];
+  });
+
+  if (showProducts?.length === 0) {
+    showProducts = [...allProducts];
+  }
+
+  if (sortOrder === 1) {
+    showProducts.sort((curr, next) => curr.price - next.price);
+  } else if (sortOrder === -1) {
+    showProducts.sort((curr, next) => next.price - curr.price);
+  }
+
+  return showProducts;
+}
+
+
 function Collection() {
   const [allProducts, setAllProducts] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [activeFilter, setActiveFilter] = useState({
-    men: false, women: false, girl: false, boy: false,
+  const [categoryFilter, setCategoryFilter] = useState({
+    men: false,
+    women: false,
+    girl: false,
+    boy: false,
   });
-    
-  async function getProductInfo() {
+  const [sortOrder, setSortOrder] = useState(0);
+
+  async function getAllProductInfo() {
     try {
       setLoading(true);
       const res = await getAllProducts();
@@ -25,17 +49,10 @@ function Collection() {
   }
 
   useEffect(() => {
-    getProductInfo();
+    getAllProductInfo();
   }, []);
 
-  let showProducts = allProducts?.filter((product) => {
-    const productCategory = product.category;
-    return activeFilter[productCategory];
-  });
-
-  if (showProducts?.length === 0) {
-    showProducts = allProducts;
-  }
+  const showProducts = getShowProducts(sortOrder, categoryFilter, allProducts);
 
   if (loading) {
     return <CollectionSkeleton />;
@@ -43,7 +60,11 @@ function Collection() {
 
   return (
     <section className="mb-40 min-h-screen flex gap-8">
-      <Filters activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
+      <Filters
+        setSortOrder={setSortOrder}
+        sortOrder={sortOrder}
+        setCategoryFilter={setCategoryFilter}
+      />
       <div className="flex-1">
         <div className="py-6 flex justify-between ">
           <h2 className="text-3xl flex items-center">

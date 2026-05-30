@@ -9,6 +9,7 @@ const cloudinary = require("cloudinary").v2;
 const ExpressError = require("../utils/ExpressError.js");
 const bcrypt = require("bcrypt");
 const { passwordUpdateEmail } = require("./emailServices.js");
+const isValidDocumentId = require("../utils/Validator.js");
 
 function getUser(userInfo) {
   const user = userInfo.toObject();
@@ -22,21 +23,20 @@ function getUser(userInfo) {
 }
 
 async function getAllUser(search, status, limit) {
-
   const query = {};
-  
-  if(search){
-    query.username = { $regex: search, $options: "i"};
+
+  if (search) {
+    query.username = { $regex: search, $options: "i" };
   }
 
-  if(status){
+  if (status) {
     query.status = status[0].toUpperCase() + status.slice(1, status.length);
   }
-  
+
   const matchedUsersCount = await User.countDocuments(query);
-  const allUser = await User.find(query).limit(Number(limit)).select(
-    "username email role profileImage status",
-  );
+  const allUser = await User.find(query)
+    .limit(Number(limit))
+    .select("username email role profileImage status");
 
   return {
     success: true,
@@ -90,7 +90,7 @@ async function updateProfilePassword(body, user) {
 
   const updatePasswordEmail = await passwordUpdateEmail(user?.email);
 
-  if(!updatePasswordEmail){
+  if (!updatePasswordEmail) {
     console.log("Update password email is not sent");
   }
 
@@ -145,6 +145,10 @@ async function uploadProfileImage(user, file) {
 }
 
 async function deleteUser(userId) {
+  if (!isValidDocumentId(userId)) {
+    throw new ExpressError(400, "Invalid user Id");
+  }
+
   const deletedUser = await User.findByIdAndDelete(userId);
 
   if (!deletedUser) {

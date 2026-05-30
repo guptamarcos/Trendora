@@ -60,7 +60,7 @@ function RelatedProducts({ relatedProducts }) {
   );
 }
 
-function ProductDetails({ setLoading, setProductId }) {
+function ProductDetails({ setLoading, setProductId, refreshProduct }) {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState(null);
@@ -151,7 +151,7 @@ function ProductDetails({ setLoading, setProductId }) {
 
   useEffect(() => {
     getProduct();
-  }, [productId]);
+  }, [productId, refreshProduct]);
 
   useEffect(() => {
     if (product?.category) {
@@ -183,20 +183,30 @@ function ProductDetails({ setLoading, setProductId }) {
             {/* RATINGS */}
             {product?.rating?.average > 0 && (
               <div className="flex items-center gap-2">
-                {}
-                <FaStar className="text-yellow-400" />
-                <FaStar className="text-yellow-400" />
-                <FaStar className="text-yellow-400" />
-                <FaStar className="text-yellow-400" />
-                {product?.rating?.average -
-                  Math.floor(product?.rating?.average) >
-                0.5 ? (
-                  <FaStarHalfAlt className="text-yellow-400" />
-                ) : (
-                  <FaStar className="text-gray-400" />
-                )}
-                <span className="text-gray-600 text-sm">
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const rating = product?.rating?.average || 0;
+
+                    if (star <= Math.floor(rating)) {
+                      return <FaStar key={star} className="text-yellow-400" />;
+                    }
+
+                    if (star - rating <= 0.5) {
+                      return (
+                        <FaStarHalfAlt key={star} className="text-yellow-400" />
+                      );
+                    }
+
+                    return <FaStar key={star} className="text-gray-300" />;
+                  })}
+                </div>
+
+                <span className="text-gray-600 text-sm font-medium">
                   {product?.rating?.average.toFixed(1)}
+                </span>
+
+                <span className="text-gray-400 text-sm">
+                  ({product?.rating?.count || 0} reviews)
                 </span>
               </div>
             )}

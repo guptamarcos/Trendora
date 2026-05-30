@@ -5,9 +5,9 @@ const wrapAsync = require("../utils/WrapAsync.js");
 const csrfProtection = require("../config/csrfConfig.js");
 
 
-router.post("/create-order", wrapAsync(createOrder))
+router.post("/create-order",csrfProtection, wrapAsync(createOrder))
 
-router.post("/verify-payment", wrapAsync(verifyPayment));
+router.post("/verify-payment",csrfProtection, wrapAsync(verifyPayment));
 
 
 module.exports = router;

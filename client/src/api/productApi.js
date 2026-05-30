@@ -21,10 +21,6 @@ export const getProductInfo = (productId) =>{
   return axiosInstance.get(`/products/${productId}`);
 }
 
-export const updateProductRating = (productId, rating) =>{
-  return axiosInstance.post(`/products/${productId}/rating`, { rating });
-}
-
 
 
 

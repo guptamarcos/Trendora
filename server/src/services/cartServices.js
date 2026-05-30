@@ -1,5 +1,6 @@
 const Product = require("../models/productSchema.js");
 const User = require("../models/userSchema.js");
+const isValidDocumentId = require("../utils/Validator.js");
 const ExpressError = require("../utils/ExpressError.js");
 
 async function getCartItems(userId) {
@@ -26,11 +27,10 @@ async function addToCart(body, userId) {
   if (product.stock < quantity) {
     throw new ExpressError(400, "Product is unavailable");
   }
-  
+
   if (product.stock === 0) {
     throw new ExpressError(400, "Product is out of stock");
   }
-
 
   product.stock -= 1;
   await product.save();
@@ -56,6 +56,10 @@ async function addToCart(body, userId) {
 }
 
 async function removeCartItem(userId, itemId) {
+  if (!isValidDocumentId(itemId)) {
+    throw new ExpressError(400, "Invalid itemId");
+  }
+  
   const cartItems = await User.updateOne(
     { _id: userId },
     {
