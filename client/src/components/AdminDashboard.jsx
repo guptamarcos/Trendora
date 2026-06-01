@@ -46,7 +46,7 @@ function AdminDashboard() {
         await getDashboardInfo();
 
       setDashboard(
-        res?.data?.DashboardInfo
+        res?.data?.data
       );
     } catch (err) {
       const message =

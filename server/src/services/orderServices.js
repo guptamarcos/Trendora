@@ -39,7 +39,8 @@ async function addOrder(body, userId) {
   });
 
   if (error) {
-    throw new ExpressError(400, error.details[0].message);
+    const errors = error.details.map((err) => err.name);
+    throw new ExpressError(422, errors);
   }
 
   // CHECK PAYMENT METHOD IS VALID
@@ -100,7 +101,7 @@ async function addOrder(body, userId) {
   const OrderConfirmationEmail =  await orderConfirmationEmail(user?.email,orderDetails);
   
   if(!OrderConfirmationEmail){
-    console.log("Order confirmation email is not sent");
+    console.log("Order confirmation email is not sent for email : ", user.email);
   }
 
   // REMOVE CART ITEMS
@@ -161,15 +162,18 @@ async function getOrders(search, status, limit) {
 }
 
 async function updateOrderStatus(orderId, status){
+  if(!isValidDocumentId(orderId)){
+    throw new ExpressError(400, "Invalid order id");
+  }
   
   if(!status){
     throw new ExpressError(400, "Invalid order status");
   }
-
-  if(!isValidDocumentId(orderId)){
-    throw new ExpressError(400, "Invalid order id");
+  
+  const orderStatus = ["Pending", "Shipped", "Completed", "Delivered", "Cancelled"]
+  if(!orderStatus.includes(status)){
+    throw new ExpressError(400, "Invalid Order status");
   }
-
 
   const updatedOrder = await Order.findByIdAndUpdate(orderId, {$set: { orderStatus: status}});
 

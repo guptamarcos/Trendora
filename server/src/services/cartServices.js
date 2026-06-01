@@ -18,6 +18,10 @@ async function getCartItems(userId) {
 async function addToCart(body, userId) {
   const { productId, size, quantity } = body;
 
+  if(!isValidDocumentId(productId)){
+    throw new ExpressError(400,"Invalid Product id")
+  }
+
   const product = await Product.findById(productId);
 
   if (!product) {
@@ -32,7 +36,7 @@ async function addToCart(body, userId) {
     throw new ExpressError(400, "Product is out of stock");
   }
 
-  product.stock -= 1;
+  product.stock -= quantity;
   await product.save();
 
   await User.findByIdAndUpdate(
@@ -57,7 +61,7 @@ async function addToCart(body, userId) {
 
 async function removeCartItem(userId, itemId) {
   if (!isValidDocumentId(itemId)) {
-    throw new ExpressError(400, "Invalid itemId");
+    throw new ExpressError(400, "Invalid Item Id");
   }
   
   const cartItems = await User.updateOne(

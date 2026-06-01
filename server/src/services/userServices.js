@@ -51,7 +51,8 @@ async function updateProfileInfo(body, userId) {
   });
 
   if (error) {
-    throw new ExpressError(400, error.details[0].message);
+    const errors = error.details.map((err) => err.name);
+    throw new ExpressError(422, errors);
   }
 
   const { username, bio } = value;
@@ -74,7 +75,8 @@ async function updateProfilePassword(body, user) {
   });
 
   if (error) {
-    throw new ExpressError(400, error.details[0].message);
+    const errors = error.details.map((err) => err.name);
+    throw new ExpressError(422, errors);
   }
 
   const { oldPassword, newPassword } = value;
@@ -91,7 +93,7 @@ async function updateProfilePassword(body, user) {
   const updatePasswordEmail = await passwordUpdateEmail(user?.email);
 
   if (!updatePasswordEmail) {
-    console.log("Update password email is not sent");
+    console.log("Update password email is not sent for email: ",user.email);
   }
 
   return {
@@ -154,6 +156,7 @@ async function deleteUser(userId) {
   if (!deletedUser) {
     throw new ExpressError(404, "User not found");
   }
+  
   return {
     success: true,
     message: "User deleted successfully",

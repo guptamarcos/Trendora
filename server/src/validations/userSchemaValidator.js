@@ -68,10 +68,16 @@ const GoogleAuthSchemaValidator = Joi.object({
   }),
 });
 
+const emailSchemaValidator = Joi.object({
+  email: userBaseSchema.extract("email"),
+});
+
+
 module.exports = {
   signupSchemaValidator,
   loginSchemaValidator,
   ProfileInfoSchemaValidator,
   PasswordSchemaValidator,
-  GoogleAuthSchemaValidator
+  GoogleAuthSchemaValidator,
+  emailSchemaValidator
 };

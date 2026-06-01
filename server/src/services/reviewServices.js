@@ -25,10 +25,14 @@ async function addReviews(body, productId, userId) {
   }
 
   let { content, rating } = body;
+  if(!rating || !content){
+    throw new ExpressError(400, "Content and rating both fields are required");
+  }
+
   rating = Number(rating);
 
   if (rating < 1 || rating > 5) {
-    throw new ExpressError(400, "Invalid rating value");
+    throw new ExpressError(400, "Invalid rating");
   }
 
   const existingProduct = await Product.findById(productId);

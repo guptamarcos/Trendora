@@ -17,10 +17,11 @@ function ProfileInfo({loading, setLoading}) {
     data.email = user.email;
     try{
       setLoading(true);
-      await updateProfileInfo(data);
+      const res = await updateProfileInfo(data);
       toast.success("Profile Information updated successfully");
       getUser();
     }catch(err){
+      console.log(err?.response);
       const message = err?.response?.data?.message || "Something went Wrong";
       toast.error(message);
     } finally{

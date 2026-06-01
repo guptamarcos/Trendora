@@ -36,7 +36,7 @@ async function addToWishlist(body, userId) {
     throw new ExpressError(400, "Product is unavailable");
   }
 
-  product.stock -= 1;
+  product.stock -= quantity;
   await product.save();
 
   await User.findByIdAndUpdate(

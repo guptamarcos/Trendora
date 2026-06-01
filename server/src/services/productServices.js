@@ -8,14 +8,14 @@ const ExpressError = require("../utils/ExpressError.js");
 const isValidDocumentId = require("../utils/Validator.js");
 
 async function getProductInfo(productId) {
-  const product = await Product.find({ _id: productId });
-
   if (!isValidDocumentId(productId)) {
     throw new ExpressError(400, "Invalid Product Id");
   }
 
+  const product = await Product.find({ _id: productId });
+
   if (!product) {
-    throw new ExpressError(400, "Product not found");
+    throw new ExpressError(404, "Product not found");
   }
 
   return {
@@ -37,18 +37,17 @@ async function getBestSeller() {
 }
 
 async function getRelatedProducts(productId) {
-  const product = await Product.findById(productId);
-
   if (!isValidDocumentId(productId)) {
     throw new ExpressError(400, "Invalid Product Id");
   }
 
+  const product = await Product.findById(productId);
+
   if (!product) {
-    throw new ExpressError(400, "Product not found");
+    throw new ExpressError(404, "Product not found");
   }
 
-  const category = product.category;
-  const relatedProducts = await Product.find({ category })
+  const relatedProducts = await Product.find({ category: product.category })
     .select("productImage category price name")
     .limit(5);
 
@@ -84,12 +83,17 @@ async function addProduct(body, file) {
     body.sizes = body.sizes.split(",");
   }
 
+  if(!file){
+    throw new ExpressError(400, "Product Image is required");
+  }
+
   const { error, value } = productSchemaValidator.validate(body, {
     abortEarly: false,
   });
 
   if (error) {
-    throw new ExpressError(400, error.details[0].message);
+    const errors = error.details.map((err) => err.name);
+    throw new ExpressError(400, errors);
   }
 
   const { name, category, description, sizes, price, stock } = value;
@@ -132,7 +136,8 @@ async function editProductInfo(body, file, productId) {
   });
 
   if (error) {
-    throw new ExpressError(400, error.details[0].message);
+    const errors = error.details.map((err) => err.name);
+    throw new ExpressError(422, errors);
   }
 
   const { name, category, description, sizes, price, stock } = value;
