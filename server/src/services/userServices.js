@@ -24,6 +24,15 @@ function getUser(userInfo) {
 
 async function getAllUser(search, status, limit) {
   const query = {};
+  if (!limit) {
+    throw new ExpressError(400, "limit is required");
+  }
+
+  limit = Number(limit);
+
+  if (!Number.isInteger(limit) || limit <= 0) {
+    throw new ExpressError(400, "Limit must be a positive integer");
+  }
 
   if (search) {
     query.username = { $regex: search, $options: "i" };
@@ -60,7 +69,7 @@ async function updateProfileInfo(body, userId) {
   await User.findByIdAndUpdate(
     userId,
     { $set: { username: username, bio: bio } },
-    { returnDocument: "after", runValidators: true },
+    { runValidators: true },
   );
 
   return {
@@ -93,7 +102,7 @@ async function updateProfilePassword(body, user) {
   const updatePasswordEmail = await passwordUpdateEmail(user?.email);
 
   if (!updatePasswordEmail) {
-    console.log("Update password email is not sent for email: ",user.email);
+    console.log("Update password email is not sent for email: ", user.email);
   }
 
   return {
@@ -104,9 +113,8 @@ async function updateProfilePassword(body, user) {
 
 async function uploadProfileImage(user, file) {
   if (!file) {
-    throw new ExpressError(400, "No file uploaded or invalid file type");
+    throw new ExpressError(400, "Image not found");
   }
-  console.log("This is the file", file);
 
   // FOR REMOVING PREVIOUS IMAGE FORM THE LOCAL FOLDER
 
@@ -121,9 +129,8 @@ async function uploadProfileImage(user, file) {
   //   }
   // }
   // REMOVING THE OLDER FILE FOR THE CLOUDINARY
-  if (user?.profileImage?.path) {
-    await cloudinary.uploader.destroy(user.profileImage.filename);
-  }
+
+  const { filename, path } = user.profileImage;
 
   await User.updateOne(
     { _id: user._id },
@@ -139,6 +146,10 @@ async function uploadProfileImage(user, file) {
       runValidators: true,
     },
   );
+
+  if (path) {
+    await cloudinary.uploader.destroy(filename);
+  }
 
   return {
     success: true,
@@ -156,7 +167,7 @@ async function deleteUser(userId) {
   if (!deletedUser) {
     throw new ExpressError(404, "User not found");
   }
-  
+
   return {
     success: true,
     message: "User deleted successfully",

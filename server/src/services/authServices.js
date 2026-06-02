@@ -4,7 +4,9 @@ const {
   signupSchemaValidator,
   loginSchemaValidator,
   GoogleAuthSchemaValidator,
+  emailSchemaValidator
 } = require("../validations/userSchemaValidator.js");
+const otpSchemaValidator = require("../validations/otpSchemaValidator.js");
 const { loginEmail, sendOtpEmail } = require("./emailServices.js");
 const { loginSms } = require("./smsServices.js");
 const ExpressError = require("../utils/ExpressError.js");
@@ -19,34 +21,37 @@ async function registerUser(body) {
   });
 
   if (error) {
-    throw new ExpressError(400, error.details[0].message);
+    const errMsg = error.details.map((err) => err.message);
+    throw new ExpressError(422, errMsg);
   }
 
   const { username, email, password } = value;
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    throw new ExpressError(400, "Email is already exist!!");
+    throw new ExpressError(409, "Email is already exist!!");
   }
 
-  const createdUser = await User.create({ username, email, password });
-
   const otp = otpGenerator();
-
   const otpEmail = await sendOtpEmail(email, otp);
 
   if (!otpEmail) {
-    console.log("Otp is not sent");
-    throw new ExpressError(500, "Internal server error");
+    console.log("Signup Otp is not sent for email: ", email);
+    throw new ExpressError(
+      503,
+      "OTP service temporarily unavailable. Please try again later",
+    );
   }
 
   const hashedOtp = await bcrypt.hash(otp, 10);
 
-  await OTP.create({
+  const generateOtp = await OTP.create({
     email,
     expiresAt: Date.now() + 1000 * 60 * 5,
     otp: hashedOtp,
   });
+
+  const createdUser = await User.create({ username, email, password });
 
   return {
     success: true,
@@ -60,23 +65,29 @@ async function loginUser(body) {
   });
 
   if (error) {
-    throw new ExpressError(400, error.details[0].message);
+    const errMsg = error.details.map((err) => err.message);
+    throw new ExpressError(422, errMsg);
   }
 
   const { email, password } = value;
   const findUser = await User.findOne({ email }).select("+password");
 
+  if (!findUser) {
+    throw new ExpressError(404, "User not found");
+  }
 
-  // CHECK ADMIN OR NOT 
-  if (findUser.email === "admin@gmail.com") {
-    const checkPassword = await bcrypt.compare(password, findUser.password);
+  if (findUser.googleId && !findUser.password) {
+    throw new ExpressError(409, "Try with google login");
+  }
 
-    if (!checkPassword) {
-      throw new ExpressError(401, "Invalid Credentials");
-    }
+  const checkPassword = await bcrypt.compare(password, findUser.password);
+  if (!checkPassword) {
+    throw new ExpressError(401, "Invalid Credentials");
+  }
 
+  // CHECK ADMIN OR NOT
+  if (findUser.role === "admin") {
     await User.findByIdAndUpdate(findUser._id, { $set: { status: "Active" } });
-
     const token = findUser.generateToken();
 
     return {
@@ -86,41 +97,28 @@ async function loginUser(body) {
     };
   }
 
-  if (!findUser) {
-    throw new ExpressError(404, "Invalid Credentials");
-  }
-
-  if (findUser.googleId) {
-    throw new ExpressError(400, "Try with google login");
-  }
-
-  const checkPassword = await bcrypt.compare(password, findUser.password);
-
-  if (!checkPassword) {
-    throw new ExpressError(401, "Invalid Credentials");
-  }
-
+  await OTP.deleteMany({ email });
   const otp = otpGenerator();
-
   const otpEmail = await sendOtpEmail(email, otp);
 
   if (!otpEmail) {
-    console.log("Otp is not sent");
-    throw new ExpressError(500, "Internal server error");
+    console.log("Login Otp is not sent for email: ", email);
+    throw new ExpressError(
+      503,
+      "OTP service temporarily unavailable. Please try again later",
+    );
   }
-
-  await OTP.deleteMany({ email: email });
 
   const hashedOtp = await bcrypt.hash(otp, 10);
 
-  await OTP.create({
+  const createdOtp = await OTP.create({
     email,
     expiresAt: Date.now() + 1000 * 60 * 5,
     otp: hashedOtp,
   });
 
   return {
-    token : null, 
+    token: null,
     success: true,
     message: "Credentials verified",
   };
@@ -141,114 +139,114 @@ async function oauthLoginUser(body) {
   });
 
   if (error) {
-    throw new ExpressError(400, "Invalid Google Id");
+    const errMsg = error.details.map((err) => err.message);
+    throw new ExpressError(422, errMsg);
   }
-
+  
   const { token } = value;
-
   const ticket = await client.verifyIdToken({
     idToken: token,
     audience: process.env.OAUTH_CLIENT_ID,
   });
-
-  const { email, sub, name } = ticket?.getPayload();
-
-  const otp = otpGenerator();
-
-  const otpEmail = await sendOtpEmail(email, otp);
-
-  if (!otpEmail) {
-    console.log("Otp is not sent");
-    throw new ExpressError(500, "Internal server error");
+  
+  const { email, sub, name, email_verified } = ticket.getPayload();
+  if (!email_verified) {
+    throw new ExpressError(401, "Google email not verified");
   }
 
-  await OTP.deleteMany({ email: email });
-
+  const otp = otpGenerator();
+  
+  await OTP.deleteMany({ email });
   const hashedOtp = await bcrypt.hash(otp, 10);
-
+  
   await OTP.create({
     email,
     expiresAt: Date.now() + 1000 * 60 * 5,
     otp: hashedOtp,
   });
+  
+  const otpEmail = await sendOtpEmail(email, otp);
+  if (!otpEmail) {
+    console.log("Google login or signup otp email not sent for email: ", email);
+    throw new ExpressError(503, "Internal server error");
+  }
 
+  // CHECK 1 ---> IF USER IS ALREADY EXIST GOOGLE ID IS ALREADY PRESENT
   const existingUser1 = await User.findOne({ googleId: sub });
-
-  // IF USER IS ALREADY EXIST
   if (existingUser1) {
-    await User.findByIdAndUpdate(
-      { _id: existingUser1._id },
-      { status: "Active" },
-    );
     return {
       email,
       success: true,
-      message: "User logged in successfully",
+      message: "Credentials Verified",
     };
   }
 
+  // CHECK 2 ---> IF EMAIL IS ALREADY EXIST THAN LINK THE ACCOUNT WITH GOOGLE
   const existingUser2 = await User.findOne({ email });
-
   if (existingUser2) {
     existingUser2.googleId = sub;
-    existingUser2.status = "Active";
     await existingUser2.save();
     return {
       email,
       success: true,
-      message: "User logged in successfully",
+      message: "Credentials verified",
     };
   }
 
-  const newUser = await User.create({
+  // CHECK 3 ---> IF USER NOT EXIST THAN CREATE IT AND LINK THE ACCOUNT WITH GOOGLE
+  await User.create({
     username: name,
     email,
     googleId: sub,
     authProvider: "google",
-    status: "Active",
   });
 
   return {
     email,
     success: true,
-    message: "User logged in successfully",
+    message: "Credentials Verified",
   };
 }
 
 async function verifyOtp(body) {
-  const { otp, email } = body;
+  const { error, value } = otpSchemaValidator.validate(body, {
+    abortEarly: false,
+  });
+
+  if (error) {
+    const errMsg = error.details.map((err) => err.message);
+    throw new ExpressError(422, "Invalid otp or email");
+  }
+
+  const { otp, email } = value;
 
   const findUser = await User.findOne({ email });
-
   if (!findUser) {
-    throw new ExpressError(400, "User not found");
+    throw new ExpressError(404, "User not found");
   }
 
-  const findOtp = await OTP.findOne({ email: email });
-
+  const findOtp = await OTP.findOne({ email });
   if (!findOtp) {
-    throw new ExpressError(404, "Please login first");
+    throw new ExpressError(404, "Please login or signup first");
   }
 
+  // check otp expires or not
   if (findOtp.expiresAt <= Date.now()) {
-    const deletePrevOtpDoc = await OTP.deleteOne({ email: email });
+    await OTP.deleteOne({ email });
     throw new ExpressError(400, "Otp expires");
   }
 
   const checkOtp = await bcrypt.compare(otp, findOtp?.otp);
-
   if (!checkOtp) {
     throw new ExpressError(400, "Invalid otp");
   }
 
   const emailSent = await loginEmail(email);
-
   if (!emailSent) {
-    console.log("Email is not sent");
+    console.log("Login Email is not sent for email", email);
   }
 
   const smsSent = await loginSms();
-
   if (!smsSent) {
     console.log("Login Sms could not be sent");
   }
@@ -267,34 +265,39 @@ async function verifyOtp(body) {
 }
 
 async function resendOtp(body) {
-  const { email } = body;
-  if (!email) {
-    throw new ExpressError(400, "Email is required");
+  const { error, value } = emailSchemaValidator.validate(body, {
+    abortEarly: false,
+  });
+
+  if (error) {
+    const errMsg = error.details.map((err) => err.message);
+    throw new ExpressError(422, errMsg);
   }
 
-  const checkUser = await User.findOne({ email: email });
+  const { email } = value;
+
+  const checkUser = await User.findOne({ email });
   if (!checkUser) {
     throw new ExpressError(404, "User not found");
   }
 
   const existingOtp = await OTP.findOne({ email });
 
-  if (existingOtp?.expiresAt - Date.now() > 270000) {
-    throw new ExpressError(
-      429,
-      "Please wait 30 seconds before requesting OTP again",
-    );
+  if(existingOtp){
+    const diff = existingOtp.expiresAt-Date.now();
+    if (diff < 30000) {
+      throw new ExpressError(429,"Please wait 30 seconds before requesting OTP again");
+    }
+    
+    await OTP.deleteOne({ email });
   }
-
-  await OTP.deleteOne({ email: email });
-
+  
   const otp = otpGenerator();
-
   const otpEmail = await sendOtpEmail(email, otp);
 
   if (!otpEmail) {
-    console.log("Otp is not sent");
-    throw new ExpressError(500, "Internal server error");
+    console.log("Resend Otp is not sent for email: ", email);
+    throw new ExpressError(503, "Otp service is unavailable");
   }
 
   const hashedOtp = await bcrypt.hash(otp, 10);
@@ -307,7 +310,7 @@ async function resendOtp(body) {
 
   return {
     success: true,
-    message: "Credentials verified",
+    message: "Resend otp is sent",
   };
 }
 

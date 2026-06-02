@@ -1,12 +1,7 @@
 const Joi = require("joi");
 
 const productSchemaValidator = Joi.object({
-  name: Joi.string()
-    .trim()
-    .min(5)
-    .max(100)
-    .required()
-    .messages({
+  name: Joi.string().trim().min(5).max(100).required().messages({
     "string.empty": "Product name is required",
     "string.min": "Product name must have at least 5 characters",
     "string.max": "Product name must not exceed 100 characters",
@@ -21,11 +16,7 @@ const productSchemaValidator = Joi.object({
       "any.only": "Category must be one of men, boy, girl, women",
     }),
 
-  description: Joi.string().
-    trim().
-    max(500).
-    required().
-    messages({
+  description: Joi.string().trim().max(500).required().messages({
     "string.empty": "Product description is required",
     "string.max": "Description must not exceed 500 characters",
   }),
@@ -38,6 +29,7 @@ const productSchemaValidator = Joi.object({
     .messages({
       "any.required": "Product sizes are required",
       "array.min": "At least one size must be selected",
+      "array.unique": "Duplicate sizes are not allowed",
       "any.only": "Invalid size selected",
     }),
 

@@ -12,7 +12,7 @@ async function getProductInfo(productId) {
     throw new ExpressError(400, "Invalid Product Id");
   }
 
-  const product = await Product.find({ _id: productId });
+  const product = await Product.findById({ productId });
 
   if (!product) {
     throw new ExpressError(404, "Product not found");
@@ -41,13 +41,13 @@ async function getRelatedProducts(productId) {
     throw new ExpressError(400, "Invalid Product Id");
   }
 
-  const product = await Product.findById(productId);
+  const currProduct = await Product.findById(productId);
 
-  if (!product) {
+  if (!currProduct) {
     throw new ExpressError(404, "Product not found");
   }
 
-  const relatedProducts = await Product.find({ category: product.category })
+  const relatedProducts = await Product.find({ category: currProduct.category })
     .select("productImage category price name")
     .limit(5);
 
@@ -79,11 +79,11 @@ async function latestCollections() {
 }
 
 async function addProduct(body, file) {
-  if (typeof body.sizes === "string") {
+  if (typeof body?.sizes === "string") {
     body.sizes = body.sizes.split(",");
   }
 
-  if(!file){
+  if (!file) {
     throw new ExpressError(400, "Product Image is required");
   }
 
@@ -121,60 +121,49 @@ async function editProductInfo(body, file, productId) {
   }
 
   const product = await Product.findById(productId);
+
   if (!product) {
     throw new ExpressError(404, "Product not found");
   }
 
-  // Handle sizes
-  if (typeof body.sizes === "string") {
+  if (typeof body?.sizes === "string") {
     body.sizes = body.sizes.split(",");
   }
 
-  // Validation
   const { error, value } = productSchemaValidator.validate(body, {
     abortEarly: false,
   });
 
   if (error) {
-    const errors = error.details.map((err) => err.name);
+    const errors = error.details.map((err) => err.message);
     throw new ExpressError(422, errors);
   }
 
-  const { name, category, description, sizes, price, stock } = value;
+  const updateData = { ...value };
 
-  // Prepare update object
-  const updateData = {
-    name,
-    category,
-    description,
-    sizes,
-    price,
-    stock,
-  };
+  let oldImage = null;
 
   if (file) {
-    const { filename, path } = file;
-
-    // delete old image FIRST
-    if (product.productImage?.filename) {
-      await cloudinary.uploader.destroy(product.productImage.filename);
-    }
+    oldImage = product.productImage?.filename;
 
     updateData.productImage = {
-      url: path,
-      filename: filename,
+      url: file.path,
+      filename: file.filename,
     };
   }
 
-  // Single DB call
   await Product.findByIdAndUpdate(productId, updateData, {
-    new: true,
     runValidators: true,
+    new: true,
   });
+
+  if (oldImage) {
+    await cloudinary.uploader.destroy(oldImage);
+  }
 
   return {
     success: true,
-    message: "Product Information edited successfully",
+    message: "Product information edited successfully",
   };
 }
 
@@ -197,7 +186,16 @@ async function deleteProduct(productId) {
 
 async function getProducts(search, category, limit) {
   let query = {};
+  if (!limit) {
+    throw new ExpressError(400, "limit is required");
+  }
 
+  limit = Number(limit);
+
+  if (!Number.isInteger(limit) || limit <= 0) {
+    throw new ExpressError(400, "Limit must be a positive integer");
+  }
+  
   if (search) {
     query.name = { $regex: search, $options: "i" };
   }

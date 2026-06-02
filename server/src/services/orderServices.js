@@ -2,7 +2,7 @@ const User = require("../models/userSchema.js");
 const Order = require("../models/orderSchema.js");
 const { addressSchema } = require("../validations/addressSchemaValidator.js");
 const ExpressError = require("../utils/ExpressError.js");
-const { orderConfirmationEmail} = require("./emailServices.js");
+const { orderConfirmationEmail } = require("./emailServices.js");
 const isValidDocumentId = require("../utils/validator.js");
 
 async function getUserOrder(userId) {
@@ -21,20 +21,18 @@ async function getUserOrder(userId) {
 
 async function addOrder(body, userId) {
   // CHECK CART NOT EMPTY
-  const user = await User.findById(userId)
-    .select("cart email name")
-    .populate({
-      path: "cart.product",
-    });
+  const user = await User.findById(userId).select("cart email name").populate({
+    path: "cart.product",
+  });
 
   if (!user.cart || user.cart.length === 0) {
-    throw new ExpressError(404, "Please select the item for order");
+    throw new ExpressError(404, "Please select the items for order");
   }
 
   const { paymentMethod, ...address } = body;
 
   // CHECK ADDRESS IS VALID
-  const { error } = addressSchema.validate(address, {
+  const { error, value } = addressSchema.validate(address, {
     abortEarly: false,
   });
 
@@ -50,8 +48,7 @@ async function addOrder(body, userId) {
     throw new ExpressError(400, "Invalid payment method");
   }
 
-  const paymentStatus =
-    paymentMethod === "cod" ? "Pending" : "Completed";
+  const paymentStatus = paymentMethod === "cod" ? "Pending" : "Completed";
 
   // CREATE ORDER DATA
   const allOrders = user.cart.map((cartItem) => ({
@@ -60,8 +57,7 @@ async function addOrder(body, userId) {
     quantity: cartItem.quantity,
     priceAtOrder: cartItem.product.price,
     size: cartItem.size,
-    totalAmount:
-      cartItem.quantity * cartItem.product.price,
+    totalAmount: cartItem.quantity * cartItem.product.price,
     paymentMethod,
     paymentStatus,
     shippingAddress: address,
@@ -70,7 +66,7 @@ async function addOrder(body, userId) {
   // SAVE ORDERS
   const orders = await Order.create(allOrders);
 
-  // EMAIL DATA (only necessary info)
+  // DATA SEND WITH EMAIL
   const orderDetails = {
     customerName: user.name,
 
@@ -80,34 +76,35 @@ async function addOrder(body, userId) {
       quantity: item.quantity,
       size: item.size,
       price: item.product.price,
-      total:
-        item.quantity * item.product.price,
+      total: item.quantity * item.product.price,
     })),
 
     paymentMethod,
     paymentStatus,
     shippingAddress: address,
 
-    totalAmount: user.cart.reduce(
-      (sum, item) =>
-        sum + item.quantity * item.product.price,
-      0
-    ),
+    totalAmount: user.cart.reduce((sum, item) => {
+      return sum + item.quantity * item.product.price;
+    }, 0),
 
     orderDate: new Date().toLocaleDateString(),
   };
 
   // SEND EMAIL
-  const OrderConfirmationEmail =  await orderConfirmationEmail(user?.email,orderDetails);
-  
-  if(!OrderConfirmationEmail){
-    console.log("Order confirmation email is not sent for email : ", user.email);
+  const OrderConfirmationEmail = await orderConfirmationEmail(
+    user?.email,
+    orderDetails,
+  );
+
+  if (!OrderConfirmationEmail) {
+    console.log(
+      "Order confirmation email is not sent for email : ",
+      user.email,
+    );
   }
 
   // REMOVE CART ITEMS
-  const cartItemIds = user.cart.map(
-    (cartItem) => cartItem._id
-  );
+  const cartItemIds = user.cart.map((cartItem) => cartItem._id);
 
   await User.updateOne(
     { _id: userId },
@@ -117,7 +114,7 @@ async function addOrder(body, userId) {
           _id: { $in: cartItemIds },
         },
       },
-    }
+    },
   );
 
   return {
@@ -129,9 +126,18 @@ async function addOrder(body, userId) {
 async function getOrders(search, status, limit) {
   let query = {};
 
+  if (!limit) {
+    throw new ExpressError(400, "limit is required");
+  }
+
+  limit = Number(limit);
+
+  if (!Number.isInteger(limit) || limit <= 0) {
+    throw new ExpressError(400, "Limit must be a positive integer");
+  }
+
   if (status) {
-    query.orderStatus =
-      status[0].toUpperCase() + status.slice(1);
+    query.orderStatus = status[0].toUpperCase() + status.slice(1);
   }
 
   if (search) {
@@ -147,12 +153,9 @@ async function getOrders(search, status, limit) {
     };
   }
 
-  const matchedOrdersCount =
-    await Order.countDocuments(query);
+  const matchedOrdersCount = await Order.countDocuments(query);
 
-  const orders = await Order.find(query)
-    .populate("user")
-    .limit(Number(limit));
+  const orders = await Order.find(query).populate("user").limit(limit);
 
   return {
     success: true,
@@ -161,30 +164,39 @@ async function getOrders(search, status, limit) {
   };
 }
 
-async function updateOrderStatus(orderId, status){
-  if(!isValidDocumentId(orderId)){
+async function updateOrderStatus(orderId, status) {
+  if (!isValidDocumentId(orderId)) {
     throw new ExpressError(400, "Invalid order id");
   }
-  
-  if(!status){
+
+  if (!status) {
     throw new ExpressError(400, "Invalid order status");
   }
-  
-  const orderStatus = ["Pending", "Shipped", "Completed", "Delivered", "Cancelled"]
-  if(!orderStatus.includes(status)){
+
+  const orderStatus = [
+    "Pending",
+    "Shipped",
+    "Completed",
+    "Delivered",
+    "Cancelled",
+  ];
+
+  if (!orderStatus.includes(status)) {
     throw new ExpressError(400, "Invalid Order status");
   }
 
-  const updatedOrder = await Order.findByIdAndUpdate(orderId, {$set: { orderStatus: status}});
+  const updatedOrder = await Order.findByIdAndUpdate(orderId, {
+    $set: { orderStatus: status },
+  });
 
-  if(!updatedOrder){
+  if (!updatedOrder) {
     throw new ExpressError(404, "Order not found");
   }
 
   return {
     success: true,
     message: "Order status updated successfully",
-  }
+  };
 }
 
 module.exports = { addOrder, getUserOrder, getOrders, updateOrderStatus };

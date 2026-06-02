@@ -6,7 +6,6 @@ async function getUserOrder(req, res) {
   return res.status(200).json(result);
 }
 
-
 async function addOrder(req, res) {
   const userId = req.user._id;
 

@@ -53,6 +53,8 @@ async function getOrderInfo() {
   };
 }
 
+
+// MAIN SERVICE 
 async function dashboardInfo() {
   const [totalUsers, totalProducts, totalOrders] =
     await Promise.all([

@@ -6,16 +6,15 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Product Name is required"],
       trim: true,
+      lowercase: true,
       minLength: [5, "Name must be at least 5 characters"],
       maxLength: [100, "Name cannot exceed 100 characters"],
-      index: true,
     },
     category: {
       type: String,
       enum: ["men", "boy", "girl", "women"],
       lowercase: true,
       required: true,
-      index: true,
     },
     description: {
       type: String,
@@ -57,6 +56,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       min: [0, "Stock can't be negative"],
       required: [true, "Product Stock is required"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Stock must be an integer",
+      },
     },
     rating: {
       average: {
@@ -87,6 +90,17 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+productSchema.index(
+  {
+    name: 1,
+    category: 1,
+  },
+  {
+    unique: true,
+  },
+);
+
 
 const Product = mongoose.model("Product", productSchema);
 

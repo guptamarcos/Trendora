@@ -7,8 +7,9 @@ async function getReviews(productId) {
   if (!isValidDocumentId(productId)) {
     throw new ExpressError(400, "Invalid Product Id");
   }
-
-  const allReviews = await Review.find({ productId: productId }).populate(
+  
+  // IN CASE OF NO REVIEWS IT WILL RETURN EMPTY ARRAY
+  const allReviews = await Review.find({ productId }).populate(
     "userId",
     "username profileImage",
   );
@@ -50,13 +51,13 @@ async function addReviews(body, productId, userId) {
         message: "Review added successfully",
       };
     } else if (existingReview.content === "" && content === "") {
-      throw new ExpressError(400, "You already rated the product");
+      throw new ExpressError(409, "You already rated the product");
     } else {
-      throw new ExpressError(400, "You already reviewed this product");
+      throw new ExpressError(409, "You already reviewed this product");
     }
   }
 
-  const newReview = await Review.create({
+  await Review.create({
     productId,
     userId,
     content,
@@ -73,13 +74,13 @@ async function addReviews(body, productId, userId) {
 
   const { average, count } = existingProduct.rating;
 
-  const newAverage = (average * count + rating) / (count + 1);
+  const newAverage = ((average * count) + rating) / (count + 1);
   existingProduct.rating.average = newAverage;
   await existingProduct.save();
 
   const fieldToUpdate = `rating.distribution.${ratingMap[rating]}`;
 
-  const updatedProduct = await Product.findByIdAndUpdate(
+  await Product.findByIdAndUpdate(
     productId,
     {
       $inc: {

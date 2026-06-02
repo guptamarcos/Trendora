@@ -41,5 +41,4 @@ const otpGenerator = () => {
   return otp;
 };
 
-
-module.exports = { getExactTime , otpGenerator};
+module.exports = { getExactTime, otpGenerator };

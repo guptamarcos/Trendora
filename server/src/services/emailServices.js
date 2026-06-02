@@ -115,6 +115,7 @@ const loginEmail = async function (to) {
   }
 };
 
+
 const sendOtpEmail = async function (to, otp) {
   try {
     const mailOptions = {
@@ -157,6 +158,7 @@ const sendOtpEmail = async function (to, otp) {
     return false;
   }
 };
+
 
 const passwordUpdateEmail = async function (to) {
   try {
@@ -214,6 +216,7 @@ const passwordUpdateEmail = async function (to) {
     return false;
   }
 };
+
 
 const orderConfirmationEmail = async function ( to, orderInformation) {
   try {

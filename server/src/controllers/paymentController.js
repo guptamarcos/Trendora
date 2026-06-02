@@ -2,8 +2,8 @@ const paymentServices = require("../services/paymentServices.js");
 
 
 async function createOrder(req, res) {
-  const { amount } = req.body;
-  const result = await paymentServices.createOrder(amount);
+  const userId = req.user._id;
+  const result = await paymentServices.createOrder(userId);
 
   return res.status(201).json(result);
 }
