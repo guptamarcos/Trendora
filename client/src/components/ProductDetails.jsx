@@ -71,9 +71,9 @@ function ProductDetails({ setLoading, setProductId, refreshProduct }) {
   async function getProduct() {
     try {
       let res = await getProductInfo(productId);
-      setProduct(res?.data?.data[0]);
+      setProduct(res?.data?.data);
       setProductId(productId);
-      const sizes = res?.data?.data[0]?.sizes;
+      const sizes = res?.data?.data?.sizes;
       const obj = sizes?.reduce((acc, val) => {
         acc[val] = false;
         return acc;

@@ -108,20 +108,24 @@ Trendora/
 │── CLIENT/
 │   ├── src/
 │   │   ├── api/
+│   │   ├── assets/
 │   │   ├── components/
 │   │   ├── context/
-│   │   ├── pages/
+│   │   ├── providers/
 │   │   ├── routes/
-│   │   └── utils/
+│   │   └── schemas/
 │
 │── SERVER/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── utils/
-│   └── validators/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   └── services/
+│   │   ├── uploads/
+│   │   └── utils/
+│   │   └── validations/
 ```
 
 ---
@@ -203,17 +207,29 @@ npm run dev
 
 ---
 
-## 📸 Screenshots
+## 🗄️ Database Design
 
-Add screenshots here for:
+The application uses MongoDB with a hybrid approach of embedding and referencing.
 
-* Home Page
-* Product Page
-* Cart
-* Wishlist
-* Checkout
-* Admin Dashboard
-* Login/Register
+### Database Schema Diagram
+
+![Database Schema](./db.png)
+
+### Relationships
+
+* User → Orders (1:N)
+* User → Reviews (1:N)
+* Admin → Products (1:N)
+* Product → Reviews (1:N)
+* Product → Orders (1:N)
+* User → Cart Items (Embedded)
+* User → Wishlist Items (Embedded)
+* User → Addresses (Embedded)
+* Order → Shipping Address (Embedded)
+
+---
+
+## 🔗 API Highlights
 
 
 ## 🔗 API Highlights

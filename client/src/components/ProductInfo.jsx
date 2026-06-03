@@ -22,7 +22,7 @@ function ProductInfo() {
     try {
       const res = await getAllReviews(productId);
       const showReviews = res?.data?.allReviews.filter((review)=>{
-        if(review.userId._id === user._id){
+        if(review?.userId?._id === user?._id){
           setRating(review.rating);
         }
         return review.content !== "" ; 

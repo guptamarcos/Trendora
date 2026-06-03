@@ -11,9 +11,9 @@ async function getProductInfo(productId) {
   if (!isValidDocumentId(productId)) {
     throw new ExpressError(400, "Invalid Product Id");
   }
-
-  const product = await Product.findById({ productId });
-
+  
+  const product = await Product.findById(productId);
+  
   if (!product) {
     throw new ExpressError(404, "Product not found");
   }

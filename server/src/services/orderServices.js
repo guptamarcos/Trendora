@@ -65,6 +65,7 @@ async function addOrder(body, userId) {
 
   // SAVE ORDERS
   const orders = await Order.create(allOrders);
+  const ordersId = orders.map((order) => order._id);
 
   // DATA SEND WITH EMAIL
   const orderDetails = {
@@ -106,8 +107,7 @@ async function addOrder(body, userId) {
   // REMOVE CART ITEMS
   const cartItemIds = user.cart.map((cartItem) => cartItem._id);
 
-  await User.updateOne(
-    { _id: userId },
+  await User.updateOne({ _id: userId },
     {
       $pull: {
         cart: {

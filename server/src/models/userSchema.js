@@ -29,11 +29,9 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-
       required: function () {
         return this.authProvider === "local";
       },
-
       minlength: [5, "Password must be at least 5 characters"],
       match: [
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/,
@@ -59,13 +57,6 @@ const userSchema = new mongoose.Schema(
         default: "",
       },
     },
-
-    orders: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Order",
-      },
-    ],
 
     role: {
       type: String,
