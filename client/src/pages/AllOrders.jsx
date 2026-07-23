@@ -1,8 +1,8 @@
-import { OrderCard } from "./Index.jsx";
+import { OrderCard } from "../components/Index.jsx";
 import { useEffect, useState } from "react";
 import { getUserOrder } from "../api/orderApi.js";
 import { toast } from "react-toastify";
-import Loader from "./loaders/Loader.jsx";
+import Loader from "../components/loaders/Loader.jsx";
 
 function AllOrders() {
   const [allOrders, setAllOrders] = useState([]);

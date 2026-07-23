@@ -64,7 +64,7 @@ app.use("/api/cart/items", verifyAndCheckUserToken, cartRoutes);
 app.use("/api/wishlist/items", verifyAndCheckUserToken, wishlistRoutes);
 app.use("/api/orders", verifyAndCheckUserToken, orderRoutes);
 app.use("/api/security", securityRoutes);
-app.use("/api/payment", paymentRoutes);
+app.use("/api/payment", verifyAndCheckUserToken,paymentRoutes);
 
 // WHEN API ENDPOINT NOT EXIST
 app.use((req, res, next) => {

@@ -1,13 +1,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ProductSchema from "../schemas/ProductSchema.js";
-import { getProductInfo } from "../api/productApi.js";
-import { editProduct } from "../api/adminApi.js";
+import ProductSchema from "../../schemas/ProductSchema.js";
+import { getProductInfo } from "../../api/productApi.js";
+import { editProduct } from "../../api/adminApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import ImageSchema from "../schemas/ImageSchema.js";
+import ImageSchema from "../../schemas/ImageSchema.js";
 
 function AdminEditProduct() {
   const [product, setProduct] = useState("");
@@ -21,7 +21,7 @@ function AdminEditProduct() {
     try {
       setProductLoading(true);
       const res = await getProductInfo(productId);
-      setProduct(res?.data?.data[0]);
+      setProduct(res?.data?.data);
     } catch (err) {
       const message = err?.message?.response?.data || "Something went wrong";
       toast.error(message);

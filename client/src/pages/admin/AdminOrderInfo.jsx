@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
-import { getAllOrders, updateOrderStatus } from "../api/adminApi.js";
+import { AdminSectionSkeleton } from "../../components/skeletons/Index.jsx";
+import { getAllOrders, updateOrderStatus } from "../../api/adminApi.js";
 
 function TableHead() {
   const headings = [

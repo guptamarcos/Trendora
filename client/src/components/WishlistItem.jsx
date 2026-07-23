@@ -26,9 +26,9 @@ function WishlistItem({ wishlistItem, getUserWishListItems }) {
 
   async function addWishlistItemToCart() {
     try {
-      const productId = product._id;
+      const productId = product?._id;
       await addToCart({ productId, size, quantity });
-      await removeWishlistItem(wishlistItem._id);
+      await removeWishlistItem(wishlistItem?._id);
       toast.success("Product added to cart");
       getUserWishListItems();
       getUser();

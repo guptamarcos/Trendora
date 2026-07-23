@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 import { SignupSchema } from "../schemas/SignupSchema";
 import { registerUser, login, oauthLogin } from "../api/authApi.js";
-import Loader from "./loaders/Loader.jsx";
+import Loader from "../components/loaders/Loader.jsx";
 
 // REUSABLE COMPONENTS
 

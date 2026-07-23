@@ -27,7 +27,6 @@ It is designed with a **production-oriented architecture** using authentication,
 * Add to Cart
 * Wishlist Management
 * Place Orders
-* Order Tracking
 * Product Reviews & Ratings
 
 ### 👨‍💼 Admin Features
@@ -46,7 +45,7 @@ It is designed with a **production-oriented architecture** using authentication,
 ### ☁️ Media Uploads
 
 * Product Image Upload using **Cloudinary**
-* File Upload Handling using **Multer**
+* Profile Image Upload using **Cloudinary**
 
 ### 🔒 Security Features
 
@@ -80,6 +79,7 @@ It is designed with a **production-oriented architecture** using authentication,
 * React Hook Form
 * Zod Validation
 * React Toastify
+* React-Icons
 
 ### Backend
 
@@ -228,9 +228,6 @@ The application uses MongoDB with a hybrid approach of embedding and referencing
 * Order → Shipping Address (Embedded)
 
 ---
-
-## 🔗 API Highlights
-
 
 ## 🔗 API Highlights
 

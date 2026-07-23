@@ -127,7 +127,8 @@ const userSchema = new mongoose.Schema(
     },
 
     addresses: [
-      {
+      { 
+        _id: false,
         firstName: {
           type: String,
           required: true,

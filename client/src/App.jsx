@@ -1,23 +1,21 @@
-import "./App.css";
-import Home from "./components/Home.jsx";
-import Layout from "./components/Layout.jsx";
-import Login from "./components/Login.jsx";
-import Signup from "./components/Signup.jsx";
-import AdminDashboard from "./components/AdminDashboard.jsx";
-import AdminPageLayout from "./components/AdminPageLayout.jsx";
-import NotFound from "./components/NotFound.jsx";
+import Home from "./pages/Home.jsx";
+import Login from "./pages/Login.jsx";
+import Signup from "./pages/Signup.jsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+import NotFound from "./pages/NotFound.jsx";
+
+import {Layout,AdminPageLayout } from "./components/Index.jsx";
+
+import {AdminSectionSkeleton } from "./components/skeletons/Index.jsx"
+
 import { Cart, AllOrders, About, Collection, Contact, ProductInfo, Profile, Checkout, Wishlist,
    AdminUsersInfo, AdminProductInfo, AdminOrderInfo, AdminAddProduct, AdminEditProduct, VerifyOtpForm
 } from "./routes/LazyRoutes.jsx";
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  UserProtectedRoutes,
-  AdminProtectedRoutes,
-  CheckUserAuth,
-} from "./routes/ProtectedRoutes.jsx";
-import {AdminSectionSkeleton } from "./components/skeletons/Index.jsx"
+import { UserProtectedRoutes, AdminProtectedRoutes,CheckUserAuth,} from "./routes/ProtectedRoutes.jsx";
 
 function App() {
   return (

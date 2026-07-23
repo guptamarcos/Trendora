@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { getDashboardInfo } from "../api/adminApi.js";
+import { getDashboardInfo } from "../../api/adminApi.js";
 import { toast } from "react-toastify";
-import { AdminDashboardSkeleton } from "./skeletons/Index.jsx";
+import { AdminDashboardSkeleton } from "../../components/skeletons/Index.jsx";
 
 function InformationTabs({ text, value }) {
   return (

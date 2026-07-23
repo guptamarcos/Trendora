@@ -65,6 +65,24 @@ async function addOrder(body, userId) {
 
   // SAVE ORDERS
   const orders = await Order.create(allOrders);
+
+  // REMOVE CART ITEMS
+  const cartItemIds = user.cart.map((cartItem) => cartItem._id);
+  
+  await User.updateOne(
+    { _id: userId },
+    {
+      $addToSet: {
+        addresses: value
+      },
+      $pull: {
+        cart: {
+          _id: { $in: cartItemIds },
+        },
+      },
+    },
+  );
+
   const ordersId = orders.map((order) => order._id);
 
   // DATA SEND WITH EMAIL
@@ -103,19 +121,6 @@ async function addOrder(body, userId) {
       user.email,
     );
   }
-
-  // REMOVE CART ITEMS
-  const cartItemIds = user.cart.map((cartItem) => cartItem._id);
-
-  await User.updateOne({ _id: userId },
-    {
-      $pull: {
-        cart: {
-          _id: { $in: cartItemIds },
-        },
-      },
-    },
-  );
 
   return {
     success: true,

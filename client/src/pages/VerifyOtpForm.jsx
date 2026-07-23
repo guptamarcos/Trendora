@@ -4,7 +4,7 @@ import { useRef, useState, useContext } from "react";
 import { verifyOtp, resendOtp } from "../api/authApi.js";
 import { toast } from "react-toastify";
 import { UserContext } from "../context/UserContext.jsx";
-import Loader from "./loaders/Loader.jsx";
+import Loader from "../components/loaders/Loader.jsx";
 import { useEffect } from "react";
 
 // STYLES

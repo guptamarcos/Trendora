@@ -7,7 +7,7 @@ async function getReviews(productId) {
   if (!isValidDocumentId(productId)) {
     throw new ExpressError(400, "Invalid Product Id");
   }
-  
+
   // IN CASE OF NO REVIEWS IT WILL RETURN EMPTY ARRAY
   const allReviews = await Review.find({ productId }).populate(
     "userId",
@@ -26,7 +26,7 @@ async function addReviews(body, productId, userId) {
   }
 
   let { content, rating } = body;
-  if(!rating || !content){
+  if (!rating || !content) {
     throw new ExpressError(400, "Content and rating both fields are required");
   }
 
@@ -74,7 +74,7 @@ async function addReviews(body, productId, userId) {
 
   const { average, count } = existingProduct.rating;
 
-  const newAverage = ((average * count) + rating) / (count + 1);
+  const newAverage = (average * count + rating) / (count + 1);
   existingProduct.rating.average = newAverage;
   await existingProduct.save();
 
@@ -105,7 +105,7 @@ async function deleteReviews(productId, reviewId) {
   if (!isValidDocumentId(reviewId)) {
     throw new ExpressError(400, "Invalid review Id");
   }
-  
+
   const product = await Product.findById(productId);
   const deletedReview = await Review.findByIdAndDelete(reviewId);
 
@@ -120,10 +120,6 @@ async function deleteReviews(productId, reviewId) {
   const { average, count } = product.rating;
   const rating = deletedReview.rating;
 
-  const newAverage = (average * count - rating) / (count - 1);
-  product.rating.average = newAverage;
-  await existingProduct.save();
-
   const ratingMap = {
     1: "oneStar",
     2: "twoStar",
@@ -134,9 +130,18 @@ async function deleteReviews(productId, reviewId) {
 
   const fieldToUpdate = `rating.distribution.${ratingMap[rating]}`;
 
+  let newAverage = 0;
+
+  if (count > 1) {
+    newAverage = (average * count - rating) / (count - 1);
+  }
+
   await Product.findByIdAndUpdate(
     productId,
     {
+      $set: {
+        "rating.average": Number(newAverage.toFixed(1)),
+      },
       $inc: {
         "rating.count": -1,
         [fieldToUpdate]: -1,
@@ -144,11 +149,6 @@ async function deleteReviews(productId, reviewId) {
     },
     { new: true },
   );
-
-  return {
-    success: true,
-    message: "Review deleted successfully",
-  };
 }
 
 module.exports = { getReviews, addReviews, deleteReviews };

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { WishlistItem } from "./Index.jsx";
+import { WishlistItem } from "../components/Index.jsx";;
 import { getWishlistItems } from "../api/wishlistApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import Loader from "./loaders/Loader.jsx";
+import Loader from "../components/loaders/Loader.jsx";
 
 function Wishlist() {
   const [wishlistItems, setWishlistItems] = useState();

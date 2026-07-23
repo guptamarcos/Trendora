@@ -1,8 +1,8 @@
-import { Filters, Product } from "./Index.jsx";
+import { Filters, Product } from "../components/Index.jsx";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { getAllProducts } from "../api/productApi.js";
-import { CollectionSkeleton } from "./skeletons/Index.jsx";
+import { CollectionSkeleton } from "../components/skeletons/Index.jsx";
 
 function getShowProducts(sortOrder, categoryFilter, allProducts) {
   let showProducts = allProducts?.filter((product) => {

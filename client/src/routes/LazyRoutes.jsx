@@ -10,76 +10,76 @@ import {
 } from "../components/skeletons/Index.jsx";    
 
 export const About = Loadable(
-  lazy(() => import("../components/About.jsx")),
+  lazy(() => import("../pages/About.jsx")),
   <UserInfoPageSkeleton/>,
 );
 
 export const AllOrders = Loadable(
-  lazy(() => import("../components/AllOrders.jsx")),
+  lazy(() => import("../pages/AllOrders.jsx")),
   <Loader />,
 );
 
 export const Cart = Loadable(
-  lazy(() => import("../components/Cart.jsx")),
+  lazy(() => import("../pages/Cart.jsx")),
   <Loader />
 );
 
 export const Collection = Loadable(
-  lazy(() => import("../components/Collection.jsx")),
+  lazy(() => import("../pages/Collection.jsx")),
   <CollectionSkeleton />
 );
 
 export const Contact = Loadable(
-  lazy(() => import("../components/Contact.jsx")),
+  lazy(() => import("../pages/Contact.jsx")),
   <UserInfoPageSkeleton />
 );
 
 export const ProductInfo = Loadable(
-  lazy(() => import("../components/ProductInfo.jsx")),
+  lazy(() => import("../pages/ProductInfo.jsx")),
   <ProductDetailsSkeleton />
 );
 
 export const Profile = Loadable(
-  lazy(() => import("../components/Profile.jsx")),
+  lazy(() => import("../pages/Profile.jsx")),
   <Loader />,
 );
 
 export const Checkout = Loadable(
-  lazy(() => import("../components/Checkout.jsx")),
+  lazy(() => import("../pages/Checkout.jsx")),
   <Loader />,
 );
 
 export const Wishlist = Loadable(
-  lazy(() => import("../components/Wishlist.jsx")),
+  lazy(() => import("../pages/Wishlist.jsx")),
   <Loader />,
 );
 
 export const AdminUsersInfo = Loadable(
-  lazy(() => import("../components/AdminUsersInfo.jsx")),
+  lazy(() => import("../pages/admin/AdminUsersInfo.jsx")),
   <AdminSectionSkeleton />,
 );
 
 export const AdminProductInfo = Loadable(
-  lazy(() => import("../components/AdminProductsInfo.jsx")),
+  lazy(() => import("../pages/admin/AdminProductsInfo.jsx")),
   <AdminSectionSkeleton />,
 );
 
 export const AdminOrderInfo = Loadable(
-  lazy(() => import("../components/AdminOrderInfo.jsx")),
+  lazy(() => import("../pages/admin/AdminOrderInfo.jsx")),
   <AdminSectionSkeleton />,
 );
 
 export const AdminAddProduct = Loadable(
-  lazy(() => import("../components/AdminAddProduct.jsx")),
+  lazy(() => import("../pages/admin/AdminAddProduct.jsx")),
   <Loader />,
 );
 
 export const AdminEditProduct = Loadable(
-  lazy(() => import("../components/AdminEditProduct.jsx")),
+  lazy(() => import("../pages/admin/AdminEditProduct.jsx")),
   <Loader />,
 );
 
 export const VerifyOtpForm = Loadable(
-  lazy(() => import("../components/VerifyOtpForm.jsx")),
+  lazy(() => import("../pages/VerifyOtpForm.jsx")),
   <Loader />,
 );

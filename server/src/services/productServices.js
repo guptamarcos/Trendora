@@ -1,4 +1,5 @@
 const Product = require("../models/productSchema.js");
+const Review = require("../models/reviewSchema.js");
 const User = require("../models/userSchema.js");
 const {
   productSchemaValidator,
@@ -11,9 +12,9 @@ async function getProductInfo(productId) {
   if (!isValidDocumentId(productId)) {
     throw new ExpressError(400, "Invalid Product Id");
   }
-  
+
   const product = await Product.findById(productId);
-  
+
   if (!product) {
     throw new ExpressError(404, "Product not found");
   }
@@ -58,7 +59,7 @@ async function getRelatedProducts(productId) {
 }
 
 async function getAllUserProducts() {
-  const allProducts = await Product.find({});
+  const allProducts = await Product.find({}).sort({ createdAt: -1 });
 
   return {
     success: true,
@@ -171,12 +172,15 @@ async function deleteProduct(productId) {
   if (!isValidDocumentId(productId)) {
     throw new ExpressError(400, "Invalid Product Id");
   }
-
+  
   const deletedProduct = await Product.findByIdAndDelete(productId);
-
+  
   if (!deletedProduct) {
     throw new ExpressError(404, "Product not found");
   }
+
+  // IF PRODUCT IS DELETED THAN ALSO DELETE THE REVIEWS OF THAT PRODUCT
+  await Review.deleteMany({productId});
 
   return {
     success: true,
@@ -195,7 +199,7 @@ async function getProducts(search, category, limit) {
   if (!Number.isInteger(limit) || limit <= 0) {
     throw new ExpressError(400, "Limit must be a positive integer");
   }
-  
+
   if (search) {
     query.name = { $regex: search, $options: "i" };
   }

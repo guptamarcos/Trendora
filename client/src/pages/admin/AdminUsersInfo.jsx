@@ -1,8 +1,8 @@
-import { getAllUser, deleteUser } from "../api/adminApi.js";
+import { getAllUser, deleteUser } from "../../api/adminApi.js";
 import { useState, useEffect } from "react";
-import { defaultProfileImage } from "../assets/Index.jsx";
+import { defaultProfileImage } from "../../assets/Index.jsx";
 import { toast } from "react-toastify";
-import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
+import { AdminSectionSkeleton } from "../../components/skeletons/Index.jsx";
 
 function TableHead() {
   return (

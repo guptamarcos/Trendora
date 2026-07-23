@@ -1,4 +1,4 @@
-import { ProfileImage, ProfileInfo, ProfileSecurity } from "./Index.jsx"; 
+import { ProfileImage, ProfileInfo, ProfileSecurity } from "../components/Index.jsx";
 import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 

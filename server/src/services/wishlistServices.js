@@ -56,7 +56,7 @@ async function addToWishlist(body, userId) {
     );
   }
 
-  const cartItemExist = await User.exists({
+  const wishlistItemExist = await User.exists({
     _id: userId,
     wishlist: {
       $elemMatch: {
@@ -66,7 +66,7 @@ async function addToWishlist(body, userId) {
     },
   });
 
-  if (cartItemExist) {
+  if (wishlistItemExist) {
     await User.updateOne(
       {
         _id: userId,
@@ -98,7 +98,6 @@ async function addToWishlist(body, userId) {
     success: true,
     message: "Product added to wishlist",
   };
-  // }
 }
 
 async function removeWishlistItem(userId, itemId) {

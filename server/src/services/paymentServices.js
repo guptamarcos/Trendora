@@ -3,12 +3,13 @@ const {
   validatePaymentVerification,
 } = require("razorpay/dist/utils/razorpay-utils.js");
 const ExpressError = require("../utils/ExpressError.js");
+const User = require("../models/userSchema.js");
 
 async function createOrder(userId) {
-  const user = await User.findById(userId).populate("cart.productId");
+  const user = await User.findById(userId).populate("cart.product");
 
   const totalAmount = user.cart.reduce((sum, item) => {
-    return sum + item.productId.price * item.quantity;
+    return sum + item.product.price * item.quantity;
   }, 0);
 
   const options = {

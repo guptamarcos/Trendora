@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ProductSchema from "../schemas/ProductSchema.js";
-import { addProduct } from "../api/adminApi.js";
+import ProductSchema from "../../schemas/ProductSchema.js";
+import { addProduct } from "../../api/adminApi.js";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
-import ImageSchema from "../schemas/ImageSchema.js";
+import ImageSchema from "../../schemas/ImageSchema.js";
 
 function AdminAddProduct() {
   const {

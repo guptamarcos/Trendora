@@ -96,6 +96,7 @@ productSchema.index(
   {
     name: 1,
     category: 1,
+    price: 1,
   },
   {
     unique: true,

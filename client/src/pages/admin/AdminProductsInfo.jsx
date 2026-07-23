@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { deleteProduct, getAllProduct } from "../api/adminApi.js";
+import { deleteProduct, getAllProduct } from "../../api/adminApi.js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { AdminSectionSkeleton } from "./skeletons/Index.jsx";
+import { AdminSectionSkeleton } from "../../components/skeletons/Index.jsx";
 
 function TableHead() {
   const headings = ["Product", "Price", "Stock", "Category"];

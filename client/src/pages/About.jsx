@@ -1,4 +1,4 @@
-import { Subscribe } from "./Index.jsx";
+import { Subscribe } from "../components/Index.jsx";
 import { about_img } from "../assets/Index.jsx";
 
 function About() {

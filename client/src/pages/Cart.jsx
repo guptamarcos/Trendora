@@ -1,9 +1,9 @@
-import { CartItem } from "./Index.jsx";
+import { CartItem } from "../components/Index.jsx";
 import { Link } from "react-router-dom";
 import { getCartItems } from "../api/cartApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import Loader from "./loaders/Loader.jsx";
+import Loader from "../components/loaders/Loader.jsx";
 
 function PriceTotal({ text, price }) {
   return (

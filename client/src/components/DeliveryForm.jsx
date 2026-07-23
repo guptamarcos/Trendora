@@ -8,7 +8,12 @@ import { UserContext } from "../context/UserContext.jsx";
 import { useContext } from "react";
 import { createOrder, verifyPayment } from "../api/paymentApi.js";
 
-function DeliveryForm({ paymentMethod, amount }) {
+function DeliveryForm({
+  paymentMethod,
+  amount,
+  loading,
+  setLoading,
+}) {
   const navigate = useNavigate();
   const { getUser } = useContext(UserContext);
 
@@ -21,75 +26,104 @@ function DeliveryForm({ paymentMethod, amount }) {
   });
 
   async function formData(data) {
-    const orderAddress = { ...data, paymentMethod };
+    const orderAddress = {
+      ...data,
+      paymentMethod,
+    };
 
+    // Stripe
     if (paymentMethod === "stripe") {
       toast.error("Payment option is currently unavailable");
       return;
     }
 
+    // COD
     if (paymentMethod === "cod") {
       try {
+        setLoading(true);
+
         await addOrder(orderAddress);
 
         toast.success("Order placed successfully");
 
-        // Refresh user/cart
         await getUser();
 
         navigate("/trendora/orders");
       } catch (err) {
         console.log(err);
-        const message = err?.response?.data?.message || "Something went wrong";
+
+        const message =
+          err?.response?.data?.message ||
+          "Something went wrong";
+
         toast.error(message);
+      } finally {
+        setLoading(false);
       }
+
+      return;
     }
 
+    // Razorpay
     if (paymentMethod === "razorpay") {
       try {
-        // Create Razorpay Order
-        const res = await createOrder(Number(amount));
-        const { order } = res?.data;
+        // Loader while creating Razorpay order
+        setLoading(true);
 
-        // Razorpay SDK check
+        const res = await createOrder(Number(amount));
+        const { order } = res.data;
+
         if (!window.Razorpay) {
+          setLoading(false);
           toast.error("Razorpay SDK failed to load");
           return;
         }
 
+        // Hide loader before opening Razorpay popup
+        setLoading(false);
+
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+
           amount: order.amount,
+
           currency: order.currency,
+
           name: "Trendora",
+
           description: "Order Payment",
+
           order_id: order.id,
 
           handler: async function (response) {
             try {
-              // Verify payment
+              // Loader while verifying payment
+              setLoading(true);
+
               const verify = await verifyPayment(response);
 
-              if (verify?.data?.success) {
-                // Add order only after successful payment
-                await addOrder(orderAddress);
-
-                toast.success("Order placed successfully");
-
-                // Refresh user/cart
-                await getUser();
-
-                navigate("/trendora/orders");
-              } else {
+              if (!verify.data.success) {
                 toast.error("Payment verification failed");
+                return;
               }
+
+              await addOrder(orderAddress);
+
+              toast.success("Order placed successfully");
+
+              await getUser();
+
+              navigate("/trendora/orders");
             } catch (err) {
               console.log(err);
 
               const message =
-                err?.response?.data?.message || "Payment verification failed";
+                err?.response?.data?.message ||
+                "Payment verification failed";
 
               toast.error(message);
+            } finally {
+              setLoading(false);
             }
           },
 
@@ -104,7 +138,8 @@ function DeliveryForm({ paymentMethod, amount }) {
           },
 
           modal: {
-            ondismiss: function () {
+            ondismiss() {
+              setLoading(false);
               toast.info("Payment cancelled");
             },
           },
@@ -112,18 +147,23 @@ function DeliveryForm({ paymentMethod, amount }) {
 
         const razor = new window.Razorpay(options);
 
-        // Payment failed event
         razor.on("payment.failed", function (response) {
-          console.log(response);
+          setLoading(false);
 
-          toast.error(response.error.description || "Payment failed");
+          toast.error(
+            response.error.description || "Payment failed"
+          );
         });
 
         razor.open();
       } catch (err) {
         console.log(err);
 
-        const message = err?.response?.data?.message || "Something went wrong";
+        setLoading(false);
+
+        const message =
+          err?.response?.data?.message ||
+          "Something went wrong";
 
         toast.error(message);
       }
@@ -131,8 +171,11 @@ function DeliveryForm({ paymentMethod, amount }) {
   }
 
   return (
-    <form id="deliveryAddressForm" onSubmit={handleSubmit(formData)}>
-      {/* FIRST NAME AND LAST NAME */}
+    <form
+      id="deliveryAddressForm"
+      onSubmit={handleSubmit(formData)}
+    >
+      {/* FIRST NAME & LAST NAME */}
       <div className="flex justify-between gap-4 mb-6">
         <div>
           <input
@@ -144,7 +187,9 @@ function DeliveryForm({ paymentMethod, amount }) {
           />
 
           {errors.firstName && (
-            <p className="text-red-500 text-sm">{errors.firstName.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.firstName.message}
+            </p>
           )}
         </div>
 
@@ -158,7 +203,9 @@ function DeliveryForm({ paymentMethod, amount }) {
           />
 
           {errors.lastName && (
-            <p className="text-red-500 text-sm">{errors.lastName.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.lastName.message}
+            </p>
           )}
         </div>
       </div>
@@ -174,7 +221,9 @@ function DeliveryForm({ paymentMethod, amount }) {
         />
 
         {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.email.message}
+          </p>
         )}
       </div>
 
@@ -189,7 +238,9 @@ function DeliveryForm({ paymentMethod, amount }) {
         />
 
         {errors.street && (
-          <p className="text-red-500 text-sm">{errors.street.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.street.message}
+          </p>
         )}
       </div>
 
@@ -205,7 +256,9 @@ function DeliveryForm({ paymentMethod, amount }) {
           />
 
           {errors.city && (
-            <p className="text-red-500 text-sm">{errors.city.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.city.message}
+            </p>
           )}
         </div>
 
@@ -219,7 +272,9 @@ function DeliveryForm({ paymentMethod, amount }) {
           />
 
           {errors.state && (
-            <p className="text-red-500 text-sm">{errors.state.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.state.message}
+            </p>
           )}
         </div>
       </div>
@@ -239,7 +294,9 @@ function DeliveryForm({ paymentMethod, amount }) {
           />
 
           {errors.zipcode && (
-            <p className="text-red-500 text-sm">{errors.zipcode.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.zipcode.message}
+            </p>
           )}
         </div>
 
@@ -253,7 +310,9 @@ function DeliveryForm({ paymentMethod, amount }) {
           />
 
           {errors.country && (
-            <p className="text-red-500 text-sm">{errors.country.message}</p>
+            <p className="text-red-500 text-sm">
+              {errors.country.message}
+            </p>
           )}
         </div>
       </div>
@@ -272,7 +331,9 @@ function DeliveryForm({ paymentMethod, amount }) {
         />
 
         {errors.phone && (
-          <p className="text-red-500 text-sm">{errors.phone.message}</p>
+          <p className="text-red-500 text-sm">
+            {errors.phone.message}
+          </p>
         )}
       </div>
     </form>

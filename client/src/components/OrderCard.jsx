@@ -1,8 +1,10 @@
 import { FaCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function OrderCard({ order }) {
   if (!order) return null;
-
+  
+  const navigate = useNavigate();
   const { product, totalAmount, quantity, size, createdAt, orderStatus } =
     order;
 
@@ -27,10 +29,16 @@ function OrderCard({ order }) {
     }
   };
 
+
+  function handleCancelOrder(){
+    console.log("hi");
+  }
+  
+ 
   return (
     <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4 border-b border-gray-200">
       {/* LEFT SECTION */}
-      <div className="flex items-center gap-4 w-full md:w-auto">
+      <div className="flex items-center gap-4 w-full md:w-auto" onClick={()=> navigate(`/trendora/products/${product?._id}`)}>
         {/* IMAGE */}
         <img
           src={imageUrl}
@@ -67,6 +75,10 @@ function OrderCard({ order }) {
         <span className="flex items-center gap-2 text-sm">
           <FaCircle color={getStatusColor(orderStatus)} size={10} />
           {orderStatus}
+        </span>
+
+        <span className="text-red-400 flex items-center gap-2 text-sm" handleClick={handleCancelOrder}>
+          Cancel Order
         </span>
 
         {/* BUTTON */}

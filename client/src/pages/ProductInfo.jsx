@@ -1,11 +1,11 @@
-import { CommentCard, ProductDetails } from "./Index.jsx";
+import { CommentCard, ProductDetails } from "../components/Index.jsx";
 import { useState, useContext, useEffect } from "react";
-import { ProductDetailsSkeleton } from "./skeletons/Index.jsx";
+import { ProductDetailsSkeleton } from "../components/skeletons/Index.jsx";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext.jsx";
 import { toast } from "react-toastify";
 import { getAllReviews, addReview } from "../api/reviewApi.js";
-import Loader from "./loaders/Loader.jsx";
+import Loader from "../components/loaders/Loader.jsx";
 
 function ProductInfo() {
   const [loading, setLoading] = useState(true);

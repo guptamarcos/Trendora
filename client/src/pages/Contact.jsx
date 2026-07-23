@@ -1,4 +1,4 @@
-import { Subscribe } from "./Index.jsx";
+import { Subscribe } from "../components/Index.jsx";
 import { about_img, contact_img } from "../assets/Index.jsx";
 import { NavLink } from "react-router-dom";
 

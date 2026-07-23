@@ -1,4 +1,4 @@
-import { Hero,BestSeller, LatestCollections,Policy, Subscribe } from "./Index.jsx";
+import { Hero,BestSeller, LatestCollections,Policy, Subscribe } from "../components/Index.jsx";
 
 function Home() {
   return (

@@ -25,6 +25,7 @@ export const editProduct = (data, productId) =>{
 }
 
 export const updateOrderStatus = (data, orderId) =>{
+  console.log(data,orderId);
   return axiosInstance.patch(`/admin/orders/${orderId}/status`,{ status: data});
 }
 
