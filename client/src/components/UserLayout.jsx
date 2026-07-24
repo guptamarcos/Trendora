@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Navbar, Footer } from "./Index.jsx";
 
-function Layout() {
+function UserLayout() {
   return (
     <main className="min-h-screen w-full px-[7.5vw] pt-[10vh]">
       <Navbar />
@@ -11,4 +11,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default UserLayout;

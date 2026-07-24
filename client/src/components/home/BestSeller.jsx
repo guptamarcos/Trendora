@@ -1,8 +1,8 @@
-import { Product } from "./Index.jsx";
-import { bestSellers } from "../api/productApi.js";
+import { Product } from "../Index.jsx";
+import { bestSellers } from "../../api/productApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { ProductSectionSkeleton } from "./skeletons/Index.jsx";
+import { ProductSectionSkeleton } from "../skeletons/Index.jsx";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 function BestSeller() {

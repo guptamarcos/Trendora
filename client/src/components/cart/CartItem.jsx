@@ -1,7 +1,7 @@
 import { FaTrash } from "react-icons/fa";
-import { removeCartItem } from "../api/cartApi.js";
+import { removeCartItem } from "../../api/cartApi.js";
 import { toast } from "react-toastify";
-import { UserContext } from "../context/Index.jsx";
+import { UserContext } from "../../context/Index.jsx";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 

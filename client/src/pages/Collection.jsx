@@ -1,4 +1,5 @@
-import { Filters, Product } from "../components/Index.jsx";
+import Filters from "../components/collection/Filters.jsx";
+import ProductGrid from "../components/collection/ProductGrid.jsx";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { getAllProducts } from "../api/productApi.js";
@@ -23,19 +24,18 @@ function getShowProducts(sortOrder, categoryFilter, allProducts) {
   return showProducts;
 }
 
-
 function Collection() {
   const [allProducts, setAllProducts] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [sortOrder, setSortOrder] = useState(0);
   const [categoryFilter, setCategoryFilter] = useState({
     men: false,
     women: false,
     girl: false,
     boy: false,
   });
-  const [sortOrder, setSortOrder] = useState(0);
 
-  async function getAllProductInfo() {
+  async function GetAllProducts() {
     try {
       setLoading(true);
       const res = await getAllProducts();
@@ -49,7 +49,7 @@ function Collection() {
   }
 
   useEffect(() => {
-    getAllProductInfo();
+    GetAllProducts();
   }, []);
 
   const showProducts = getShowProducts(sortOrder, categoryFilter, allProducts);
@@ -59,27 +59,14 @@ function Collection() {
   }
 
   return (
-    <section className="mb-40 min-h-screen flex gap-8">
+    <main className="mb-40 min-h-screen flex gap-8">
       <Filters
         setSortOrder={setSortOrder}
         sortOrder={sortOrder}
         setCategoryFilter={setCategoryFilter}
       />
-      <div className="flex-1">
-        <div className="py-6 flex justify-between ">
-          <h2 className="text-3xl flex items-center">
-            ALL&nbsp;<b>COLLECTIONS</b>&nbsp;&nbsp;
-            <hr className="w-[5vw] border-t-2 border-black" />
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-4 gap-6">
-          {showProducts?.map((product) => {
-            return <Product product={product} key={product._id} />;
-          })}
-        </div>
-      </div>
-    </section>
+      <ProductGrid showProducts={showProducts} />
+    </main>
   );
 }
 

@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { UserContext } from "../context/Index.jsx";
+import { UserContext } from "../../context/Index.jsx";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ProfileInfoSchema } from "../schemas/ProfileSchema.js";
-import { updateProfileInfo } from "../api/userApi.js";
+import { ProfileInfoSchema } from "../../schemas/ProfileSchema.js";
+import { updateProfileInfo } from "../../api/userApi.js";
 import { toast } from "react-toastify";
 
 function ProfileInfo({loading, setLoading}) {

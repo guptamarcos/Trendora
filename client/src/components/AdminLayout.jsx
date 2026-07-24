@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { AdminNavbar, AdminSidebar } from "./Index.jsx";
 
-function AdminPageLayout() {
+function AdminLayout() {
   return (
     <main className="min-h-screen w-full bg-gray-100">
       {/* HEADER */}
@@ -20,4 +20,4 @@ function AdminPageLayout() {
   );
 }
 
-export default AdminPageLayout;
+export default AdminLayout;

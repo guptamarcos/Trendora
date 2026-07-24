@@ -28,5 +28,13 @@ async function updateOrderStatus(req,res){
   return res.status(200).json(result);
 }
 
+async function cancelOrder(req,res){
+  const { orderId } = req.params;
+  const userId = req.user._id;
+  const result = await orderServices.cancelOrder(orderId,userId);
 
-module.exports = { addOrder, getUserOrder, getOrders, updateOrderStatus};
+  return res.status(200).json(result);
+}
+
+
+module.exports = { addOrder, getUserOrder, getOrders, updateOrderStatus, cancelOrder};

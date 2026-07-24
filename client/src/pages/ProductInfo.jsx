@@ -1,4 +1,4 @@
-import { CommentCard, ProductDetails } from "../components/Index.jsx";
+import { CommentCard, ProductDetails } from "../components/productDetail/Index.jsx";
 import { useState, useContext, useEffect } from "react";
 import { ProductDetailsSkeleton } from "../components/skeletons/Index.jsx";
 import { useNavigate } from "react-router-dom";

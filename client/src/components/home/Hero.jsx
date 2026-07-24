@@ -1,4 +1,4 @@
-import { hero_img } from "../assets/Index";
+import { hero_img } from "../../assets/Index";
 
 function Hero() {
   return (

@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { uploadProfileImage } from "../api/userApi.js";
-import { defaultProfileImage } from "../assets/Index.jsx";
+import { uploadProfileImage } from "../../api/userApi.js";
+import { defaultProfileImage } from "../../assets/Index.jsx";
 import { toast } from "react-toastify";
-import { UserContext } from "../context/UserContext.jsx";
-import ImageSchema from "../schemas/ImageSchema.js";
+import { UserContext } from "../../context/UserContext.jsx";
+import ImageSchema from "../../schemas/ImageSchema.js";
 
 function ProfileImage({ loading, setLoading }) {
   const { getUser, user } = useContext(UserContext);

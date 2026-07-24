@@ -1,7 +1,7 @@
 import { FaTrash } from "react-icons/fa";
-import { UserContext } from "../context/UserContext.jsx";
+import { UserContext } from "../../context/UserContext.jsx";
 import { useContext } from "react";
-import { deleteReview } from "../api/reviewApi.js";
+import { deleteReview } from "../../api/reviewApi.js";
 import { toast } from "react-toastify";
 
 function CommentCard({ comment,getAllProductReviews }) {

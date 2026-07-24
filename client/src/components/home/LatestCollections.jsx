@@ -1,8 +1,8 @@
-import { Product } from "./Index.jsx";
-import { latestCollections } from "../api/productApi.js";
+import { Product } from "../Index.jsx";
+import { latestCollections } from "../../api/productApi.js";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { ProductSectionSkeleton } from "./skeletons/Index.jsx";
+import { ProductSectionSkeleton } from "../skeletons/Index.jsx";
 
 function LatestCollections() {
   const [products, setProducts] = useState([]);

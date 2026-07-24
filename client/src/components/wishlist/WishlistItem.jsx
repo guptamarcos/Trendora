@@ -1,7 +1,7 @@
-import { removeWishlistItem } from "../api/wishlistApi.js";
-import { addToCart } from "../api/cartApi.js";
+import { removeWishlistItem } from "../../api/wishlistApi.js";
+import { addToCart } from "../../api/cartApi.js";
 import { toast } from "react-toastify";
-import { UserContext } from "../context/Index.jsx";
+import { UserContext } from "../../context/Index.jsx";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 

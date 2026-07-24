@@ -1,34 +1,6 @@
-import { OrderCard } from "../components/Index.jsx";
-import { useEffect, useState } from "react";
-import { getUserOrder } from "../api/orderApi.js";
-import { toast } from "react-toastify";
-import Loader from "../components/loaders/Loader.jsx";
+import OrderCard from "./OrderCard.jsx";
 
-function AllOrders() {
-  const [allOrders, setAllOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  async function getUserOrderInfo() {
-    try {
-      setLoading(true);
-      const res = await getUserOrder();
-      setAllOrders(res?.data?.orders);
-    } catch (err) {
-      const message = err?.response?.data?.message;
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    getUserOrderInfo();
-  }, []);
-  
-  if(loading){
-    return <Loader/>;
-  }
-  
+function OrderList({allOrders}) {
   return (
     <main className="min-h-screen pt-16">
       <h2 className="text-3xl font-semibold mb-8 flex  items-center">
@@ -53,4 +25,4 @@ function AllOrders() {
   );
 }
 
-export default AllOrders;
+export default OrderList;

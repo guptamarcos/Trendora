@@ -1,4 +1,4 @@
-import {exchange_icon, quality_icon, support_icon} from "../assets/Index.jsx";
+import {exchange_icon, quality_icon, support_icon} from "../../assets/Index.jsx";
 
 function Policy() {
   return (

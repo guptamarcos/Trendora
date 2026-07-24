@@ -68,12 +68,12 @@ async function addOrder(body, userId) {
 
   // REMOVE CART ITEMS
   const cartItemIds = user.cart.map((cartItem) => cartItem._id);
-  
+
   await User.updateOne(
     { _id: userId },
     {
       $addToSet: {
-        addresses: value
+        addresses: value,
       },
       $pull: {
         cart: {
@@ -174,10 +174,6 @@ async function updateOrderStatus(orderId, status) {
     throw new ExpressError(400, "Invalid order id");
   }
 
-  if (!status) {
-    throw new ExpressError(400, "Invalid order status");
-  }
-
   const orderStatus = [
     "Pending",
     "Shipped",
@@ -190,18 +186,68 @@ async function updateOrderStatus(orderId, status) {
     throw new ExpressError(400, "Invalid Order status");
   }
 
-  const updatedOrder = await Order.findByIdAndUpdate(orderId, {
-    $set: { orderStatus: status },
-  });
+  const order = await Order.findById(orderId);
 
-  if (!updatedOrder) {
+  if (!order) {
     throw new ExpressError(404, "Order not found");
   }
 
+  if (order.orderStatus === "Cancelled") {
+    throw new ExpressError(
+      400,
+      "You can't update the order status it's is already cancelled",
+    );
+  }
+
+  order.orderStatus = status;
+  if(status === "Cancelled"){
+    if(order.paymentStatus = "Pending"){
+      order.paymentStatus = "Cancelled";
+    } else{
+      order.paymentStatus = "Refunded";
+    }
+  }
+
+  await order.save();
+  
   return {
     success: true,
     message: "Order status updated successfully",
   };
 }
 
-module.exports = { addOrder, getUserOrder, getOrders, updateOrderStatus };
+async function cancelOrder(orderId, userId) {
+  if (!isValidDocumentId(orderId)) {
+    throw new ExpressError(400, "Invalid order id");
+  }
+
+  const order = await Order.findById(orderId);
+
+  if (!order) {
+    throw new ExpressError(404, "Order not found");
+  }
+
+  if (order.user.toString() !== userId.toString()) {
+    throw new ExpressError(403, "You are unauthorized for cancel this order");
+  }
+
+  if (order.orderStatus === "Cancelled") {
+    throw new ExpressError(400, "Order is already cancelled");
+  }
+
+  order.orderStatus = "Cancelled";
+  await order.save();
+
+  return {
+    success: true,
+    message: "Order cancelled successfully",
+  };
+}
+
+module.exports = {
+  addOrder,
+  getUserOrder,
+  getOrders,
+  updateOrderStatus,
+  cancelOrder,
+};

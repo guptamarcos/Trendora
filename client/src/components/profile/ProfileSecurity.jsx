@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { UserContext } from "../context/Index.jsx";
+import { UserContext } from "../../context/Index.jsx";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ProfileSecuritySchema } from "../schemas/ProfileSchema.js";
-import { updateProfilePassword } from "../api/userApi.js";
+import { ProfileSecuritySchema } from "../../schemas/ProfileSchema.js";
+import { updateProfilePassword } from "../../api/userApi.js";
 import { toast } from "react-toastify";
 
 function ProfileSecurity({loading, setLoading}) {

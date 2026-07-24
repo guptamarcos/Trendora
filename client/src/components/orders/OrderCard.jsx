@@ -1,9 +1,11 @@
 import { FaCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { cancelOrder } from "../../api/orderApi.js";
+import { toast } from "react-toastify";
 
 function OrderCard({ order }) {
   if (!order) return null;
-  
+
   const navigate = useNavigate();
   const { product, totalAmount, quantity, size, createdAt, orderStatus } =
     order;
@@ -22,23 +24,28 @@ function OrderCard({ order }) {
         return "green";
       case "Pending":
         return "orange";
-      case "Cancelled":
-        return "red";
       default:
         return "gray";
     }
   };
 
-
-  function handleCancelOrder(){
-    console.log("hi");
+  async function handleCancelOrder() {
+    try {
+      await cancelOrder(order?._id);
+      // await cancelOrder(orderId);
+    } catch (err) {
+      const message = err?.response?.data?.message || "Something went wrong";
+      toast.error(message);
+    }
   }
-  
- 
+
   return (
     <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4 border-b border-gray-200">
       {/* LEFT SECTION */}
-      <div className="flex items-center gap-4 w-full md:w-auto" onClick={()=> navigate(`/trendora/products/${product?._id}`)}>
+      <div
+        className="flex items-center gap-4 w-full md:w-auto"
+        onClick={() => navigate(`/trendora/products/${product?._id}`)}
+      >
         {/* IMAGE */}
         <img
           src={imageUrl}
@@ -66,25 +73,42 @@ function OrderCard({ order }) {
             <b>Date:</b> {formattedDate}
           </p>
         </div>
-
       </div>
 
       {/* RIGHT SECTION */}
-      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
+      <div className="flex items-center justify-between md:justify-end gap-5 w-full md:w-auto">
         {/* STATUS */}
-        <span className="flex items-center gap-2 text-sm">
-          <FaCircle color={getStatusColor(orderStatus)} size={10} />
-          {orderStatus}
-        </span>
+        <div className="flex items-center gap-2">
+          {orderStatus !== "Cancelled" && (
+            <FaCircle color={getStatusColor(orderStatus)} size={10} />
+          )}
 
-        <span className="text-red-400 flex items-center gap-2 text-sm" handleClick={handleCancelOrder}>
-          Cancel Order
-        </span>
+          {orderStatus === "Cancelled" ? (
+            <span className="px-4 py-2 rounded-2xl bg-red-100 text-red-600 text-sm font-medium">
+              Cancelled
+            </span>
+          ) : (
+            <span className="text-sm font-medium text-gray-700">
+              {orderStatus}
+            </span>
+          )}
+        </div>
 
-        {/* BUTTON */}
-        <button className="cursor-pointer border border-gray-300 px-4 py-2 rounded-md text-sm hover:bg-gray-100 transition">
-          Track Order
-        </button>
+        {/* ACTIONS */}
+        {orderStatus !== "Cancelled" && (
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleCancelOrder}
+              className="text-red-500 text-sm font-medium hover:text-red-600 transition cursor-pointer"
+            >
+              Cancel Order
+            </button>
+
+            <button className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-100 transition cursor-pointer">
+              Track Order
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

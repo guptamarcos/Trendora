@@ -1,13 +1,13 @@
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { getProductInfo, getRelatedProducts } from "../api/productApi.js";
-import { addToWishlist } from "../api/wishlistApi.js";
-import { addToCart } from "../api/cartApi.js";
+import { getProductInfo, getRelatedProducts } from "../../api/productApi.js";
+import { addToWishlist } from "../../api/wishlistApi.js";
+import { addToCart } from "../../api/cartApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { Product } from "./Index.jsx";
+import { Product } from "../Index.jsx";
 import { useContext } from "react";
-import { UserContext } from "../context/Index.jsx";
+import { UserContext } from "../../context/Index.jsx";
 import { ClipLoader } from "react-spinners";
 
 function SizeBox({ text, selectedSize, setSelectedSize }) {

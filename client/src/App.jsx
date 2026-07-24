@@ -4,11 +4,11 @@ import Signup from "./pages/Signup.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
-import {Layout,AdminPageLayout } from "./components/Index.jsx";
+import {UserLayout,AdminLayout } from "./components/Index.jsx";
 
 import {AdminSectionSkeleton } from "./components/skeletons/Index.jsx"
 
-import { Cart, AllOrders, About, Collection, Contact, ProductInfo, Profile, Checkout, Wishlist,
+import { Cart, UserOrders, About, Collection, Contact, ProductInfo, Profile, Checkout, Wishlist,
    AdminUsersInfo, AdminProductInfo, AdminOrderInfo, AdminAddProduct, AdminEditProduct, VerifyOtpForm
 } from "./routes/LazyRoutes.jsx";
 
@@ -24,7 +24,7 @@ function App() {
         {/* SETTING UP HOME ROUTE TO THE "/trendora" INSTEAD OF "/" */}
         <Route path="/" element={<Navigate to="/trendora" replace />} />
 
-        <Route path="/trendora" element={<Layout />}>
+        <Route path="/trendora" element={<UserLayout />}>
           <Route index element={<Home />} />
           <Route path="collections" element={<Collection />} />
           <Route path="about" element={<About />} />
@@ -33,14 +33,14 @@ function App() {
 
           <Route element={<UserProtectedRoutes />}>
             <Route path="checkout" element={<Checkout />} />
-            <Route path="orders" element={<AllOrders />} />
+            <Route path="orders" element={<UserOrders />} />
             <Route path="cart" element={<Cart />} />
             <Route path="profile" element={<Profile />} />
             <Route path="wishlist" element={<Wishlist />} />
           </Route>
         </Route>
 
-        <Route path="/trendora/admin" element={<AdminPageLayout />}>
+        <Route path="/trendora/admin" element={<AdminLayout />}>
           <Route element={<AdminProtectedRoutes />}>
             <Route path="" element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsersInfo />} />

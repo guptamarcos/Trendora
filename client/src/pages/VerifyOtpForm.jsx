@@ -60,18 +60,8 @@ function BackBtn() {
   return (
     <Link
       to="/trendora"
-      className="
-        absolute top-8 left-8
-        px-4 py-2
-        rounded-xl
-        border border-gray-300
-        flex items-center gap-2
-        bg-white
-        shadow-sm
-        hover:bg-gray-100
-        transition
-      "
-    >
+      className="absolute top-8 left-8 px-4 py-2 rounded-xl border border-gray-300 flex items-center gap-2
+        bg-white shadow-sm hover:bg-gray-100 transition">
       <FaArrowLeft />
       Back
     </Link>

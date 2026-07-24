@@ -14,8 +14,8 @@ export const About = Loadable(
   <UserInfoPageSkeleton/>,
 );
 
-export const AllOrders = Loadable(
-  lazy(() => import("../pages/AllOrders.jsx")),
+export const UserOrders = Loadable(
+  lazy(() => import("../pages/UserOrders.jsx")),
   <Loader />,
 );
 

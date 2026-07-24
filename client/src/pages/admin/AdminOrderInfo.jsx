@@ -29,7 +29,7 @@ function TableHead() {
   );
 }
 
-function TableRow({ order, setOrders }) {
+function TableRow({ order, setOrders, fetchOrders, loading, setLoading }) {
   if (!order) return null;
 
   const { _id, user, totalAmount, createdAt, paymentStatus, orderStatus } =
@@ -73,27 +73,19 @@ function TableRow({ order, setOrders }) {
 
   async function handleOrderStatusChange(e) {
     const newStatus = e.target.value;
-
     try {
+      setLoading(true);
       await updateOrderStatus(newStatus, _id);
 
-      // update only the changed order
-      setOrders((prevOrders) =>
-        prevOrders.map((item) =>
-          item._id === _id
-            ? {
-                ...item,
-                orderStatus: newStatus,
-              }
-            : item,
-        ),
-      );
+      await fetchOrders();
 
       toast.success("Order status updated successfully");
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
 
       toast.error(message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -138,17 +130,21 @@ function TableRow({ order, setOrders }) {
 
       {/* STATUS */}
       <td className="px-6 py-4">
-        <select
-          value={orderStatus}
-          onChange={handleOrderStatusChange}
-          className="h-11 rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
-        >
-          {orderStatusVal.map((status, idx) => (
-            <option value={status} key={idx}>
-              {status}
-            </option>
-          ))}
-        </select>
+        {orderStatus === "Cancelled" ? (
+          <span className="text-lg text-red-400">Cancelled</span>
+        ) : (
+          <select
+            value={orderStatus}
+            onChange={handleOrderStatusChange}
+            className="h-11 rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+          >
+            {orderStatusVal.map((status, idx) => (
+              <option value={status} key={idx}>
+                {status}
+              </option>
+            ))}
+          </select>
+        )}
       </td>
     </tr>
   );
@@ -268,6 +264,9 @@ function AdminOrderInfo() {
                     key={order._id}
                     order={order}
                     setOrders={setOrders}
+                    fetchOrders={fetchOrders}
+                    loading={loading}
+                    setLoading={setLoading}
                   />
                 ))}
               </tbody>
