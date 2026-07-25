@@ -115,7 +115,6 @@ const loginEmail = async function (to) {
   }
 };
 
-
 const sendOtpEmail = async function (to, otp) {
   try {
     const mailOptions = {
@@ -158,7 +157,6 @@ const sendOtpEmail = async function (to, otp) {
     return false;
   }
 };
-
 
 const passwordUpdateEmail = async function (to) {
   try {
@@ -217,10 +215,10 @@ const passwordUpdateEmail = async function (to) {
   }
 };
 
-
-const orderConfirmationEmail = async function ( to, orderInformation) {
+const orderConfirmationEmail = async function (to, orderInformation) {
   try {
-    const { customerName, products, paymentMethod, totalAmount, orderDate } = orderInformation;
+    const { customerName, products, paymentMethod, totalAmount, orderDate } =
+      orderInformation;
 
     const productHTML = products
       .map(
@@ -230,7 +228,7 @@ const orderConfirmationEmail = async function ( to, orderInformation) {
             (Qty: ${product.quantity}) 
             - ₹${product.total}
           </li>
-        `
+        `,
       )
       .join("");
 
@@ -294,12 +292,130 @@ const orderConfirmationEmail = async function ( to, orderInformation) {
     const info = await transporter.sendMail(mailOptions);
     return info?.accepted?.length > 0;
   } catch (err) {
-    console.log(
-      "Error occurred in order confirmation email:",
-      err.message
-    );
+    console.log("Error occurred in order confirmation email:", err.message);
     return false;
   }
+};
+
+const orderCancelEmail = async ({
+  userName,
+  email,
+  orderId,
+  productName,
+}) => {
+  return await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Your Trendora Order Has Been Cancelled",
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8" />
+        <title>Order Cancelled</title>
+      </head>
+
+      <body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,sans-serif;">
+
+        <table width="100%" cellspacing="0" cellpadding="0" style="padding:40px 0;">
+          <tr>
+            <td align="center">
+
+              <table
+                width="600"
+                cellspacing="0"
+                cellpadding="0"
+                style="background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);"
+              >
+
+                <!-- Header -->
+                <tr>
+                  <td
+                    align="center"
+                    style="background:#111827;color:#ffffff;padding:28px;"
+                  >
+                    <h1 style="margin:0;font-size:28px;">Trendora</h1>
+                  </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                  <td style="padding:40px;">
+
+                    <h2 style="margin-top:0;color:#111827;">
+                      Your Order Has Been Cancelled
+                    </h2>
+
+                    <p style="font-size:16px;color:#555;line-height:1.7;">
+                      Hi <strong>${userName}</strong>,
+                    </p>
+
+                    <p style="font-size:16px;color:#555;line-height:1.7;">
+                      We're sorry to see you cancel your order. Your cancellation has been processed successfully.
+                    </p>
+
+                    <table
+                      width="100%"
+                      cellpadding="12"
+                      cellspacing="0"
+                      style="margin:25px 0;border-collapse:collapse;background:#f9fafb;border-radius:8px;"
+                    >
+                      <tr>
+                        <td><strong>Order ID</strong></td>
+                        <td>${orderId}</td>
+                      </tr>
+
+                      <tr>
+                        <td><strong>Product</strong></td>
+                        <td>${productName}</td>
+                      </tr>
+
+                      <tr>
+                        <td><strong>Status</strong></td>
+                        <td style="color:#dc2626;font-weight:bold;">
+                          Cancelled
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="font-size:16px;color:#555;line-height:1.7;">
+                      If your payment was made online, your refund will be processed
+                      to your original payment method within
+                      <strong>5–7 business days</strong>.
+                    </p>
+
+                    <p style="font-size:16px;color:#555;line-height:1.7;">
+                      If you have any questions, feel free to contact our support team.
+                    </p>
+
+                    <p style="margin-top:35px;color:#555;">
+                      Thank you for shopping with
+                      <strong>Trendora</strong>.
+                    </p>
+
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td
+                    align="center"
+                    style="background:#f3f4f6;padding:20px;color:#6b7280;font-size:13px;"
+                  >
+                    © ${new Date().getFullYear()} Trendora. All rights reserved.
+                  </td>
+                </tr>
+
+              </table>
+
+            </td>
+          </tr>
+        </table>
+
+      </body>
+      </html>
+    `,
+  });
 };
 
 module.exports = {
@@ -307,4 +423,5 @@ module.exports = {
   sendOtpEmail,
   passwordUpdateEmail,
   orderConfirmationEmail,
+  orderCancelEmail
 };

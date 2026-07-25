@@ -1,10 +1,10 @@
 import { FiBell, FiSettings, FiLogOut } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router-dom";
-import { logoutUser } from "../api/authApi.js";
-import { UserContext } from "../context/Index.jsx";
+import { logoutUser } from "../../api/authApi.js";
+import { UserContext } from "../../context/Index.jsx";
 import { toast } from "react-toastify";
 import { useContext, useState } from "react";
-import Loader from "./loaders/Loader.jsx";
+import Loader from "../loaders/Loader.jsx";
 
 
 function AdminNavbar() {

@@ -1,11 +1,18 @@
-import { ProfileImage , ProfileInfo, ProfileSecurity } from "../components/profile/Index.jsx";
-import { useState } from "react";
+import {
+  ProfileImage,
+  ProfileInfo,
+  ProfileSecurity,
+} from "../components/profile/Index.jsx";
+import { useState, useContext } from "react";
 import { ClipLoader } from "react-spinners";
+import { UserContext } from "../context/UserContext.jsx";
 
 function Profile() {
   const [loading, setLoading] = useState(false);
+  const { user } = useContext(UserContext);
+  
   return (
-    <main className="min-h-screen w-full mb-16 py-8 flex justify-center items-center text-gray-800">
+    <main className="min-h-screen w-full mb-24 py-8 flex justify-center items-center text-gray-800">
       {loading && <ClipLoader size={40} />}
       <div
         className={
@@ -21,7 +28,11 @@ function Profile() {
         <ProfileInfo loading={loading} setLoading={setLoading} />
 
         {/* PASSWORD */}
-        <ProfileSecurity loading={loading} setLoading={setLoading} />
+        {user.authProvider === "google" ? (
+          ""
+        ) : (
+          <ProfileSecurity loading={loading} setLoading={setLoading} />
+        )}
       </div>
     </main>
   );

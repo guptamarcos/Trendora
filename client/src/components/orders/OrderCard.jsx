@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { cancelOrder } from "../../api/orderApi.js";
 import { toast } from "react-toastify";
 
-function OrderCard({ order }) {
-  if (!order) return null;
 
+function OrderCard({ order,getUserOrderInfo, setLoading }) {
+  if (!order) return null;
+   
   const navigate = useNavigate();
   const { product, totalAmount, quantity, size, createdAt, orderStatus } =
     order;
-
+  
   const formattedDate = new Date(createdAt).toLocaleString("en-IN", {
     day: "numeric",
     month: "short",
@@ -31,11 +32,14 @@ function OrderCard({ order }) {
 
   async function handleCancelOrder() {
     try {
+      setLoading(true)
       await cancelOrder(order?._id);
-      // await cancelOrder(orderId);
+      getUserOrderInfo();
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
+    } finally{
+      setLoading(false)
     }
   }
 

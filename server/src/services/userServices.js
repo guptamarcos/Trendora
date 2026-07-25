@@ -79,6 +79,13 @@ async function updateProfileInfo(body, userId) {
 }
 
 async function updateProfilePassword(body, user) {
+  if (user.authProvider === "google") {
+    throw new ExpressError(
+      403,
+      "This account was created using Google Sign-In. Please manage your password through your Google account.",
+    );
+  }
+
   const { error, value } = PasswordSchemaValidator.validate(body, {
     abortEarly: false,
   });
@@ -95,6 +102,7 @@ async function updateProfilePassword(body, user) {
   if (!checkPassword) {
     throw new ExpressError(401, "Invalid Credentials");
   }
+
 
   user.password = newPassword;
   await user.save();

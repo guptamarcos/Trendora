@@ -4,14 +4,14 @@ import { useContext } from "react";
 import { deleteReview } from "../../api/reviewApi.js";
 import { toast } from "react-toastify";
 
-function CommentCard({ comment,getAllProductReviews }) {
+function CommentCard({ comment,getProductReviews }) {
   const { user } = useContext(UserContext);
 
   async function handleReviewDelete() {
     try{
       const result = await deleteReview(comment?.productId, comment?._id);
       toast.success("Review deleted successfully");
-      getAllProductReviews();
+      getProductReviews();
     }catch(err){
       console.log(err);
       const message = err?.response?.data?.message || "Something went wrong";
@@ -22,7 +22,7 @@ function CommentCard({ comment,getAllProductReviews }) {
   const showDeleteButton = comment?.userId?._id === user?._id;
 
   return (
-    <div className="border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition">
+    <div className="border border-gray-300 rounded-lg p-4 shadow-sm hover:shadow-md transition  overflow-x-auto">
       {/* Top Section */}
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3 mb-3">

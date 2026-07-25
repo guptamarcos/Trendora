@@ -30,7 +30,7 @@ function UserOrders() {
   }
   
   return (
-    <OrderList allOrders={allOrders}/>
+    <OrderList allOrders={allOrders} getUserOrderInfo={getUserOrderInfo}/>
   );
 }
 

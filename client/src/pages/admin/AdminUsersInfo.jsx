@@ -34,6 +34,11 @@ function TableHead() {
 
 function TableRow({ user, fetchUsers }) {
   async function handleDelete() {
+    toast.warning(
+      "Delete functionality is disabled in this demo to prevent accidental data loss.",
+    );
+    return;
+
     try {
       await deleteUser(user._id);
 
@@ -101,14 +106,16 @@ function TableRow({ user, fetchUsers }) {
       </td>
 
       {/* ACTION */}
-      <td className="px-6 py-4 text-right">
-        <button
-          onClick={handleDelete}
-          className="cursor-pointer rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition"
-        >
-          Delete
-        </button>
-      </td>
+      {user.role !== "admin" && (
+        <td className="px-6 py-4 text-right">
+          <button
+            onClick={handleDelete}
+            className="cursor-pointer rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition"
+          >
+            Delete
+          </button>
+        </td>
+      )}
     </tr>
   );
 }

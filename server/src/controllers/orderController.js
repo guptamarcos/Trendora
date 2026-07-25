@@ -30,8 +30,8 @@ async function updateOrderStatus(req,res){
 
 async function cancelOrder(req,res){
   const { orderId } = req.params;
-  const userId = req.user._id;
-  const result = await orderServices.cancelOrder(orderId,userId);
+ 
+  const result = await orderServices.cancelOrder(orderId,req.user);
 
   return res.status(200).json(result);
 }

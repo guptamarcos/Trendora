@@ -1,12 +1,12 @@
 import { useForm } from "react-hook-form";
-import { DeliveryAddressSchema } from "../schemas/AddressSchema.js";
+import { DeliveryAddressSchema } from "../../schemas/AddressSchema.js";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { addOrder } from "../api/orderApi.js";
+import { addOrder } from "../../api/orderApi.js";
 import { toast } from "react-toastify";
-import { UserContext } from "../context/UserContext.jsx";
+import { UserContext } from "../../context/UserContext.jsx";
 import { useContext } from "react";
-import { createOrder, verifyPayment } from "../api/paymentApi.js";
+import { createOrder, verifyPayment } from "../../api/paymentApi.js";
 
 function DeliveryForm({
   paymentMethod,

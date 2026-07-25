@@ -10,7 +10,7 @@ function PriceTotal({ text, price }) {
   );
 }
 
-function CartItemsList({cartItems,fetchCartItems}) {
+function CartItemsList({cartItems,fetchCartItems, subtotal, shippingFee, total}) {
   const isCartEmpty = cartItems?.length === 0;
 
   return (

@@ -32,6 +32,10 @@ function TableRow({ product, productInfo }) {
   const navigate = useNavigate();
 
   async function handleDelete() {
+    toast.warning(
+      "Delete functionality is disabled in this demo to prevent accidental data loss.",
+    );
+    return;
     try {
       await deleteProduct(product._id);
 
@@ -113,7 +117,7 @@ function TableRow({ product, productInfo }) {
 
 function AdminProductInfo() {
   const [products, setProducts] = useState([]);
-  const [matchedProductsCount, setMatchedProductsCount] = useState(0)
+  const [matchedProductsCount, setMatchedProductsCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [limit, setLimit] = useState(10);
 
@@ -126,7 +130,7 @@ function AdminProductInfo() {
       setLoading(true);
 
       const res = await getAllProduct(search, categoryFilter, limit);
-      
+
       setMatchedProductsCount(res?.data?.matchedProductsCount);
 
       const productData = res?.data?.data || [];

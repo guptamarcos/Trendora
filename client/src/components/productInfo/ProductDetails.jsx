@@ -1,69 +1,19 @@
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { getProductInfo, getRelatedProducts } from "../../api/productApi.js";
+import { getProductInfo } from "../../api/productApi.js";
 import { addToWishlist } from "../../api/wishlistApi.js";
 import { addToCart } from "../../api/cartApi.js";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { Product } from "../Index.jsx";
 import { useContext } from "react";
 import { UserContext } from "../../context/Index.jsx";
 import { ClipLoader } from "react-spinners";
-
-function SizeBox({ text, selectedSize, setSelectedSize }) {
-  function handleSelectSize({ text }) {
-    const newSelectedSize = Object.keys(selectedSize).reduce((acc, val) => {
-      {
-        val === text ? (acc[val] = true) : (acc[val] = false);
-      }
-      return acc;
-    }, {});
-
-    setSelectedSize(newSelectedSize);
-  }
-
-  return (
-    <>
-      {!selectedSize[text] && (
-        <span
-          onClick={() => handleSelectSize({ text })}
-          className="flex justify-center items-center cursor-pointer px-4 py-2 rounded-md bg-gray-100 border border-gray-300"
-        >
-          {text}
-        </span>
-      )}
-
-      {selectedSize[text] && (
-        <span className="flex justify-center items-center cursor-pointer px-4 py-2 rounded-md border border-gray-300 text-white bg-black ">
-          {text}
-        </span>
-      )}
-    </>
-  );
-}
-
-function RelatedProducts({ relatedProducts }) {
-  return (
-    <section className="mt-20">
-      <h2 className="text-3xl font-semibold mb-10 flex items-center justify-center">
-        <span className="text-3xl text-gray-600">RELATED</span>&nbsp;PRODUCTS
-        <hr className="w-16 ml-3 border-t-2 border-black" />
-      </h2>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        {relatedProducts?.length > 0 &&
-          relatedProducts.map((product, index) => {
-            return <Product key={index} product={product} />;
-          })}
-      </div>
-    </section>
-  );
-}
+import RelatedProducts from "./RelatedProducts.jsx";
+import ProductActions from "./ProductActions.jsx";
 
 function ProductDetails({ setLoading, setProductId, refreshProduct }) {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
   const { user, getUser } = useContext(UserContext);
@@ -85,17 +35,6 @@ function ProductDetails({ setLoading, setProductId, refreshProduct }) {
       toast.error(message);
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function getRelatedProductsInfo() {
-    try {
-      const productId = product?._id;
-      const res = await getRelatedProducts(productId);
-      setRelatedProducts(res?.data?.data);
-    } catch (err) {
-      const message = err?.response?.data?.message;
-      toast.error(message);
     }
   }
 
@@ -153,17 +92,9 @@ function ProductDetails({ setLoading, setProductId, refreshProduct }) {
     getProduct();
   }, [productId, refreshProduct]);
 
-  useEffect(() => {
-    if (product?.category) {
-      getRelatedProductsInfo();
-    }
-  }, [product?.category]);
-
   return (
     <>
       <div className="max-w-7xl mx-auto px-6 py-16">
-        {/* ================= PRODUCT SECTION ================= */}
-
         <section className="grid md:grid-cols-2 gap-12">
           {/*PRODUCT IMAGE */}
           <div className="flex justify-center items-start cursor-pointer hover:scale-101 transition">
@@ -174,13 +105,11 @@ function ProductDetails({ setLoading, setProductId, refreshProduct }) {
             />
           </div>
 
-          {/* PRODUCT DETAILS */}
           <div className="flex flex-col justify-evenly">
             <h2 className="text-3xl font-semibold text-gray-800">
               {product?.name}
             </h2>
 
-            {/* RATINGS */}
             {product?.rating?.average > 0 && (
               <div className="flex items-center gap-2">
                 <div className="flex gap-1">
@@ -236,92 +165,19 @@ function ProductDetails({ setLoading, setProductId, refreshProduct }) {
               {product?.description}
             </p>
 
-            {product?.stock > 0 && (
-              <div>
-                <h6 className="font-semibold text-gray-700 mb-3">
-                  Select Size
-                </h6>
-
-                <div className="flex flex-wrap gap-3">
-                  {product?.sizes?.length > 0 &&
-                    product?.sizes?.map((sizeVal) => (
-                      <SizeBox
-                        key={sizeVal}
-                        text={sizeVal}
-                        selectedSize={selectedSize}
-                        setSelectedSize={setSelectedSize}
-                      />
-                    ))}
-                </div>
-              </div>
-            )}
-
-            {product?.stock === 0 && (
-              <div className="min-h-30 ">
-                <span className="px-4 py-2 w-max bg-red-50 text-red-600 border border-red-200 rounded-md font-medium">
-                  Out of Stock
-                </span>
-              </div>
-            )}
-
-            {/* QUANTITY */}
-            {product?.stock > 0 && (
-              <div>
-                <h6 className="font-semibold text-gray-700 mb-3">Quantity</h6>
-
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() =>
-                      setQuantity((prev) => (prev > 1 ? prev - 1 : 1))
-                    }
-                    className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
-                  >
-                    -
-                  </button>
-
-                  <span className="text-lg font-medium">{quantity}</span>
-
-                  <button
-                    onClick={() => {
-                      if (!(product?.stock > quantity)) {
-                        toast.error(
-                          `Only ${product?.stock} items are available`,
-                        );
-                        return;
-                      }
-                      setQuantity((prev) => prev + 1);
-                    }}
-                    className="cursor-pointer px-3 py-1 border border-gray-400 rounded-md hover:bg-gray-200"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Actions */}
-
-            {product?.stock > 0 && (
-              <div className="flex gap-4 pt-4">
-                <button
-                  onClick={addInCart}
-                  className="cursor-pointer px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition shadow-sm"
-                >
-                  ADD TO CART
-                </button>
-
-                <button
-                  onClick={addInWishlist}
-                  className="cursor-pointer px-6 py-3 border border-black text-black rounded-md hover:bg-black hover:text-white transition"
-                >
-                  ADD TO WISHLIST
-                </button>
-              </div>
-            )}
+            <ProductActions
+              product={product}
+              selectedSize={selectedSize}
+              setSelectedSize={setSelectedSize}
+              setQuantity={setQuantity}
+              quantity={quantity}
+              addInCart={addInCart}
+              addInWishlist={addInWishlist}
+            />
           </div>
         </section>
 
-        <RelatedProducts relatedProducts={relatedProducts} />
+        <RelatedProducts productId={productId} />
       </div>
     </>
   );

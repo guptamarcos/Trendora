@@ -41,7 +41,7 @@ function Cart() {
   }
 
   return (
-    <CartList cartItems={cartItems} fetchCartItems={fetchCartItems}/>
+    <CartList cartItems={cartItems} fetchCartItems={fetchCartItems} subtotal={subtotal} shippingFee={shippingFee} total={total}/>
   );
 }
 

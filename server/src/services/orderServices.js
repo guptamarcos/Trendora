@@ -1,8 +1,12 @@
 const User = require("../models/userSchema.js");
 const Order = require("../models/orderSchema.js");
+const Product = require("../models/productSchema.js")
 const { addressSchema } = require("../validations/addressSchemaValidator.js");
 const ExpressError = require("../utils/ExpressError.js");
-const { orderConfirmationEmail } = require("./emailServices.js");
+const {
+  orderConfirmationEmail,
+  orderCancelEmail,
+} = require("./emailServices.js");
 const isValidDocumentId = require("../utils/validator.js");
 
 async function getUserOrder(userId) {
@@ -21,7 +25,7 @@ async function getUserOrder(userId) {
 
 async function addOrder(body, userId) {
   // CHECK CART NOT EMPTY
-  const user = await User.findById(userId).select("cart email name").populate({
+  const user = await User.findById(userId).select("cart email username").populate({
     path: "cart.product",
   });
 
@@ -37,7 +41,7 @@ async function addOrder(body, userId) {
   });
 
   if (error) {
-    const errors = error.details.map((err) => err.name);
+    const errors = error.details.map((err) => err.message);
     throw new ExpressError(422, errors);
   }
 
@@ -84,14 +88,15 @@ async function addOrder(body, userId) {
   );
 
   const ordersId = orders.map((order) => order._id);
-
+  
+  
   // DATA SEND WITH EMAIL
   const orderDetails = {
-    customerName: user.name,
+    customerName: user.username,
 
     products: user.cart.map((item) => ({
-      name: item.product.title,
-      image: item.product.image,
+      name: item.product.name,
+      image: item.product.productImage.url,
       quantity: item.quantity,
       size: item.size,
       price: item.product.price,
@@ -110,6 +115,7 @@ async function addOrder(body, userId) {
   };
 
   // SEND EMAIL
+  
   const OrderConfirmationEmail = await orderConfirmationEmail(
     user?.email,
     orderDetails,
@@ -200,23 +206,23 @@ async function updateOrderStatus(orderId, status) {
   }
 
   order.orderStatus = status;
-  if(status === "Cancelled"){
-    if(order.paymentStatus = "Pending"){
+  if (status === "Cancelled") {
+    if ((order.paymentStatus = "Pending")) {
       order.paymentStatus = "Cancelled";
-    } else{
+    } else {
       order.paymentStatus = "Refunded";
     }
   }
 
   await order.save();
-  
+
   return {
     success: true,
     message: "Order status updated successfully",
   };
 }
 
-async function cancelOrder(orderId, userId) {
+async function cancelOrder(orderId, user) {
   if (!isValidDocumentId(orderId)) {
     throw new ExpressError(400, "Invalid order id");
   }
@@ -227,7 +233,9 @@ async function cancelOrder(orderId, userId) {
     throw new ExpressError(404, "Order not found");
   }
 
-  if (order.user.toString() !== userId.toString()) {
+  
+
+  if (order.user.toString() !== user._id.toString()) {
     throw new ExpressError(403, "You are unauthorized for cancel this order");
   }
 
@@ -237,6 +245,23 @@ async function cancelOrder(orderId, userId) {
 
   order.orderStatus = "Cancelled";
   await order.save();
+
+  const product = await Product.findById(order.product);
+  const productName = product.name;
+
+  const OrderCancelEmail = await orderCancelEmail({
+    userName: user.username,
+    email: user.email,
+    orderId: order._id,
+    productName,
+  });
+
+  if (!OrderCancelEmail) {
+    console.log(
+      "Order confirmation email is not sent for email : ",
+      user.email,
+    );
+  }
 
   return {
     success: true,
