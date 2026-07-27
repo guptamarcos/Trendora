@@ -10,7 +10,7 @@ import { UserContext } from "../context/UserContext.jsx";
 function Profile() {
   const [loading, setLoading] = useState(false);
   const { user } = useContext(UserContext);
-  
+
   return (
     <main className="min-h-screen w-full mb-24 py-8 flex justify-center items-center text-gray-800">
       {loading && <ClipLoader size={40} />}
@@ -18,7 +18,7 @@ function Profile() {
         className={
           loading
             ? "hidden"
-            : "w-[55%] bg-white border border-gray-200 rounded-2xl px-10 py-8 shadow-md"
+            : "w-full sm:w-[90%] md:w-[75%] lg:w-[55%] bg-white border border-gray-200 rounded-2xl px-5 sm:px-8 lg:px-10 py-8 shadow-md"
         }
       >
         {/* PROFILE IMAGE */}

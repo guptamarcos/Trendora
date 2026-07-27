@@ -51,16 +51,16 @@ function BestSeller() {
   }
 
   return (
-    <section className="px-12 py-4 flex flex-col items-center relative">
-      <h2 className="font-outfit text-3xl flex items-center">
+    <section className="px-4 sm:px-8 lg:px-12 py-4 flex flex-col items-center relative">
+      <h2 className="font-outfit text-2xl sm:text-3xl flex items-center text-center">
         BEST &nbsp;<b>SELLER</b> &nbsp; &nbsp;
         <hr className="w-12 border-t-2 border-black" />
       </h2>
-      <p className="pt-2 text-sm font-outfit text-gray-500">
+      <p className="pt-2 text-sm font-outfit text-gray-500 text-center max-w-2xl">
         Explore our top-selling picks that customers can’t get enough of,
         combining trend, comfort, and value.
       </p>
-      <div className="w-full grid grid-cols-5 gap-x-5 mt-6">
+      <div className="w-full grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-5 mt-6">
         {bestSellerProducts.length > 0 &&
           bestSellerProducts.slice(prevIndex, nextIndex + 1).map((product) => {
             return <Product product={product} key={product._id} />;
@@ -68,14 +68,18 @@ function BestSeller() {
       </div>
 
       <div
-        className={`absolute left-0 top-[50%] cursor-pointer ${prevIndex === 0 ? "opacity-50" : ""}`}
+        className={`absolute left-2 lg:left-0 top-1/2 -translate-y-1/2 cursor-pointer ${
+          prevIndex === 0 ? "opacity-50" : ""
+        }`}
         onClick={handlePrev}
       >
         <IoChevronBack size={24} />
       </div>
 
       <div
-        className={`absolute right-0 top-[50%] cursor-pointer ${nextIndex === 9 ? "opacity-50" : ""}`}
+        className={`absolute right-2 lg:right-0 top-1/2 -translate-y-1/2 cursor-pointer ${
+          nextIndex === 9 ? "opacity-50" : ""
+        }`}
         onClick={handleNext}
       >
         <IoChevronForward size={24} />

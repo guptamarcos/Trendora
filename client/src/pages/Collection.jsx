@@ -41,7 +41,8 @@ function Collection() {
       const res = await getAllProducts();
       setAllProducts(res?.data?.data);
     } catch (err) {
-      const message = err?.response?.data?.message || "Something went wrong";
+      const message =
+        err?.response?.data?.message || "Something went wrong";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -52,19 +53,24 @@ function Collection() {
     GetAllProducts();
   }, []);
 
-  const showProducts = getShowProducts(sortOrder, categoryFilter, allProducts);
+  const showProducts = getShowProducts(
+    sortOrder,
+    categoryFilter,
+    allProducts
+  );
 
   if (loading) {
     return <CollectionSkeleton />;
   }
 
   return (
-    <main className="mb-40 min-h-screen flex gap-8">
+    <main className="mb-40 min-h-screen flex flex-col lg:flex-row gap-8 px-4 sm:px-6 lg:px-0">
       <Filters
         setSortOrder={setSortOrder}
         sortOrder={sortOrder}
         setCategoryFilter={setCategoryFilter}
       />
+
       <ProductGrid showProducts={showProducts} />
     </main>
   );

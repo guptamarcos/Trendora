@@ -3,7 +3,7 @@ import { Navbar, Footer } from "./Index.jsx";
 
 function UserLayout() {
   return (
-    <main className="min-h-screen w-full px-[7.5vw] pt-[10vh]">
+    <main className="min-h-screen w-full px-4 sm:px-8 lg:px-[7.5vw] pt-[10vh]">
       <Navbar />
       <Outlet />
       <Footer />

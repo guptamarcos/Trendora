@@ -46,7 +46,7 @@ function ProfileInfo({loading, setLoading}) {
           type="text"
           defaultValue={user?.username}
           {...register("username")}
-          className="w-full text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500"
+          className="w-full text-sm sm:text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500"
         />
         {errors.username && (<p className="text-red-500 text-sm">{errors.username.message}</p>)}
       </div>
@@ -61,7 +61,7 @@ function ProfileInfo({loading, setLoading}) {
           defaultValue={user?.email}
           readOnly
           {...register("email")}
-          className="w-full text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500"
+          className="w-full text-sm sm:text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500"
         />
       </div>
 
@@ -73,14 +73,14 @@ function ProfileInfo({loading, setLoading}) {
           id="bio"
           defaultValue={user?.bio || "Tell us about yourself..."}
           {...register("bio")}
-          className="w-full h-24 resize-none text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500">
+          className="w-full h-24 resize-none text-sm sm:text-base rounded-lg bg-gray-50 border border-gray-300 py-2 px-3 mt-2 focus:outline-none focus:border-indigo-500">
         </textarea>
         {errors.bio && (<p className="text-red-500 text-sm">{errors.bio.message}</p>)}
       </div>
 
       <button
         type="submit"
-        className="w-50 bg-indigo-600 cursor-pointer text-white text-base tracking-wide py-2 rounded-lg hover:bg-indigo-700 transition"
+        className="w-full sm:w-50 bg-indigo-600 cursor-pointer text-white text-base tracking-wide py-2 rounded-lg hover:bg-indigo-700 transition"
       >
         Save Profile
       </button>

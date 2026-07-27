@@ -41,7 +41,7 @@ function ProfileImage({ loading, setLoading }) {
         <img
           src={user?.profileImage?.path || defaultProfileImage}
           alt="profile"
-          className="h-50 w-50 rounded-full border border-gray-300 object-cover"
+          className="h-32 w-32 sm:h-40 sm:w-40 lg:h-50 lg:w-50 rounded-full border border-gray-300 object-cover"
         />
       </label>
 

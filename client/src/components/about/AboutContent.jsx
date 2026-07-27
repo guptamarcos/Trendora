@@ -2,14 +2,14 @@ import { about_img } from "../../assets/Index";
 
 function AboutContent() {
   return (
-    <section className="flex mt-8 mb-12">
+    <section className="flex flex-col lg:flex-row mt-8 mb-12 gap-8">
       <img
         src={about_img}
         alt="About Trendora"
-        className="w-[50%] h-[75vh] rounded-lg object-cover"
+        className="w-full lg:w-[50%] h-72 sm:h-96 lg:h-[75vh] rounded-lg object-cover"
       />
 
-      <div className="flex-1 p-16 text-justify text-gray-600">
+      <div className="flex-1 px-4 sm:px-8 lg:p-16 text-justify text-gray-600">
         <p>
           Trendora was born out of a passion for innovation and a desire to
           revolutionize the way people shop online...

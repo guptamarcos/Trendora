@@ -12,19 +12,19 @@ const STORE_INFO = {
 
 function ContactContent() {
   return (
-    <section className="flex mt-12 mb-20 gap-12 items-center">
+    <section className="flex flex-col lg:flex-row mt-12 mb-20 gap-8 lg:gap-12 items-center">
       {/* Left Image */}
       <img
         src={contact_img}
         alt="Contact"
-        className="w-1/2 h-[70vh] object-cover rounded-lg"
+        className="w-full lg:w-1/2 h-72 sm:h-96 lg:h-[70vh] object-cover rounded-lg"
       />
 
       {/* Right Content */}
-      <div className="flex-1 text-gray-600 space-y-10">
+      <div className="flex-1 text-gray-600 space-y-8 lg:space-y-10 px-4 lg:px-0">
         {/* Store Information */}
         <div>
-          <h2 className="text-2xl font-semibold text-black mb-4">
+          <h2 className="text-xl sm:text-2xl font-semibold text-black mb-4">
             OUR STORE
           </h2>
 
@@ -51,7 +51,7 @@ function ContactContent() {
 
         {/* Careers */}
         <div>
-          <h2 className="text-2xl font-semibold text-black mb-4">
+          <h2 className="text-xl sm:text-2xl font-semibold text-black mb-4">
             CAREERS AT TRENDORA
           </h2>
 

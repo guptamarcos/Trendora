@@ -10,17 +10,22 @@ function PriceTotal({ text, price }) {
   );
 }
 
-function CartItemsList({cartItems,fetchCartItems, subtotal, shippingFee, total}) {
+function CartItemsList({
+  cartItems,
+  fetchCartItems,
+  subtotal,
+  shippingFee,
+  total,
+}) {
   const isCartEmpty = cartItems?.length === 0;
 
   return (
-    <main className="min-h-screen pt-16 mb-32">
-      <h2 className="text-3xl font-semibold mb-8 flex items-center">
+    <main className="min-h-screen pt-10 sm:pt-16 mb-20 sm:mb-32">
+      <h2 className="text-2xl sm:text-3xl font-semibold mb-8 flex items-center">
         <span className="text-gray-600">YOUR</span>&nbsp;CART&nbsp;
-        <hr className="w-[5%] border-t-2 border-black" />
+        <hr className="w-10 sm:w-[5%] border-t-2 border-black" />
       </h2>
 
-      {/* CART ITEMS */}
       <div className="flex flex-col border-t-2 border-gray-200">
         {cartItems.map((item) => (
           <CartItem
@@ -31,20 +36,20 @@ function CartItemsList({cartItems,fetchCartItems, subtotal, shippingFee, total})
         ))}
       </div>
 
-      {/* EMPTY STATE */}
       {isCartEmpty && (
-        <h2 className="text-center mt-10 text-gray-500">No items added yet</h2>
+        <h2 className="text-center mt-10 text-gray-500 text-lg">
+          No items added yet
+        </h2>
       )}
 
-      {/* CART TOTAL */}
       {!isCartEmpty && (
-        <div className="flex mt-8">
-          <div className="flex-1" />
+        <div className="flex flex-col lg:flex-row mt-8">
+          <div className="hidden lg:block flex-1" />
 
-          <div className="flex-1 text-right">
-            <h2 className="my-8 flex items-center font-semibold text-2xl justify-end">
+          <div className="w-full lg:flex-1 lg:text-right">
+            <h2 className="my-8 flex items-center justify-start lg:justify-end font-semibold text-xl sm:text-2xl">
               <span className="text-gray-500">CART</span>&nbsp;TOTALS
-              <hr className="w-[20%] border-t-2 border-black ml-2" />
+              <hr className="w-16 sm:w-[20%] border-t-2 border-black ml-2" />
             </h2>
 
             <PriceTotal text="Subtotal" price={subtotal} />
@@ -57,7 +62,7 @@ function CartItemsList({cartItems,fetchCartItems, subtotal, shippingFee, total})
 
             <Link
               to="/trendora/checkout"
-              className="inline-block mt-6 px-8 py-2 bg-black text-gray-100"
+              className="inline-block w-full sm:w-auto text-center mt-6 px-8 py-3 bg-black text-gray-100 hover:bg-gray-800 transition"
             >
               PROCEED TO CHECKOUT
             </Link>

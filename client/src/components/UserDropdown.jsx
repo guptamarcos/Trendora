@@ -10,7 +10,7 @@ function UserDropDown({ isOpen, setIsOpen, buttonRef }) {
   const dropDownRef = useRef(null);
   const { user, getUser } = useContext(UserContext);
   const navigate = useNavigate();
-  const [loading , setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function handleLogout() {
     try {
@@ -23,41 +23,38 @@ function UserDropDown({ isOpen, setIsOpen, buttonRef }) {
     } catch (err) {
       const message = err?.response?.data?.message || "Something went wrong";
       toast.error(message);
-    } finally{
+    } finally {
       setLoading(false);
     }
   }
 
-  
   useEffect(() => {
-    
     function closeDropdown(evt) {
-      
-      if(buttonRef?.current?.contains(evt.target)){
+      if (buttonRef?.current?.contains(evt.target)) {
         return;
       }
-      
-      if(!dropDownRef?.current?.contains(evt.target)){
+
+      if (!dropDownRef?.current?.contains(evt.target)) {
         setIsOpen(false);
       }
     }
-    
+
     document.addEventListener("mousedown", closeDropdown);
-    
+
     return () => {
       document.removeEventListener("mousedown", closeDropdown);
     };
   }, []);
-  
+
   // console.log(ref.current);
-  
-  if(loading){
-    return <Loader/>
+
+  if (loading) {
+    return <Loader />;
   }
 
   return (
     <div
-      className={`absolute right-2 top-14 w-56 p-4 flex flex-col bg-white rounded-xl border border-gray-200 shadow-lg z-50 ${isOpen ? "" : "hidden"}`}
+      className={`fixed right-4 top-20 w-[90vw] max-w-56 p-4 flex flex-col bg-white rounded-xl border border-gray-200 shadow-lg z-50 ${isOpen ? "" : "hidden"} `}
       ref={dropDownRef}
     >
       {/* User Info */}
