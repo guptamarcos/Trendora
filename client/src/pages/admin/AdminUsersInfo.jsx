@@ -8,23 +8,23 @@ function TableHead() {
   return (
     <thead className="bg-gray-50 border-b border-gray-200">
       <tr>
-        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+        <th className="px-4 sm:px-6 py-4 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
           User
         </th>
 
-        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+        <th className="px-4 sm:px-6 py-4 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
           Email
         </th>
 
-        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+        <th className="px-4 sm:px-6 py-4 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
           Role
         </th>
 
-        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+        <th className="px-4 sm:px-6 py-4 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
           Status
         </th>
 
-        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">
+        <th className="px-4 sm:px-6 py-4 text-right text-sm font-semibold text-gray-700 whitespace-nowrap">
           Action
         </th>
       </tr>
@@ -68,36 +68,42 @@ function TableRow({ user, fetchUsers }) {
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition duration-200">
       {/* USER */}
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-4">
+      <td className="px-4 sm:px-6 py-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <img
             src={user?.profileImage?.path || defaultProfileImage}
             alt={user.username}
-            className="w-12 h-12 rounded-full object-cover border border-gray-200 bg-gray-100"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200 bg-gray-100 flex-shrink-0"
           />
 
           <div>
-            <p className="font-medium text-gray-800">{user.username}</p>
+            <p className="font-medium text-sm sm:text-base text-gray-800">
+              {user.username}
+            </p>
 
-            <p className="text-sm text-gray-500">ID: {user._id.slice(-6)}</p>
+            <p className="text-xs sm:text-sm text-gray-500">
+              ID: {user._id.slice(-6)}
+            </p>
           </div>
         </div>
       </td>
 
-      {/* EMAIL */}
-      <td className="px-6 py-4 text-gray-700">{user.email}</td>
+      
+      <td className="px-4 sm:px-6 py-4 text-sm sm:text-base text-gray-700 whitespace-nowrap">
+        {user.email}
+      </td>
 
-      {/* ROLE */}
-      <td className="px-6 py-4">
-        <span className="capitalize font-medium text-gray-700">
+      
+      <td className="px-4 sm:px-6 py-4">
+        <span className="capitalize font-medium text-sm sm:text-base text-gray-700 whitespace-nowrap">
           {user.role}
         </span>
       </td>
 
-      {/* STATUS */}
-      <td className="px-6 py-4">
+      
+      <td className="px-4 sm:px-6 py-4">
         <span
-          className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getStatusStyles(
+          className={`inline-flex rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium ${getStatusStyles(
             user.status,
           )}`}
         >
@@ -105,12 +111,12 @@ function TableRow({ user, fetchUsers }) {
         </span>
       </td>
 
-      {/* ACTION */}
+      
       {user.role !== "admin" && (
-        <td className="px-6 py-4 text-right">
+        <td className="px-4 sm:px-6 py-4 text-right">
           <button
             onClick={handleDelete}
-            className="cursor-pointer rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition"
+            className="cursor-pointer rounded-lg border border-red-200 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-red-600 hover:bg-red-50 transition whitespace-nowrap"
           >
             Delete
           </button>
@@ -157,26 +163,28 @@ function AllUsersInfo() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 px-4 py-8 md:px-8">
+    <main className="min-h-screen bg-gray-100 px-3 sm:px-4 lg:px-8 py-6 sm:py-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* HEADER */}
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold text-gray-800">Users</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            Users
+          </h1>
 
-          <p className="text-gray-500">
+          <p className="text-sm sm:text-base text-gray-500">
             Manage and monitor all registered users
           </p>
         </div>
 
-        {/* KEEPING SAME SEARCH + DROPDOWN */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex w-full md:w-auto gap-2">
+        {/* SEARCH + FILTER */}
+        <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4">
+          <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-3">
             <input
               type="text"
               placeholder="Search users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-11 w-full md:w-72 border border-gray-200 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-black bg-white"
+              className="h-11 w-full lg:w-72 border border-gray-200 px-4 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-black"
             />
 
             <button
@@ -184,7 +192,7 @@ function AllUsersInfo() {
                 setLimit(10);
                 fetchUsers();
               }}
-              className="cursor-pointer h-11 px-6 rounded-md border border-gray-200 text-gray-700 bg-white hover:bg-gray-100 transition"
+              className="cursor-pointer h-11 w-full sm:w-auto px-6 rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 transition"
             >
               Search
             </button>
@@ -196,7 +204,7 @@ function AllUsersInfo() {
               setLimit(10);
               setStatus(e.target.value);
             }}
-            className="h-11 border border-gray-200 px-4 rounded-md text-gray-700 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+            className="h-11 w-full sm:w-52 lg:w-44 border border-gray-200 px-4 rounded-md bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
           >
             <option value="">All</option>
             <option value="Active">Active</option>
@@ -217,21 +225,30 @@ function AllUsersInfo() {
           </p>
         </div>
 
-        {/* TABLE */}
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[850px] border-collapse">
+                {/* TABLE */}
+        <div className="overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="w-full overflow-x-auto">
+            <table className="w-full min-w-[820px] border-collapse">
               <TableHead />
 
               <tbody>
                 {users?.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="py-10 text-center text-gray-500">
+                    <td
+                      colSpan="5"
+                      className="py-10 text-center text-gray-500"
+                    >
                       No users found
                     </td>
                   </tr>
                 ) : (
-                  users?.map((user) => <TableRow key={user._id} user={user} />)
+                  users?.map((user) => (
+                    <TableRow
+                      key={user._id}
+                      user={user}
+                      fetchUsers={fetchUsers}
+                    />
+                  ))
                 )}
               </tbody>
             </table>
@@ -242,7 +259,9 @@ function AllUsersInfo() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 pt-5">
           <button
             onClick={() => setLimit((prev) => prev - 10)}
-            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition ${users?.length > 10 ? "" : "invisible"}`}
+            className={`cursor-pointer w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition ${
+              users?.length > 10 ? "" : "invisible"
+            }`}
           >
             Show Less
           </button>
@@ -251,7 +270,9 @@ function AllUsersInfo() {
             onClick={() => {
               setLimit((prev) => prev + 10);
             }}
-            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl bg-black text-white hover:opacity-90 transition ${users?.length < matchedUsersCount ? "" : "invisible"}`}
+            className={`cursor-pointer w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-black text-white hover:opacity-90 transition ${
+              users?.length < matchedUsersCount ? "" : "invisible"
+            }`}
           >
             Show More
           </button>

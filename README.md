@@ -259,17 +259,25 @@ npm run dev
 
 ---
 
-# 🗄️ Database Design
+# 📸 Screenshots
 
-The application uses **MongoDB** with a hybrid approach of **embedding** and **referencing**.
+## Home Page
 
-## Database Schema Diagram
-
-```md
-![Database Schema](./db.png)
-```
+![Home Page](./screenshots/home.png)
 
 ---
+
+## Admin Dashboard
+
+![Admin Dashboard](./screenshots/admin-dashboard.png)
+
+---
+
+## Database Schema
+
+![Database Schema](./screenshots/db.png)
+
+
 
 # 🔗 API Highlights
 

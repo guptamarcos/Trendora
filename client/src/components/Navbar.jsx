@@ -20,23 +20,45 @@ function Navbar() {
   return (
     <header className="w-full px-4 sm:px-8 lg:px-[7.5vw] bg-white fixed top-0 left-0 z-50">
       <nav className="h-[10vh] flex justify-between items-center border-b-2 border-gray-300">
-
         <h1 className="font-semibold font-heading text-2xl sm:text-3xl lg:text-4xl">
           Trendora
         </h1>
 
         <div className="hidden lg:flex w-[30%] justify-between">
-          <NavLink to="/trendora" className="text-lg">Home</NavLink>
+          <NavLink
+            to="/trendora"
+            end
+            className={({ isActive }) =>
+              `text-lg ${isActive ? "text-purple-500 " : "text-gray-800"}`
+            }
+          >
+            Home
+          </NavLink>
 
-          <NavLink to="/trendora/collections" className="text-lg">
+          <NavLink
+            to="/trendora/collections"
+            className={({ isActive }) =>
+              `text-lg ${isActive ? "text-purple-500 " : "text-gray-800"}`
+            }
+          >
             Collection
           </NavLink>
 
-          <NavLink to="/trendora/about" className="text-lg">
+          <NavLink
+            to="/trendora/about"
+            className={({ isActive }) =>
+              `text-lg ${isActive ? "text-purple-500 " : "text-gray-800"}`
+            }
+          >
             About
           </NavLink>
 
-          <NavLink to="/trendora/contact" className="text-lg">
+          <NavLink
+            to="/trendora/contact"
+            className={({ isActive }) =>
+              `text-lg ${isActive ? "text-purple-500" : "text-gray-800"}`
+            }
+          >
             Contact
           </NavLink>
         </div>
@@ -82,20 +104,14 @@ function Navbar() {
                 )}
               </NavLink>
 
-              <button
-                ref={buttonRef}
-                onClick={() => setIsOpen(!isOpen)}
-              >
+              <button ref={buttonRef} onClick={() => setIsOpen(!isOpen)}>
                 <FaUserAlt size={24} />
               </button>
             </div>
           )}
         </div>
 
-        <button
-          className="lg:hidden"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
+        <button className="lg:hidden" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
         </button>
       </nav>
@@ -104,7 +120,10 @@ function Navbar() {
         <div className="lg:hidden bg-white border-b border-gray-200 py-4 space-y-4">
           <NavLink
             to="/trendora"
-            className="block"
+            end
+            className={({ isActive }) =>
+              `block ${isActive ? "text-purple-500 " : "text-gray-800"}`
+            }
             onClick={() => setMenuOpen(false)}
           >
             Home
@@ -112,7 +131,9 @@ function Navbar() {
 
           <NavLink
             to="/trendora/collections"
-            className="block"
+            className={({ isActive }) =>
+              `block ${isActive ? "text-purple-500 " : "text-gray-800"}`
+            }
             onClick={() => setMenuOpen(false)}
           >
             Collection
@@ -120,7 +141,9 @@ function Navbar() {
 
           <NavLink
             to="/trendora/about"
-            className="block"
+            className={({ isActive }) =>
+              `block ${isActive ? "text-purple-500 " : "text-gray-800"}`
+            }
             onClick={() => setMenuOpen(false)}
           >
             About
@@ -128,7 +151,9 @@ function Navbar() {
 
           <NavLink
             to="/trendora/contact"
-            className="block"
+            className={({ isActive }) =>
+              `block ${isActive ? "text-purple-500 " : "text-gray-800"}`
+            }
             onClick={() => setMenuOpen(false)}
           >
             Contact
@@ -138,7 +163,9 @@ function Navbar() {
             <>
               <NavLink
                 to="/trendora/login"
-                className="block"
+                className={({ isActive }) =>
+                  `block ${isActive ? "text-purple-500 " : "text-gray-800"}`
+                }
                 onClick={() => setMenuOpen(false)}
               >
                 Login
@@ -146,7 +173,9 @@ function Navbar() {
 
               <NavLink
                 to="/trendora/signup"
-                className="block"
+                className={({ isActive }) =>
+                  `block ${isActive ? "text-purple-500 " : "text-gray-800"}`
+                }
                 onClick={() => setMenuOpen(false)}
               >
                 Get Started
@@ -168,10 +197,7 @@ function Navbar() {
                 )}
               </NavLink>
 
-              <button
-                ref={buttonRef}
-                onClick={() => setIsOpen(!isOpen)}
-              >
+              <button ref={buttonRef} onClick={() => setIsOpen(!isOpen)}>
                 <FaUserAlt size={22} />
               </button>
             </div>

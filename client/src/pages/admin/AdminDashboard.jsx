@@ -68,7 +68,7 @@ function AdminDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 px-4 py-8 md:px-8">
+    <main className="h-[83vh] bg-gray-100 px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* HEADER */}

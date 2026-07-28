@@ -31,13 +31,11 @@ function DeliveryForm({
       paymentMethod,
     };
 
-    // Stripe
     if (paymentMethod === "stripe") {
       toast.error("Payment option is currently unavailable");
       return;
     }
 
-    // COD
     if (paymentMethod === "cod") {
       try {
         setLoading(true);
@@ -64,10 +62,8 @@ function DeliveryForm({
       return;
     }
 
-    // Razorpay
     if (paymentMethod === "razorpay") {
       try {
-        // Loader while creating Razorpay order
         setLoading(true);
 
         const res = await createOrder(Number(amount));
@@ -79,25 +75,18 @@ function DeliveryForm({
           return;
         }
 
-        // Hide loader before opening Razorpay popup
         setLoading(false);
 
         const options = {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-
           amount: order.amount,
-
           currency: order.currency,
-
           name: "Trendora",
-
           description: "Order Payment",
-
           order_id: order.id,
 
           handler: async function (response) {
             try {
-              // Loader while verifying payment
               setLoading(true);
 
               const verify = await verifyPayment(response);
@@ -176,34 +165,34 @@ function DeliveryForm({
       onSubmit={handleSubmit(formData)}
     >
       {/* FIRST NAME & LAST NAME */}
-      <div className="flex justify-between gap-4 mb-6">
-        <div>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex-1">
           <input
             id="firstName"
             type="text"
             placeholder="First Name"
-            className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
+            className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
             {...register("firstName")}
           />
 
           {errors.firstName && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm mt-1">
               {errors.firstName.message}
             </p>
           )}
         </div>
 
-        <div>
+        <div className="flex-1">
           <input
             id="lastName"
             type="text"
             placeholder="Last Name"
-            className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
+            className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
             {...register("lastName")}
           />
 
           {errors.lastName && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm mt-1">
               {errors.lastName.message}
             </p>
           )}
@@ -216,12 +205,12 @@ function DeliveryForm({
           id="email"
           type="email"
           placeholder="Email Address"
-          className="w-full border border-gray-300 rounded-sm px-2 py-2"
+          className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
           {...register("email")}
         />
 
         {errors.email && (
-          <p className="text-red-500 text-sm">
+          <p className="text-red-500 text-sm mt-1">
             {errors.email.message}
           </p>
         )}
@@ -233,46 +222,46 @@ function DeliveryForm({
           id="street"
           type="text"
           placeholder="Street"
-          className="w-full border border-gray-300 rounded-sm px-2 py-2"
+          className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
           {...register("street")}
         />
 
         {errors.street && (
-          <p className="text-red-500 text-sm">
+          <p className="text-red-500 text-sm mt-1">
             {errors.street.message}
           </p>
         )}
       </div>
 
-      {/* CITY & STATE */}
-      <div className="flex justify-between gap-4 mb-6">
-        <div>
+            {/* CITY & STATE */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex-1">
           <input
             id="city"
             type="text"
             placeholder="City"
-            className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
+            className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
             {...register("city")}
           />
 
           {errors.city && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm mt-1">
               {errors.city.message}
             </p>
           )}
         </div>
 
-        <div>
+        <div className="flex-1">
           <input
             id="state"
             type="text"
             placeholder="State"
-            className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
+            className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
             {...register("state")}
           />
 
           {errors.state && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm mt-1">
               {errors.state.message}
             </p>
           )}
@@ -280,8 +269,8 @@ function DeliveryForm({
       </div>
 
       {/* ZIPCODE & COUNTRY */}
-      <div className="flex justify-between gap-4 mb-6">
-        <div>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex-1">
           <input
             id="zipcode"
             type="tel"
@@ -289,28 +278,28 @@ function DeliveryForm({
             pattern="[0-9]*"
             maxLength={6}
             placeholder="Zip Code"
-            className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
+            className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
             {...register("zipcode")}
           />
 
           {errors.zipcode && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm mt-1">
               {errors.zipcode.message}
             </p>
           )}
         </div>
 
-        <div>
+        <div className="flex-1">
           <input
             id="country"
             type="text"
             placeholder="Country"
-            className="flex-1 border border-gray-300 rounded-sm px-2 py-2"
+            className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
             {...register("country")}
           />
 
           {errors.country && (
-            <p className="text-red-500 text-sm">
+            <p className="text-red-500 text-sm mt-1">
               {errors.country.message}
             </p>
           )}
@@ -326,12 +315,12 @@ function DeliveryForm({
           pattern="[0-9]*"
           maxLength={10}
           placeholder="Phone"
-          className="w-full border border-gray-300 rounded-sm px-2 py-2"
+          className="w-full border border-gray-300 rounded-sm px-3 py-2 text-sm sm:text-base"
           {...register("phone")}
         />
 
         {errors.phone && (
-          <p className="text-red-500 text-sm">
+          <p className="text-red-500 text-sm mt-1">
             {errors.phone.message}
           </p>
         )}

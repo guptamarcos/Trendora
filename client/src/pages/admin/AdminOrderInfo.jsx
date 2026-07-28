@@ -19,7 +19,7 @@ function TableHead() {
         {headings.map((head) => (
           <th
             key={head}
-            className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
+            className="px-4 sm:px-6 py-4 text-left text-sm font-semibold text-gray-700 whitespace-nowrap"
           >
             {head}
           </th>
@@ -29,11 +29,23 @@ function TableHead() {
   );
 }
 
-function TableRow({ order, setOrders, fetchOrders, loading, setLoading }) {
+function TableRow({
+  order,
+  setOrders,
+  fetchOrders,
+  loading,
+  setLoading,
+}) {
   if (!order) return null;
 
-  const { _id, user, totalAmount, createdAt, paymentStatus, orderStatus } =
-    order;
+  const {
+    _id,
+    user,
+    totalAmount,
+    createdAt,
+    paymentStatus,
+    orderStatus,
+  } = order;
 
   const formattedDate = new Date(createdAt).toLocaleDateString("en-IN", {
     day: "numeric",
@@ -73,15 +85,18 @@ function TableRow({ order, setOrders, fetchOrders, loading, setLoading }) {
 
   async function handleOrderStatusChange(e) {
     const newStatus = e.target.value;
+
     try {
       setLoading(true);
+
       await updateOrderStatus(newStatus, _id);
 
       await fetchOrders();
 
       toast.success("Order status updated successfully");
     } catch (err) {
-      const message = err?.response?.data?.message || "Something went wrong";
+      const message =
+        err?.response?.data?.message || "Something went wrong";
 
       toast.error(message);
     } finally {
@@ -91,34 +106,43 @@ function TableRow({ order, setOrders, fetchOrders, loading, setLoading }) {
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition duration-200">
-      {/* ORDER ID */}
-      <td className="px-6 py-4">
-        <div>
-          <p className="font-medium text-gray-800">#{_id.slice(-8)}</p>
 
-          <p className="text-xs text-gray-500">{_id}</p>
+      {/* ORDER ID */}
+      <td className="px-4 sm:px-6 py-4">
+        <div>
+          <p className="font-medium text-sm sm:text-base text-gray-800">
+            #{_id.slice(-8)}
+          </p>
+
+          <p className="text-xs text-gray-500 whitespace-nowrap">
+            {_id}
+          </p>
         </div>
       </td>
 
       {/* CUSTOMER */}
-      <td className="px-6 py-4">
+      <td className="px-4 sm:px-6 py-4">
         <div className="flex flex-col">
-          <p className="font-medium text-gray-800">
+          <p className="font-medium text-sm sm:text-base text-gray-800 whitespace-nowrap">
             {user?.username || "Unknown User"}
           </p>
 
-          <p className="text-sm text-gray-500">Customer</p>
+          <p className="text-xs sm:text-sm text-gray-500">
+            Customer
+          </p>
         </div>
       </td>
 
       {/* AMOUNT */}
-      <td className="px-6 py-4 font-medium text-gray-800">₹{totalAmount}</td>
+      <td className="px-4 sm:px-6 py-4 font-medium text-sm sm:text-base text-gray-800 whitespace-nowrap">
+        ₹{totalAmount}
+      </td>
 
       {/* PAYMENT */}
-      <td className="px-6 py-4">
+      <td className="px-4 sm:px-6 py-4">
         <span
-          className={`inline-flex rounded-full px-3 py-1 text-sm font-medium ${getPaymentStyles(
-            paymentStatus,
+          className={`inline-flex rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium ${getPaymentStyles(
+            paymentStatus
           )}`}
         >
           {paymentStatus}
@@ -126,20 +150,24 @@ function TableRow({ order, setOrders, fetchOrders, loading, setLoading }) {
       </td>
 
       {/* DATE */}
-      <td className="px-6 py-4 text-sm text-gray-600">{formattedDate}</td>
+      <td className="px-4 sm:px-6 py-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
+        {formattedDate}
+      </td>
 
       {/* STATUS */}
-      <td className="px-6 py-4">
+      <td className="px-4 sm:px-6 py-4">
         {orderStatus === "Cancelled" ? (
-          <span className="text-lg text-red-400">Cancelled</span>
+          <span className="text-sm sm:text-base text-red-500 font-medium whitespace-nowrap">
+            Cancelled
+          </span>
         ) : (
           <select
             value={orderStatus}
             onChange={handleOrderStatusChange}
-            className="h-11 rounded-xl border border-gray-300 bg-white px-4 text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+            className="h-10 sm:h-11 rounded-xl border border-gray-300 bg-white px-3 sm:px-4 text-xs sm:text-sm text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black whitespace-nowrap"
           >
             {orderStatusVal.map((status, idx) => (
-              <option value={status} key={idx}>
+              <option key={idx} value={status}>
                 {status}
               </option>
             ))}
@@ -170,7 +198,9 @@ function AdminOrderInfo() {
 
       setMatchedOrdersCount(res?.data?.matchedOrdersCount || 0);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Failed to fetch orders");
+      toast.error(
+        err?.response?.data?.message || "Failed to fetch orders"
+      );
     } finally {
       setLoading(false);
     }
@@ -185,24 +215,31 @@ function AdminOrderInfo() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 px-4 py-8 md:px-8">
+    <main className="min-h-screen bg-gray-100 px-3 sm:px-4 lg:px-8 py-6 sm:py-8">
       <div className="max-w-7xl mx-auto space-y-6">
+
         {/* HEADER */}
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold text-gray-800">Orders</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            Orders
+          </h1>
 
-          <p className="text-gray-500">Manage customer orders</p>
+          <p className="text-sm sm:text-base text-gray-500">
+            Manage customer orders
+          </p>
         </div>
 
         {/* SEARCH + FILTER */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex w-full md:w-auto gap-2">
+        <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4">
+
+          <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-3">
+
             <input
               type="text"
               placeholder="Search Customer..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-11 w-full md:w-72 border border-gray-200 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-black bg-white"
+              className="h-11 w-full lg:w-72 border border-gray-200 px-4 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-black"
             />
 
             <button
@@ -210,10 +247,11 @@ function AdminOrderInfo() {
                 setLimit(10);
                 fetchOrders();
               }}
-              className="cursor-pointer h-11 px-6 rounded-md border border-gray-200 text-gray-700 bg-white hover:bg-gray-100 transition"
+              className="cursor-pointer h-11 w-full sm:w-auto px-6 rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 transition"
             >
               Search
             </button>
+
           </div>
 
           <select
@@ -222,7 +260,7 @@ function AdminOrderInfo() {
               setLimit(10);
               setStatus(e.target.value);
             }}
-            className="h-11 border border-gray-200 px-4 rounded-md text-gray-700 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
+            className="h-11 w-full sm:w-52 lg:w-48 border border-gray-200 px-4 rounded-md bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black"
           >
             <option value="">All</option>
             <option value="Completed">Completed</option>
@@ -231,12 +269,15 @@ function AdminOrderInfo() {
             <option value="Delivered">Delivered</option>
             <option value="Cancelled">Cancelled</option>
           </select>
+
         </div>
 
         {/* COUNT */}
         <p className="text-sm text-gray-600">
           Showing{" "}
-          <span className="font-semibold text-gray-800">{orders.length}</span>{" "}
+          <span className="font-semibold text-gray-800">
+            {orders.length}
+          </span>{" "}
           of{" "}
           <span className="font-semibold text-gray-800">
             {matchedOrdersCount}
@@ -244,31 +285,34 @@ function AdminOrderInfo() {
           orders
         </p>
 
-        {/* TABLE */}
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className="overflow-x-auto">
+                {/* TABLE */}
+        <div className="overflow-hidden rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="w-full overflow-x-auto">
             <table className="w-full min-w-[950px] border-collapse">
               <TableHead />
 
               <tbody>
-                {orders.length === 0 && (
+                {orders.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="py-10 text-center text-gray-500">
+                    <td
+                      colSpan="6"
+                      className="py-10 text-center text-gray-500"
+                    >
                       No orders found
                     </td>
                   </tr>
+                ) : (
+                  orders.map((order) => (
+                    <TableRow
+                      key={order._id}
+                      order={order}
+                      setOrders={setOrders}
+                      fetchOrders={fetchOrders}
+                      loading={loading}
+                      setLoading={setLoading}
+                    />
+                  ))
                 )}
-
-                {orders.map((order) => (
-                  <TableRow
-                    key={order._id}
-                    order={order}
-                    setOrders={setOrders}
-                    fetchOrders={fetchOrders}
-                    loading={loading}
-                    setLoading={setLoading}
-                  />
-                ))}
               </tbody>
             </table>
           </div>
@@ -278,7 +322,7 @@ function AdminOrderInfo() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200 pt-5">
           <button
             onClick={() => setLimit((prev) => prev - 10)}
-            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition ${
+            className={`cursor-pointer w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition ${
               orders.length > 10 ? "" : "invisible"
             }`}
           >
@@ -287,7 +331,7 @@ function AdminOrderInfo() {
 
           <button
             onClick={() => setLimit((prev) => prev + 10)}
-            className={`cursor-pointer w-full sm:w-auto px-5 py-3 rounded-xl bg-black text-white hover:opacity-90 transition ${
+            className={`cursor-pointer w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-black text-white hover:opacity-90 transition ${
               orders.length < matchedOrdersCount ? "" : "invisible"
             }`}
           >

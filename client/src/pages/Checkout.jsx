@@ -1,9 +1,12 @@
-import { CartTotal, DeliveryForm, Heading} from "../components/checkout/Index.jsx";
+import {
+  CartTotal,
+  DeliveryForm,
+  Heading,
+} from "../components/checkout/Index.jsx";
 import { useState, useEffect } from "react";
 import { getCartItems } from "../api/cartApi.js";
 import { toast } from "react-toastify";
 import Loader from "../components/Loaders/Loader.jsx";
-
 
 function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("stripe");
@@ -37,13 +40,12 @@ function Checkout() {
   }
 
   return (
-    <section className="min-h-screen flex justify-between gap-30">
-      {/* DELIVERY ADDRESS */}
-      <div className="w-[35%] pt-8">
+    <section className="min-h-screen mb-20 flex flex-col lg:flex-row justify-between gap-10 lg:gap-20">
+      <div className="w-full lg:w-[35%] pt-8">
         <Heading
           textGray="DELIVERY"
           textBlack="INFORMATION"
-          fontSize="text-3xl"
+          fontSize="text-2xl sm:text-3xl"
         />
 
         <DeliveryForm
@@ -54,9 +56,13 @@ function Checkout() {
         />
       </div>
 
-
-      <CartTotal subTotal={subTotal} paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod}/>
-    
+      <div className="w-full lg:w-[50%]">
+        <CartTotal
+          subTotal={subTotal}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+        />
+      </div>
     </section>
   );
 }
