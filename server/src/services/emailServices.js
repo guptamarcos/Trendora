@@ -1,4 +1,4 @@
-const transporter = require("../utils/transporter.js");
+const transporter = require("../utils/Transporter.js");
 
 const loginEmail = async function (to) {
   try {

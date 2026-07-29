@@ -12,7 +12,7 @@ const { loginSms } = require("./smsServices.js");
 const ExpressError = require("../utils/ExpressError.js");
 const client = require("../config/oauthConfig.js");
 const OTP = require("../models/otpSchema.js");
-const { otpGenerator } = require("../utils/Helper.js");
+const { otpGenerator } = require("../utils/helper.js");
 
 async function registerUser(body) {
   // VALIDATING REQUEST BODY
