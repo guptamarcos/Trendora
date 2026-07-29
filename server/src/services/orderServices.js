@@ -7,7 +7,7 @@ const {
   orderConfirmationEmail,
   orderCancelEmail,
 } = require("./emailServices.js");
-const isValidDocumentId = require("../utils/validator.js");
+const isValidDocumentId = require("../utils/Validator.js");
 
 async function getUserOrder(userId) {
   const userOrders = await Order.find({ user: userId })
