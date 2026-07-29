@@ -1,4 +1,4 @@
-import { about_img } from "../../assets/Index";
+import { about_img } from "../../assets/Index.jsx";
 
 function AboutContent() {
   return (

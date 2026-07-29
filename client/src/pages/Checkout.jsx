@@ -6,7 +6,7 @@ import {
 import { useState, useEffect } from "react";
 import { getCartItems } from "../api/cartApi.js";
 import { toast } from "react-toastify";
-import Loader from "../components/Loaders/Loader.jsx";
+import Loader from "../components/loaders/Loader.jsx";
 
 function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("stripe");
