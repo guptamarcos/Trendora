@@ -29,12 +29,18 @@ const reviewRoutes = require("./src/routes/reviewRoutes.js");
 const paymentRoutes = require("./src/routes/paymentRoutes.js");
 
 // MIDDLEWARE SETUP
+app.disable("x-powered-by"); // This removes the X-Powered-By: Express response header.
+if(process.env.NODE_ENV === "production"){
+  app.set("trust proxy", 1); // TRUST PROXY
+  app.use(helmet()); 
+}
+
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.SIGNED_COOKIE_SECRET));
-// app.use(helmet()); // PRODUCTION ONLY
 app.use(apiLimiter);
+
 
 // WE ONLY NEED IT WHEN WE LOCALLY UPLOADING THE IMAGES
 // app.use("/uploads", express.static(path.join(__dirname, "uploads")));
